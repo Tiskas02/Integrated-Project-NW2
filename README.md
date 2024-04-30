@@ -14,15 +14,25 @@
    
 2. **Application of Technical Concepts:** The project will demonstrate the application of technical concepts and practices in core information technologies.
 
-## Inst
+## Installation
+
+[Provide instructions on how to install and set up the project environment, including any dependencies.]
 
 ## Usage
 
 [Explain how to use the project once it's set up, including any commands or procedures.]
 
+## Contributing
 
+[If applicable, provide guidelines for contributing to the project.]
+
+## License
+
+[Specify the project's license, if any.]
 
 ## Contact
+
+[Provide contact information for inquiries or support related to the project.]
 
 [Provide contact information for inquiries or support related to the project.]
  
