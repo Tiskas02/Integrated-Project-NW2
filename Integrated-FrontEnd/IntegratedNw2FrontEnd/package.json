@@ -1,0 +1,32 @@
+{
+  "name": "integratednw2frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:e2e": "start-server-and-test preview http://localhost:5173 'cypress run --e2e'",
+    "test:e2e:dev": "start-server-and-test 'vite dev --port 5173' http://localhost:5173 'cypress open --e2e'",
+    "test:unit": "cypress run --component",
+    "test:unit:dev": "cypress open --component",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "dependencies": {
+    "daisyui": "^4.10.2",
+    "tailwindcss-animated": "^1.0.1",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.19",
+    "cypress": "^13.7.2",
+    "postcss": "^8.4.38",
+    "start-server-and-test": "^2.0.3",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.2.8"
+  }
+}

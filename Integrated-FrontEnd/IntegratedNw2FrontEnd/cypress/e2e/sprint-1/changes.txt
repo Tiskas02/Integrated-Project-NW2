@@ -1,0 +1,7 @@
+v1.0 -- initial
+v1.1 -- tc-pbi2-view-task-table-view-2 and tc-pbi2-view-task-deatil-2
+         .itbkk-assignees change should to contains("unassigned") and should('have.css)
+v1.2 -- tc-pbi2-view-task-table-detail-2..4 remove cy.visit(/task/:id) and use 
+        cy.get('.itbkk-title').contains('xxxx').click() instead of cy('@item').eq(n).contains('.itbkk-title','xxx')
+        because when using cy('@item').eq(n) the event click() does not work.
+v1.3 -- tc-pbi2-view-task-table-detail-5 check the error message "The requested task does not exist"
