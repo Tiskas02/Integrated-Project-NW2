@@ -38,4 +38,8 @@ public class TaskController {
     public void deleteTask(@PathVariable Integer id) {
         service.deleteTask(id);
     }
+    @PutMapping("/{id}")
+    public NewTaskDTO updateTask(@RequestBody NewTaskDTO editTask,@PathVariable Integer id){
+        return service.updateTask(editTask,id);
+    }
 }
