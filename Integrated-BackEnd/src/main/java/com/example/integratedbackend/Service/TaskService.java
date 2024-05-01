@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.List;
@@ -52,27 +53,21 @@ public class TaskService {
         entityManager.createNativeQuery("ALTER TABLE task AUTO_INCREMENT = 1").executeUpdate();
     }
     @Transactional
-    public NewTaskDTO updateTask(NewTaskDTO editTask,Integer id){
-        Optional<Tasks> optionalTask = repositories.findById(id);
-        if (optionalTask.isPresent()) {
-            Tasks existingTask = optionalTask.get();
-            // Update the existing task entity with data from editTask
+    public NewTaskDTO updateTask(NewTaskDTO editTask, Integer id) {
+        Optional<Tasks> oldTask = repositories.findById(id);
+        if (oldTask.isPresent()) {
+            Tasks existingTask = oldTask.get();
             existingTask.setTaskTitle(editTask.getTitle());
             existingTask.setTaskAssignees(editTask.getAssignees());
             existingTask.setTaskDescription(editTask.getDescription());
             existingTask.setTaskStatus(editTask.getStatus());
-
-            // Save the updated task entity back to the database
             Tasks updatedTask = repositories.save(existingTask);
-
-            // Map the updated task entity to NewTaskDTO and return
             return mapper.map(updatedTask, NewTaskDTO.class);
         } else {
-            // Handle the case where task with given id is not found
-            // You might throw an exception or return null/throw custom exception, etc.
-            return null; // Or throw new TaskNotFoundException("Task with id " + id + " not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
 
 
 }
