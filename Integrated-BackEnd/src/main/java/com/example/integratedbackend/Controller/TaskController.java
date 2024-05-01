@@ -23,12 +23,19 @@ public class TaskController {
     private ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
+
     @GetMapping("")
-    public ResponseEntity<Object> getTasks(){
-         return ResponseEntity.ok(listMapper.mapList(service.getTasks(), TaskDTO.class,modelMapper));
-   }
+    public ResponseEntity<Object> getTasks() {
+        return ResponseEntity.ok(listMapper.mapList(service.getTasks(), TaskDTO.class, modelMapper));
+    }
+
     @GetMapping("{id}")
-    public ResponseEntity<Object> findAllProducts(@PathVariable Integer id){
+    public ResponseEntity<Object> findAllProducts(@PathVariable Integer id) {
         return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTO.class));
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteTask(@PathVariable Integer id) {
+        service.deleteTask(id);
     }
 }
