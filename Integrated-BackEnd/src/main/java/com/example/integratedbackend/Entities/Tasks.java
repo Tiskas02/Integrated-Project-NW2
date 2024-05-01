@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 @Setter
 public class Tasks {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
     private Integer taskId;
     
@@ -29,10 +30,10 @@ public class Tasks {
     @Column(name = "taskStatus")
     private ResourceType taskStatus;
     
-    @Column(name = "createdOn")
+    @Column(name = "createdOn",insertable = false,updatable = false)
     private ZonedDateTime createdOn;
     
-    @Column(name = "updatedOn")
+    @Column(name = "updatedOn",insertable = false,updatable = false)
     private ZonedDateTime updatedOn;
 
     
