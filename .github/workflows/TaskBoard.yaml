@@ -25,7 +25,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Shutdown container
         run: |
-          docker-compose down || true
+          docker-compose down
           
       - name: Clear storage
         run: |
