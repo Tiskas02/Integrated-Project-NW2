@@ -1,5 +1,6 @@
 # Integrated Project 
 #### Member
+* Jiraplus Chanpong 65130500011 ✨
 * Saksit tatitrisakul 65130500078 ✨
 
 ## Prerequisites
