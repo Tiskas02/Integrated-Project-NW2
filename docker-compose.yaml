@@ -9,8 +9,8 @@ services:
       - '5173:80'
     # networks: 
     #   - internal
-  #   depends_on:
-  #     - backend
+    depends_on:
+      - backend
   backend:
     container_name: backEndContainer
     build:
@@ -26,10 +26,8 @@ services:
       SPRING_JPA.HIBERNATE: update
     # networks: 
     #   - internal
-  #   depends_on:
-  #     - dbserver
-        
- 
+    depends_on:
+      - dbserver     
  
   dbserver:
     container_name: dataContainer
