@@ -19,11 +19,11 @@ services:
     restart: always
     ports:
       - '8080:8080'
-    # environment:
-    #   SPRING_DATASOURCE_URL: jdbc:mysql://dbserver:3306/kradanItBangMod
-    #   SPRING_DATASOURCE_USERNAME: root
-    #   SPRING_DATASOURCE_PASSWORD: nw2
-    #   SPRING_JPA.HIBERNATE: update
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://dbserver:3306/kradanItBangMod
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: nw2
+      SPRING_JPA.HIBERNATE: update
     # networks: 
     #   - internal
     # depends_on:
