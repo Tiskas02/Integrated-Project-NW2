@@ -31,8 +31,6 @@ services:
       MYSQL_DATABASE: 'kradanItBangMod'
       MYSQL_ROOT_PASSWORD: 'nw2'
       MYSQL_ROOT_HOST: '%'
-    ports:
-      - '3306:3306'
     volumes:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
