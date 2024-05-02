@@ -7,8 +7,8 @@ services:
     restart: always
     ports:
       - '80:80'
-    # networks: 
-    #   - internal
+    networks: 
+      - external
     depends_on:
       - backend
   backend:
@@ -24,8 +24,8 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: nw2
       SPRING_JPA.HIBERNATE: update
-    # networks: 
-    #   - internal
+    networks: 
+      - internal
     depends_on:
       - dbserver     
  
@@ -44,11 +44,11 @@ services:
       - mysqlconfig:/etc/mysql
     healthcheck:
       test: "exit 0"
-    # networks: 
-    #   - internal
+    networks: 
+      - internal
 
 volumes:
   mysqldb:
   mysqlconfig:
 
-# networks: 
+

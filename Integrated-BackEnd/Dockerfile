@@ -7,8 +7,8 @@ COPY . /usr/src/app
 # Set the working directory
 WORKDIR /usr/src/app
  
-# Build the project and package the application
-RUN mvn clean package -DskipTests
+# Build the project and package the application / -DskipTests
+RUN mvn clean package 
  
 # Use OpenJDK 17 for running the application
 FROM openjdk:17-jdk
