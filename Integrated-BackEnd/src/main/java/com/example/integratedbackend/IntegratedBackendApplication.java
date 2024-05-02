@@ -21,7 +21,7 @@ public class IntegratedBackendApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/v1/**").allowedOrigins("http://localhost:5173", "http://ip23nw2.sit.kmutt.ac.th:5173");
+                registry.addMapping("/v1/**").allowedOrigins("http://localhost", "http://ip23nw2.sit.kmutt.ac.th");
             }
         };
     }
