@@ -4,7 +4,7 @@ services:
     build:
       context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
       dockerfile: Dockerfile
-    restart: always
+    # restart: always
     ports:
       - '80:80'
     # networks: 
@@ -16,11 +16,11 @@ services:
     build:
       context: ./Integrated-BackEnd
       dockerfile: Dockerfile
-    restart: always
+    # restart: always
     ports:
       - '8080:8080'
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://dbserver:3306/kradanItBangMod
+      SPRING_DATASOURCE_URL: jdbc:mysql://dataContainer:3306/kradanItBangMod
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: nw2
       SPRING_JPA.HIBERNATE: update
@@ -32,7 +32,7 @@ services:
   dbserver:
     container_name: dataContainer
     image: mysql/mysql-server
-    restart: always
+    # restart: always
     environment:
       MYSQL_DATABASE: 'kradanItBangMod'
       MYSQL_ROOT_PASSWORD: 'nw2'
