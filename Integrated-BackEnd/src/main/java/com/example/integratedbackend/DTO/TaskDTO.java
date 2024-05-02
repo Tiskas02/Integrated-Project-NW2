@@ -11,4 +11,8 @@ public class TaskDTO {
     private String Title;
     private String Assignees;
     private ResourceType Status;
+
+    public TaskDTO(String errorMessage) {
+
+    }
 }

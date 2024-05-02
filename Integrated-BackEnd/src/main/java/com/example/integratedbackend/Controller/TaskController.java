@@ -7,6 +7,7 @@ import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,8 +36,8 @@ public class TaskController {
         return service.createTask(newTask);
     }
     @DeleteMapping("{id}")
-    public void deleteTask(@PathVariable Integer id) {
-        service.deleteTask(id);
+    public TaskDTO deleteTask(@PathVariable Integer id) {
+        return service.deleteTask(id);
     }
     @PutMapping("/{id}")
     public NewTaskDTO updateTask(@RequestBody NewTaskDTO editTask,@PathVariable Integer id){
