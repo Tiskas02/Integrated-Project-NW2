@@ -20,7 +20,7 @@ services:
     ports:
       - '8080:8080'
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://dataContainer:3306/kradanItBangMod
+      SPRING_DATASOURCE_URL: jdbc:mysql://dataContainer/kradanItBangMod
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: nw2
       SPRING_JPA.HIBERNATE: update
