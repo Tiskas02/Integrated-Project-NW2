@@ -45,7 +45,8 @@ services:
     healthcheck:
       test: "exit 0"
     networks: 
-      - internal
+      internal:
+        driver: bridge
 
 volumes:
   mysqldb:
