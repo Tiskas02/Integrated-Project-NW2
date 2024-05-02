@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - '5173:80'
+      - '80:80'
     # networks: 
     #   - internal
     depends_on:
@@ -38,7 +38,7 @@ services:
       MYSQL_ROOT_PASSWORD: 'nw2'
       MYSQL_ROOT_HOST: '%'
     ports:
-      - '3306:3306'
+      - '22:3306'
     volumes:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
