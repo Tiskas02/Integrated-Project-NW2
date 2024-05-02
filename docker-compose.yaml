@@ -1,16 +1,16 @@
 services:
-  frontend:
-    container_name: frontEndContainer
-    build:
-      context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - '80:80'
+  # frontend:
+  #   container_name: frontEndContainer
+  #   build:
+  #     context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - '80:80'
     # networks: 
     #   - external
-    depends_on:
-      - backend
+    # depends_on:
+    #   - backend
   backend:
     container_name: backEndContainer
     build:
