@@ -11,9 +11,12 @@
 body {    
     font-family: "Poppins", sans-serif;
     min-height: 100vh;
-    background: #c70ae9;
-    background: linear-gradient(100deg, rgba(86,52,163,1) 34%, rgba(219, 75, 227) 95%);
+    margin: 0;
+    padding: 0;
+    background: url('/images/background.png');
+    background-size: cover;
 }
+
 
 ::-webkit-scrollbar {
     width: 0.5em;
