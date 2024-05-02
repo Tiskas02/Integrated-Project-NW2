@@ -1,13 +1,15 @@
 package com.example.integratedbackend.Service;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListMapper {
     private static final ListMapper listMapper = new ListMapper();
-    private static final ModelMapper modelMapper = new ModelMapper();
+    @Autowired
+    ModelMapper modelMapper;
     private ListMapper() { }
     public static ListMapper getInstance() {
         return listMapper;
