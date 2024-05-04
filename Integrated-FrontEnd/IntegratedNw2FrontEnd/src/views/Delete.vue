@@ -1,8 +1,8 @@
 <script setup>
-const emit = defineEmits(['setDelete']);
+const emit = defineEmits(['setDelete'])
 const props = defineProps({
   tasks: Object
-});
+})
 </script>
 
 <template>
