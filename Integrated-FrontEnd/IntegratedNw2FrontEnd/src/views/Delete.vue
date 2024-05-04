@@ -1,8 +1,25 @@
 <script setup>
-const emit = defineEmits(['setDelete'])
+import { deleteItemById } from '../libs/fetchUtil.js';
+import { defineProps, defineEmits, ref } from 'vue';
+const emit = defineEmits(['setDelete','statusCode'])
 const props = defineProps({
   tasks: Object
 })
+const statusCode = ref(0)
+const removeTask = async (removeId) => {
+  //backend
+  const removeTask = await deleteItemById(
+    import.meta.env.VITE_BASE_URL,
+    removeId
+  );
+  console.log(removeTask);
+  if (removeTask === 200) {
+    statusCode.value = 200
+  } else {
+    statusCode.value = 400
+  }
+  console.log(statusCode.value);
+}
 </script>
 
 <template>
@@ -30,10 +47,11 @@ const props = defineProps({
             </div>
             <div
               @click="
-                [$emit('setDelete', false), $router.replace({ name: 'task' })]
+                [removeTask(tasks?.id),$emit('setDelete', false), $router.replace({ name: 'task' }),$emit('statusCode', statusCode)]
               "
               class="itbkk-button btn btn-success text-white"
             >
+              
               Confirm
             </div>
           </div>

@@ -1,8 +1,8 @@
-import { reactive } from "vue";
+import { ref } from "vue";
 
 class TaskManagement {
   constructor() {
-    this.tasks = reactive([]);
+    this.tasks = []
   }
   getTask() {
     return this.tasks;
@@ -18,6 +18,7 @@ class TaskManagement {
 
       tasks.forEach((task) => {
         task.status = this.convertStatus(task.status);
+        console.log(task);
         this.tasks.push(task);
       });
 
@@ -44,4 +45,4 @@ class TaskManagement {
     return this.tasks;
   }
 }
-export { TaskManagement };
+export default new TaskManagement() 

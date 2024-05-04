@@ -1,44 +1,50 @@
 <script setup>
-import { getTaskById, getTaskData , addItem ,deleteItemById} from '../libs/fetchUtil.js';
-import { onMounted, ref ,computed} from 'vue';
-import { TaskManagement } from '/src/libs/TaskManagement.js';
+import {
+  getTaskById,
+  getTaskData,
+  addItem,
+  deleteItemById
+} from '../libs/fetchUtil.js';
+import { onMounted, ref, computed } from 'vue';
+// import { TaskManagement } from '/src/libs/TaskManagement.js';
+import taskManagement from '/src/libs/TaskManagement.js';
 import { useRoute, useRouter } from 'vue-router';
 import router from '../router/router.js';
 import Modal from '../components/Modal.vue';
 import Delete from '../views/Delete.vue';
 
-const showDetail = ref(false)
-const showDelete = ref(false)
-const route = useRoute()
-const taskManagement = new TaskManagement()
-const dataById = ref()
-const storeMode = ref(null)
-let historyStack = []
-const myTasks = ref(taskManagement.getTask())
+const showDetail = ref(false);
+const showDelete = ref(false);
+const route = useRoute();
+const dataById = ref();
+const storeMode = ref(null);
+let historyStack = [];
+const myTasks = ref(taskManagement);
+const removeId = ref();
+console.log(myTasks.value.getTask());
 
-const removeTask = async (removeId) => {
-  //backend
-  const removeTask = await deleteItemById(
-    import.meta.env.VITE_BASE_URL,
-    removeId
-  )
-  if (removeTask === 200) {
+const removeTask = async (code) => {
+  console.log(code);
+  if (code === 200) {
     //frontend
-    taskManagement.removeTask(removeId)
+    myTasks.value.removeTask(removeId.value);
   }
-}
+};
+const setTaskId = (id) => {
+  removeId.value = id;
+};
 onMounted(async () => {
-  taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
-})
+  myTasks.value.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
+});
 const setDelete = (del) => {
-  showDelete.value = del
-}
+  showDelete.value = del;
+};
 const setMode = (mode) => {
-  storeMode.value = mode
-}
+  storeMode.value = mode;
+};
 const setDetail = (set) => {
-  showDetail.value = set
-}
+  showDetail.value = set;
+};
 function routeToadd() {
   router.push({ name: 'addTask' });
 }
@@ -48,46 +54,43 @@ async function fetchById(id) {
   if (!id) {
     throw new Error('Missing required param "id"');
   }
-  
   dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
-  
   if (showDetail.value === true) {
     if (storeMode.value === 'edit') {
-      router.push({ name: 'taskDetail', params: { id: id }}).then(() => {
+      router.push({ name: 'taskDetail', params: { id: id } }).then(() => {
         router.push({ name: 'editTask', params: { id: id } });
       });
     } else {
       router.push({ name: 'taskDetail', params: { id: id } });
     }
-    
+
     if (dataById.value.status == '404') {
       alert('The requested task does not exist');
       router.replace({ name: 'task' });
       return;
     }
-    
+
     setDetail(true);
   }
 }
 
 // Add Task
 
-
 window.onpopstate = function () {
-  const previousState = historyStack.pop()
+  const previousState = historyStack.pop();
   if (previousState === true) {
-    setDetail(true) // Forward navigation
+    setDetail(true); // Forward navigation
   } else {
-    setDetail(false) // Backward navigation or initial load
+    setDetail(false); // Backward navigation or initial load
   }
-}
+};
 
 function navigateToDetail(showDetail) {
-  historyStack.push(showDetail)
+  historyStack.push(showDetail);
 }
 
 if (route.params.id) {
-  fetchById(route.params.id)
+  fetchById(route.params.id);
 }
 
 const task = ref({
@@ -140,7 +143,7 @@ const convertStatus = (status) => {
             <!-- Add Task-->
             <div
               class="btn btn-outline btn-primary"
-              @click="[setMode('add'), (showDetail = true),routeToadd()]"
+              @click="[setMode('add'), (showDetail = true), routeToadd()]"
             >
               <svg
                 width="20"
@@ -166,7 +169,7 @@ const convertStatus = (status) => {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
-        
+
         <!-- No Task -->
         <div class="w-full flex justify-center">
           <div
@@ -199,7 +202,7 @@ const convertStatus = (status) => {
                 </div>
               </div>
               <div
-                v-if="taskManagement.getTask().length === 0"
+                v-if="myTasks.getTask().length === 0"
                 class="w-full border bg-white"
               >
                 <div class="w-full">
@@ -216,7 +219,7 @@ const convertStatus = (status) => {
               >
                 <div class="w-full max-h-[550px]">
                   <div
-                    v-for="task in myTasks"
+                    v-for="task in myTasks.getTask()"
                     :key="task.taskId"
                     class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
                   >
@@ -293,12 +296,17 @@ const convertStatus = (status) => {
                             ]
                           "
                         >
-                        
                           Edit
                         </div>
                         <div
                           class="btn btn-outline btn-error"
-                          @click="[(showDelete = true), fetchById(task.taskId),removeTask(task.taskId)]"
+                          @click="
+                            [
+                              (showDelete = true),
+                              fetchById(task.taskId),
+                              setTaskId(task.taskId)
+                            ]
+                          "
                         >
                           Delete
                         </div>
@@ -316,9 +324,13 @@ const convertStatus = (status) => {
               :mode="storeMode"
             ></Modal>
           </teleport>
-          <!-- <Teleport to="body" v-if="showDelete">
-            <Delete @setDelete="setDelete" :tasks="dataById"></Delete>
-          </Teleport> -->
+          <Teleport to="body" v-if="showDelete">
+            <Delete
+              @setDelete="setDelete"
+              :tasks="dataById"
+              @statusCode="removeTask"
+            ></Delete>
+          </Teleport>
         </div>
       </div>
     </div>
