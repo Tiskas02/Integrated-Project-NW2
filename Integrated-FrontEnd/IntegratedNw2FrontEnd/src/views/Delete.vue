@@ -1,25 +1,12 @@
 <script setup>
-import { deleteTaskById } from "../libs/fetchUtil.js";
+import { defineEmits } from 'vue';
+import { deleteTask } from '../libs/fetchUtil.js';
 const emit = defineEmits(["setDelete"]);
 const props = defineProps({
   tasks: Object,
 });
-
-async function deleteTask(taskId) {
-    try {
-        await deleteTaskById(taskId);
-        // Optionally, emit an event or perform any other necessary actions after successful deletion
-        // For example, you might want to update the task list
-    } catch (error) {
-        console.error('Error deleting task:', error);
-    }
-}
-const confirmDelete = async () => {
-    try {
-        await deleteTask(tasks.taskId);
-    } catch (error) {
-        console.error('Error confirming deletion:', error);
-    }
+const confirmDelete = () => {
+  $emit('setDelete', false);
 };
 </script>
 
@@ -35,7 +22,7 @@ const confirmDelete = async () => {
           <div class="text-xl font-semibold text-red-400">Delete Task</div>
           <div class="border-b my-3"></div>
           <div class="break-all">
-            Do you want to delete the task " {{ tasks?.title }} " ?
+            Do you want to delete the task " {{ tasks?.title }}" ?
           </div>
           <div class="flex justify-end my-4">
             <div
@@ -46,17 +33,8 @@ const confirmDelete = async () => {
             >
               Cancle
             </div>
-            <div
-              @click="
-                [
-                  $emit('setDelete', false),
-                  $router.replace({ name: 'task' }),
-                  deleteTask(tasks.taskId),
-                  confirmDelete
-                ]
-              "
-              class="itbkk-button btn btn-success text-white"
-            >
+            <div @click="[(confirmDelete), deleteTask(tasks?.tasksId)]" class="itbkk-button btn btn-success text-white">
+
               Confirm
             </div>
           </div>  

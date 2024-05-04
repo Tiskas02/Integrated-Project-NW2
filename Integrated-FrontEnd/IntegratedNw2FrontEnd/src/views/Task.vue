@@ -1,6 +1,5 @@
 <script setup>
-import { getTaskById, getTaskData } from "../libs/fetchUtil.js";
-import { deleteTaskById, getTaskById, getTaskData } from "../libs/fetchUtil.js";
+import { getTaskById, getTaskData, deleteTask } from "../libs/fetchUtil.js";
 import { onMounted, ref } from "vue";
 import { TaskManagement } from "/src/libs/TaskManagement.js";
 import { useRoute, useRouter } from "vue-router";
@@ -15,6 +14,21 @@ let historyStack = [];
 onMounted(async () => {
   taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
 });
+const handleDelete = async () => {
+  try {
+    await deleteTask(dataById.value.id);
+    taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
+};
+const onSetDelete = (value) => {
+  if (value) {
+    handleDelete();
+  } else {
+    console.log("Deletion cancelled");
+  }
+};
 const setDelete = (del) => {
   showDelete.value = del;
 };
@@ -32,15 +46,6 @@ async function fetchById(id) {
     alert("The requested task does not exist");
     router.replace({ name: "task" });
     return;
-    if (showDetail.value === true) {
-      router.push({ name: "taskDetail", params: { id: id } });
-      if (dataById.value.status == "404") {
-        alert("The requested task does not exist");
-        router.replace({ name: "task" });
-        return;
-      }
-      setDetail(true);
-    }
     setDetail(true);
   }
   window.onpopstate = function () {
