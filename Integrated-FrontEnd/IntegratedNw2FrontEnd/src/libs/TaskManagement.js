@@ -32,7 +32,12 @@ class TaskManagement {
     const convertStatus = capitalizedStatus.replace(/_/g, " ");
     return convertStatus;
   }
-
+  removeTask(removeId) {
+    this.tasks.splice(
+      this.tasks.findIndex((task) => task.id === removeId),
+      1
+    )
+  }
   
 
   getTaskById() {

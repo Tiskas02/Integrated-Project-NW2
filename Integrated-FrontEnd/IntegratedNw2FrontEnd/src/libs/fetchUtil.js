@@ -36,6 +36,16 @@ async function addItem(url,id) {
     console.log(`error: ${error}`)
   }
 }
+async function deleteItemById(url, id) {
 
+  try {
+    const res = await fetch(`${url}/v1/tasks/${id}`, {
+      method: 'DELETE'
+    })
+    return res.status
+  } catch (error) {
+    console.log(`error: ${error}`)
+  }
+}
 
-export { getTaskData , getTaskById , addItem}
+export { getTaskData , getTaskById , addItem, deleteItemById }

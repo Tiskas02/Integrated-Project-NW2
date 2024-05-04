@@ -1,5 +1,5 @@
 <script setup>
-import { getTaskById, getTaskData , addItem} from '../libs/fetchUtil.js';
+import { getTaskById, getTaskData , addItem ,deleteItemById} from '../libs/fetchUtil.js';
 import { onMounted, ref ,computed} from 'vue';
 import { TaskManagement } from '/src/libs/TaskManagement.js';
 import { useRoute, useRouter } from 'vue-router';
@@ -14,9 +14,19 @@ const taskManagement = new TaskManagement()
 const dataById = ref()
 const storeMode = ref(null)
 let historyStack = []
+const myTasks = ref(taskManagement.getTask())
 
-
-
+const removeTask = async (removeId) => {
+  //backend
+  const removeTask = await deleteItemById(
+    import.meta.env.VITE_BASE_URL,
+    removeId
+  )
+  if (removeTask === 200) {
+    //frontend
+    taskManagement.removeTask(removeId)
+  }
+}
 onMounted(async () => {
   taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
 })
@@ -206,7 +216,7 @@ const convertStatus = (status) => {
               >
                 <div class="w-full max-h-[550px]">
                   <div
-                    v-for="task in taskManagement.getTask()"
+                    v-for="task in myTasks"
                     :key="task.taskId"
                     class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
                   >
@@ -288,7 +298,7 @@ const convertStatus = (status) => {
                         </div>
                         <div
                           class="btn btn-outline btn-error"
-                          @click="[(showDelete = true), fetchById(task.taskId)]"
+                          @click="[(showDelete = true), fetchById(task.taskId),removeTask(task.taskId)]"
                         >
                           Delete
                         </div>
@@ -306,9 +316,9 @@ const convertStatus = (status) => {
               :mode="storeMode"
             ></Modal>
           </teleport>
-          <Teleport to="body" v-if="showDelete">
+          <!-- <Teleport to="body" v-if="showDelete">
             <Delete @setDelete="setDelete" :tasks="dataById"></Delete>
-          </Teleport>
+          </Teleport> -->
         </div>
       </div>
     </div>
