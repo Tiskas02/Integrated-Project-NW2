@@ -1,5 +1,5 @@
 <script setup>
-import { getTaskById, getTaskData , addItem} from '../libs/fetchUtil.js';
+import { getTaskById, getTaskData , addTask} from '../libs/fetchUtil.js';
 import { onMounted, ref ,computed} from 'vue';
 import { TaskManagement } from '/src/libs/TaskManagement.js';
 import { useRoute, useRouter } from 'vue-router';
@@ -29,6 +29,8 @@ const setMode = (mode) => {
 const setDetail = (set) => {
   showDetail.value = set
 }
+
+
 function routeToadd() {
   router.push({ name: 'addTask' });
 }
@@ -59,9 +61,6 @@ async function fetchById(id) {
     setDetail(true);
   }
 }
-
-// Add Task
-
 
 window.onpopstate = function () {
   const previousState = historyStack.pop()
@@ -112,7 +111,19 @@ const convertStatus = (status) => {
     case 'Done':
       return 'Done';
   }
-};
+}
+
+// Add Task
+async function addNewTask(taskData) {
+  try {
+    const addedTask = await addTask(import.meta.env.VITE_BASE_URL, taskData);
+    console.log('New task added:', addedTask);
+    taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
+  } catch (error) {
+    console.error('Error adding task:', error);
+  }
+}
+
 </script>
 
 <template>

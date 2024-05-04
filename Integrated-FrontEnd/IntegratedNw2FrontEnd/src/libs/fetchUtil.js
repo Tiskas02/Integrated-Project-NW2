@@ -19,7 +19,7 @@ async function getTaskById(url,id) {
   }
 }
 
-async function addItem(url,id) {
+async function addTask(url, taskData) {
   try {
     const res = await fetch(`${url}/v1/tasks`, {
       method: 'POST',
@@ -27,15 +27,20 @@ async function addItem(url,id) {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        ...id
+        title: taskData.title.trim(),
+        assignees: taskData.assignees.trim(),
+        description: taskData.description.trim(),
+        status: taskData.status.trim()
       })
-    })
-    const addedItem = await res.json()
-    return addedItem
+    });
+    const addedItem = await res.json();
+    return addedItem;
   } catch (error) {
-    console.log(`error: ${error}`)
+    console.error('Error adding task:', error);
+    return null;
   }
 }
 
 
-export { getTaskData , getTaskById , addItem}
+
+export { getTaskData , getTaskById , addTask}

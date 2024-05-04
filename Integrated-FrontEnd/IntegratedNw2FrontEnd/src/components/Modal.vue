@@ -1,5 +1,5 @@
 <script setup>
-const emit = defineEmits(['setDetail', 'setAdd'])
+const emit = defineEmits(['setDetail'])
 const props = defineProps({
   tasks: Object,
   mode: String
