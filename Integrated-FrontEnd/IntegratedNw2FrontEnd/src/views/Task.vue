@@ -1,13 +1,7 @@
 <script setup>
-import {
-  getTaskById,
-  getTaskData,
-  addItem,
-  deleteItemById
-} from '../libs/fetchUtil.js';
-import { onMounted, ref, computed } from 'vue';
-// import { TaskManagement } from '/src/libs/TaskManagement.js';
-import taskManagement from '/src/libs/TaskManagement.js';
+import { getTaskById, getTaskData , addTask} from '../libs/fetchUtil.js';
+import { onMounted, ref ,computed} from 'vue';
+import { TaskManagement } from '/src/libs/TaskManagement.js';
 import { useRoute, useRouter } from 'vue-router';
 import router from '../router/router.js';
 import Modal from '../components/Modal.vue';
@@ -25,10 +19,10 @@ console.log(myTasks.value.getTask());
 
 const removeTask = async (code) => {
   console.log(code);
-  if (code === 200) {
+  // if (code === 200) {
     //frontend
     myTasks.value.removeTask(removeId.value);
-  }
+  // }
 };
 const setTaskId = (id) => {
   removeId.value = id;
@@ -43,8 +37,8 @@ const setMode = (mode) => {
   storeMode.value = mode;
 };
 const setDetail = (set) => {
-  showDetail.value = set;
-};
+  showDetail.value = set
+}
 function routeToadd() {
   router.push({ name: 'addTask' });
 }
@@ -75,6 +69,7 @@ async function fetchById(id) {
 }
 
 // Add Task
+
 
 window.onpopstate = function () {
   const previousState = historyStack.pop();
@@ -125,7 +120,19 @@ const convertStatus = (status) => {
     case 'Done':
       return 'Done';
   }
-};
+}
+
+// Add Task
+async function addNewTask(taskData) {
+  try {
+    const addedTask = await addTask(import.meta.env.VITE_BASE_URL, taskData);
+    console.log('New task added:', addedTask);
+    taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
+  } catch (error) {
+    console.error('Error adding task:', error);
+  }
+}
+
 </script>
 
 <template>
