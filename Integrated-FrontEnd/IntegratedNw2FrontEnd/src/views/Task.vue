@@ -1,5 +1,5 @@
 <script setup>
-import { getTaskById, getTaskData } from '../libs/fetchUtil.js';
+import { getTaskById, getTaskData , addItem} from '../libs/fetchUtil.js';
 import { onMounted, ref } from 'vue';
 import { TaskManagement } from '/src/libs/TaskManagement.js';
 import { useRoute, useRouter } from 'vue-router';
@@ -7,51 +7,63 @@ import router from '../router/router.js';
 import Modal from '../components/Modal.vue';
 import Delete from '../views/Delete.vue';
 
-const showDetail = ref(false);
-const showDelete = ref(false);
-const route = useRoute();
-const taskManagement = new TaskManagement();
-const dataById = ref();
-const storeMode = ref(null);
-let historyStack = [];
+const showDetail = ref(false)
+const showDelete = ref(false)
+const route = useRoute()
+const taskManagement = new TaskManagement()
+const dataById = ref()
+const storeMode = ref(null)
+let historyStack = []
+
+
+
 onMounted(async () => {
   taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
-});
+})
 const setDelete = (del) => {
-  showDelete.value = del;
-};
+  showDelete.value = del
+}
 const setMode = (mode) => {
-  storeMode.value = mode;
-};
+  storeMode.value = mode
+}
 const setDetail = (set) => {
-  showDetail.value = set;
-};
+  showDetail.value = set
+}
+
+// Fetch task by id
 async function fetchById(id) {
-  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
+  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id)
   if (showDetail.value === true) {
-    router.push({ name: 'taskDetail', params: { id: id } });
+    router.push({ name: 'taskDetail', params: { id: id } })
     if (dataById.value.status == '404') {
-      alert('The requested task does not exist');
-      router.replace({ name: 'task' });
-      return;
+      alert('The requested task does not exist')
+      router.replace({ name: 'task' })
+      return
     }
-    setDetail(true);
+    setDetail(true)
   }
 }
+
+// Add Task
+
+
 window.onpopstate = function () {
-  const previousState = historyStack.pop();
+  const previousState = historyStack.pop()
   if (previousState === true) {
-    setDetail(true); // Forward navigation
+    setDetail(true) // Forward navigation
   } else {
-    setDetail(false); // Backward navigation or initial load
+    setDetail(false) // Backward navigation or initial load
   }
-};
+}
+
 function navigateToDetail(showDetail) {
-  historyStack.push(showDetail);
+  historyStack.push(showDetail)
 }
+
 if (route.params.id) {
-  fetchById(route.params.id);
+  fetchById(route.params.id)
 }
+
 const task = ref({
   status: 'No Status',
   todo: 'To Do',
@@ -99,7 +111,7 @@ const convertStatus = (status) => {
           </div>
           <div class="grow"></div>
           <div class="mr-20 mt-2 flex-row items-center">
-            <!-- Added items-center class -->
+            <!-- Add Task-->
             <div
               class="btn btn-outline btn-primary"
               @click="[setMode('add'), (showDetail = true)]"
@@ -128,6 +140,8 @@ const convertStatus = (status) => {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
+        
+        <!-- No Task -->
         <div class="w-full flex justify-center">
           <div
             class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40"
@@ -169,6 +183,7 @@ const convertStatus = (status) => {
                   <div></div>
                 </div>
               </div>
+              <!-- Edit Task -->
               <div
                 v-else
                 class="bg-white divide-y divide-gray-200 overflow-auto"

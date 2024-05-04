@@ -19,5 +19,23 @@ async function getTaskById(url,id) {
   }
 }
 
+async function addItem(url,id) {
+  try {
+    const res = await fetch(`${url}/v1/tasks`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...id
+      })
+    })
+    const addedItem = await res.json()
+    return addedItem
+  } catch (error) {
+    console.log(`error: ${error}`)
+  }
+}
 
-export { getTaskData , getTaskById }
+
+export { getTaskData , getTaskById , addItem}

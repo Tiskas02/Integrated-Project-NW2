@@ -1,9 +1,12 @@
 <script setup>
-const emit = defineEmits(['setDetail']);
+const emit = defineEmits(['setDetail','setAdd'])
 const props = defineProps({
   tasks: Object,
   mode: String
-});
+})
+
+
+
 </script>
 
 <template>
@@ -12,6 +15,7 @@ const props = defineProps({
       class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px]"
     >
       <div class="w-[60%] m-[auto] max-h-[80%]">
+        <!--  -->
         <div v-if="mode === 'add'">
           <div
             class="flex flex-col justify-between bg-white p-4 border-gray-200 rounded-lg shadow-xl"
@@ -95,6 +99,8 @@ const props = defineProps({
             </div>
           </div>
         </div>
+
+        <!-- Edit -->
         <div v-if="mode === 'edit'">
           <div
             class="flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
