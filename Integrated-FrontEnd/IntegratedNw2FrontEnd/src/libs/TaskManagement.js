@@ -34,6 +34,8 @@ class TaskManagement {
     return convertStatus;
   }
   removeTask(removeId) {
+    console.log(removeId);
+    console.log(this.tasks.findIndex((task) => task.id === removeId));
     this.tasks.splice(
       this.tasks.findIndex((task) => task.id === removeId),
       1

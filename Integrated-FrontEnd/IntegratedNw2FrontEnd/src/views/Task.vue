@@ -1,7 +1,7 @@
 <script setup>
-import { getTaskById, getTaskData , addTask} from '../libs/fetchUtil.js';
+import { getTaskById, getTaskData , addTask,deleteItemById} from '../libs/fetchUtil.js';
 import { onMounted, ref ,computed} from 'vue';
-import { TaskManagement } from '/src/libs/TaskManagement.js';
+import taskManagement  from '/src/libs/TaskManagement.js';
 import { useRoute, useRouter } from 'vue-router';
 import router from '../router/router.js';
 import Modal from '../components/Modal.vue';
@@ -17,12 +17,17 @@ const myTasks = ref(taskManagement);
 const removeId = ref();
 console.log(myTasks.value.getTask());
 
-const removeTask = async (code) => {
-  console.log(code);
-  // if (code === 200) {
-    //frontend
-    myTasks.value.removeTask(removeId.value);
-  // }
+const removeTask = async (removeId) => {
+  console.log(removeId);
+  const removeTask = await deleteItemById(
+    import.meta.env.VITE_BASE_URL,
+    removeId
+  );
+  if (removeTask === 200) {
+    myTasks.value.removeTask(removeId);
+  } else{
+    alert('Error deleting task ');
+  }
 };
 const setTaskId = (id) => {
   removeId.value = id;
