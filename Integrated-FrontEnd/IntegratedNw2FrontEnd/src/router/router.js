@@ -13,11 +13,24 @@ const routes = [
 		path: "/task",
 		name: "task",
 		component: Task,
-		children:[{
-			path:':id',
-			name : 'taskDetail',
-			component : Modal
-		}]
+		children: [{
+				path: ':id',
+				name: 'taskDetail',
+				component: Modal,
+				children: [
+					{
+						path: 'edit',
+						name: 'editTask',
+						component: Modal
+					}
+				]
+			},
+			{
+				path: 'add',
+				name: 'addTask',
+				component: Modal
+			}
+		]
 	},
     {
 		path: "/:notfoundpath(.*)",
