@@ -18,21 +18,45 @@ async function getTaskById(url, id) {
     return null;
   }
 }
-async function deleteTask(id) {
+async function addTask(url, id) {
   try {
-    console.log('testtt');
-    const response = await fetch(`${url}/v1/tasks/${id}`, {
-      method: 'DELETE',
+    const res = await fetch(`${url}/v1/tasks`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        title: taskData.title.trim(),
+        assignees: taskData.assignees.trim(),
+        description: taskData.description.trim(),
+        status: taskData.status.trim(),
+      }),
     });
     if (!response.ok) {
       throw new Error('Failed to delete task');
     }
     return await response.json();
   } catch (error) {
-    console.error('Error deleting task:', error);
-    throw error;
+    console.error("Error adding task:", error);
+    return null;
   }
+}
+async function updateTask(url, id) {
+  try {
+    console.log('testtt')
+    const res = await fetch(`${url}/v1/tasks/${id}`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(taskData),
+    });
+    const updatedTask = await res.json();
+    return updatedTask;
+  } catch (error) {
+    console.error("Error updating task:", error);
+    throw error; 
+  }
+}
 
-};
-export { getTaskData , getTaskById , deleteTask}
-
+export { getTaskData, getTaskById, addTask , updateTask};

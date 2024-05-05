@@ -1,32 +1,29 @@
 <script setup>
-import { getTaskById, getTaskData, deleteTask } from "../libs/fetchUtil.js";
-import { onMounted, ref } from "vue";
+import { getTaskById, getTaskData, addTask , updateTask} from "../libs/fetchUtil.js";
+import { onMounted, ref, computed } from "vue";
 import { TaskManagement } from "/src/libs/TaskManagement.js";
 import { useRoute, useRouter } from "vue-router";
 import router from "../router/router.js";
 import Modal from "../components/Modal.vue";
 import Delete from "../views/Delete.vue";
+
+const tasksCopy = ref({});
 const showDetail = ref(false);
+const showDelete = ref(false);
 const route = useRoute();
 const taskManagement = new TaskManagement();
 const dataById = ref();
+const storeMode = ref(null);
 let historyStack = [];
 onMounted(async () => {
   taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
 });
-const handleDelete = async () => {
+const saveChanges = async () => {
   try {
-    await deleteTask(dataById.value.id);
-    taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
+    await updateTask(import.meta.env.VITE_BASE_URL, tasksCopy.value);
+    $router.replace({ name: "task" });
   } catch (error) {
-    console.error("Error deleting task:", error);
-  }
-};
-const onSetDelete = (value) => {
-  if (value) {
-    handleDelete();
-  } else {
-    console.log("Deletion cancelled");
+    console.error("Error saving task:", error);
   }
 };
 const setDelete = (del) => {
@@ -37,6 +34,106 @@ const setMode = (mode) => {
 };
 const setDetail = (set) => {
   showDetail.value = set;
+};
+
+function routeToadd() {
+  router.push({ name: "addTask" });
+}
+
+// Fetch task by id
+async function fetchById(id) {
+  if (!id) {
+    throw new Error('Missing required param "id"');
+  }
+
+  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
+
+  if (showDetail.value === true) {
+    if (storeMode.value === "edit") {
+      router.push({ name: "taskDetail", params: { id: id } }).then(() => {
+        router.push({ name: "editTask", params: { id: id } });
+      });
+    } else {
+      router.push({ name: "taskDetail", params: { id: id } });
+    }
+
+    if (dataById.value.status == "404") {
+      alert("The requested task does not exist");
+      router.replace({ name: "task" });
+      return;
+    }
+
+    setDetail(true);
+  }
+}
+
+window.onpopstate = function () {
+  const previousState = historyStack.pop();
+  if (previousState === true) {
+    setDetail(true); // Forward navigation
+  } else {
+    setDetail(false); // Backward navigation or initial load
+  }
+};
+
+function navigateToDetail(showDetail) {
+  historyStack.push(showDetail);
+}
+
+if (route.params.id) {
+  fetchById(route.params.id);
+}
+
+const task = ref({
+  status: "No Status",
+  todo: "To Do",
+  doing: "Doing",
+  done: "Done",
+});
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case "No status":
+      return "SlateGray";
+    case "To do":
+      return "Tomato";
+    case "Doing":
+      return "Orange";
+    case "Done":
+      return "LimeGreen";
+    default:
+      return "transparent";
+  }
+};
+const convertStatus = (status) => {
+  switch (status) {
+    case "No status":
+      return "No Status";
+    case "To do":
+      return "To Do";
+    case "Doing":
+      return "Doing";
+    case "Done":
+      return "Done";
+  }
+};
+
+// Add Task
+async function addNewTask(taskData) {
+  try {
+    const addedTask = await addTask(import.meta.env.VITE_BASE_URL, taskData);
+    console.log("New task added:", addedTask);
+    taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
+  } catch (error) {
+    console.error("Error adding task:", error);
+  }
+};
+const onSetDelete = (value) => {
+  if (value) {
+    handleDelete();
+  } else {
+    console.log("Deletion cancelled");
+  }
 };
 
 async function fetchById(id) {
@@ -114,7 +211,7 @@ async function fetchById(id) {
             <!-- Added items-center class -->
             <div
               class="btn btn-outline btn-primary"
-              @click="[setMode('add'), (showDetail = true)]"
+              @click="[setMode('add'), (showDetail = true), routeToadd()]"
             >
               <svg
                 width="20"
@@ -140,6 +237,8 @@ async function fetchById(id) {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
+
+        <!-- No Task -->
         <div class="w-full flex justify-center">
           <div
             class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40"
@@ -264,6 +363,7 @@ async function fetchById(id) {
                             ]
                           "
                         >
+
                           Edit
                         </div>
                         <div
