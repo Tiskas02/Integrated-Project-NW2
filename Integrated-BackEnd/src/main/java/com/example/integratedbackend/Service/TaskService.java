@@ -2,6 +2,7 @@ package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.NewTaskDTO;
 import com.example.integratedbackend.DTO.TaskDTO;
+import com.example.integratedbackend.DTO.TaskIDDTO;
 import com.example.integratedbackend.Entities.Tasks;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
@@ -45,9 +46,10 @@ public class TaskService {
                         "Task"+ " " + id + " " +"doesn't exist !!!"));
     }
     @Transactional
-    public NewTaskDTO createTask(NewTaskDTO addTask) {
+    public TaskIDDTO createTask(NewTaskDTO addTask) {
         Tasks task = mapper.map(addTask, Tasks.class);
-        return mapper.map(repositories.saveAndFlush(task), NewTaskDTO.class);
+        Tasks updatedTask = repositories.saveAndFlush(task);
+        return mapper.map(updatedTask, TaskIDDTO.class);
     }
     @Transactional
     public TaskDTO deleteTask(Integer id) throws ItemNotFoundException{
@@ -57,7 +59,7 @@ public class TaskService {
         return mapper.map(taskToDelete, TaskDTO.class);
     }
     @Transactional
-    public NewTaskDTO updateTask(NewTaskDTO editTask, Integer id) {
+    public TaskIDDTO updateTask(NewTaskDTO editTask, Integer id) {
         Optional<Tasks> oldTask = repositories.findById(id);
         if (oldTask.isPresent()) {
             Tasks existingTask = oldTask.get();
@@ -66,7 +68,7 @@ public class TaskService {
             existingTask.setTaskDescription(editTask.getDescription());
             existingTask.setTaskStatus(editTask.getStatus());
             Tasks updatedTask = repositories.save(existingTask);
-            return mapper.map(updatedTask, NewTaskDTO.class);
+            return mapper.map(updatedTask, TaskIDDTO.class);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

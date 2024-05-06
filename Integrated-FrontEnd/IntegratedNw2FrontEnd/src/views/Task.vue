@@ -1,11 +1,17 @@
 <script setup>
-import { getTaskById, getTaskData , addTask,deleteItemById} from '../libs/fetchUtil.js';
-import { onMounted, ref ,computed} from 'vue';
-import taskManagement  from '/src/libs/TaskManagement.js';
-import { useRoute, useRouter } from 'vue-router';
-import router from '../router/router.js';
-import Modal from '../components/Modal.vue';
-import Delete from '../views/Delete.vue';
+import {
+  getTaskById,
+  getTaskData,
+  addTask,
+  deleteItemById,
+  updateTask,
+} from "../libs/fetchUtil.js";
+import { onMounted, ref, computed } from "vue";
+import taskManagement from "../libs/TaskManagement.js";
+import { useRoute, useRouter } from "vue-router";
+import router from "../router/router.js";
+import Modal from "../components/Modal.vue";
+import Delete from "../views/Delete.vue";
 
 const showDetail = ref(false);
 const showDelete = ref(false);
@@ -16,6 +22,43 @@ let historyStack = [];
 const myTasks = ref(taskManagement);
 const removeId = ref();
 console.log(myTasks.value.getTask());
+const updateEdit = async (newEdit) => {
+  if (newEdit.id === undefined) {
+    //backend
+    const addedTask = await addTask(import.meta.env.VITE_BASE_URL, {
+      assignees: newEdit.assignees,
+      status: newEdit.status,
+      title: newEdit.title,
+      description: newEdit.description,
+    });
+    console.log(addedTask.id);
+    //frontend
+    myTasks.value.addTask({
+      id: addedTask.id,
+      title: addedTask.title,
+      assignees: addedTask.assignees,
+      status:addedTask.status,
+      description: addedTask.description,
+      createdOn: addedTask.createdOn,
+      updatedOn: addedTask.updatedOn}
+    );
+  } else {
+    const updatedTask = await updateTask(
+      import.meta.env.VITE_BASE_URL,
+      newEdit.id,
+      newEdit
+    );
+    myTasks.value.updateTask({
+      id: updatedTask.id,
+      assignees: updatedTask.assignees,
+      status: updatedTask.status,
+      title: updatedTask.title,
+      description: updatedTask.description,
+      createdOn: updatedTask.createdOn,
+      updatedOn: updatedTask.updatedOn,
+    });
+  }
+};
 
 const removeTask = async (removeId) => {
   console.log(removeId);
@@ -23,10 +66,11 @@ const removeTask = async (removeId) => {
     import.meta.env.VITE_BASE_URL,
     removeId
   );
+  console.log(removeTask);
   if (removeTask === 200) {
     myTasks.value.removeTask(removeId);
-  } else{
-    alert('Error deleting task ');
+  } else {
+    alert("Error deleting task ");
   }
 };
 const setTaskId = (id) => {
@@ -42,30 +86,31 @@ const setMode = (mode) => {
   storeMode.value = mode;
 };
 const setDetail = (set) => {
-  showDetail.value = set
-}
+  showDetail.value = set;
+};
 function routeToadd() {
-  router.push({ name: 'addTask' });
+  router.push({ name: "addTask" });
 }
 
 // Fetch task by id
 async function fetchById(id) {
+  console.log(id);
   if (!id) {
     throw new Error('Missing required param "id"');
   }
   dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
   if (showDetail.value === true) {
-    if (storeMode.value === 'edit') {
-      router.push({ name: 'taskDetail', params: { id: id } }).then(() => {
-        router.push({ name: 'editTask', params: { id: id } });
+    if (storeMode.value === "edit") {
+      router.push({ name: "taskDetail", params: { id: id } }).then(() => {
+        router.push({ name: "editTask", params: { id: id } });
       });
     } else {
-      router.push({ name: 'taskDetail', params: { id: id } });
+      router.push({ name: "taskDetail", params: { id: id } });
     }
 
-    if (dataById.value.status == '404') {
-      alert('The requested task does not exist');
-      router.replace({ name: 'task' });
+    if (dataById.value.status == "404") {
+      alert("The requested task does not exist");
+      router.replace({ name: "task" });
       return;
     }
 
@@ -74,7 +119,6 @@ async function fetchById(id) {
 }
 
 // Add Task
-
 
 window.onpopstate = function () {
   const previousState = historyStack.pop();
@@ -94,50 +138,49 @@ if (route.params.id) {
 }
 
 const task = ref({
-  status: 'No Status',
-  todo: 'To Do',
-  doing: 'Doing',
-  done: 'Done'
+  status: "No Status",
+  todo: "To Do",
+  doing: "Doing",
+  done: "Done",
 });
 
 const getStatusColor = (status) => {
   switch (status) {
-    case 'No status':
-      return 'SlateGray';
-    case 'To do':
-      return 'Tomato';
-    case 'Doing':
-      return 'Orange';
-    case 'Done':
-      return 'LimeGreen';
+    case "No status":
+      return "SlateGray";
+    case "To do":
+      return "Tomato";
+    case "Doing":
+      return "Orange";
+    case "Done":
+      return "LimeGreen";
     default:
-      return 'transparent';
+      return "transparent";
   }
 };
 const convertStatus = (status) => {
   switch (status) {
-    case 'No status':
-      return 'No Status';
-    case 'To do':
-      return 'To Do';
-    case 'Doing':
-      return 'Doing';
-    case 'Done':
-      return 'Done';
+    case "No status":
+      return "No Status";
+    case "To do":
+      return "To Do";
+    case "Doing":
+      return "Doing";
+    case "Done":
+      return "Done";
   }
-}
+};
 
 // Add Task
 async function addNewTask(taskData) {
   try {
     const addedTask = await addTask(import.meta.env.VITE_BASE_URL, taskData);
-    console.log('New task added:', addedTask);
+    console.log("New task added:", addedTask);
     taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
   } catch (error) {
-    console.error('Error adding task:', error);
+    console.error("Error adding task:", error);
   }
 }
-
 </script>
 
 <template>
@@ -231,7 +274,7 @@ async function addNewTask(taskData) {
               >
                 <div class="w-full max-h-[550px]">
                   <div
-                    v-for="task in myTasks.getTask()"
+                    v-for="(task, index) in myTasks.getTask()"
                     :key="task.taskId"
                     class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
                   >
@@ -241,20 +284,20 @@ async function addNewTask(taskData) {
                         @click="
                           [
                             (showDetail = true),
-                            fetchById(task.taskId),
-                            setMode('view')
+                            fetchById(task.id),
+                            setMode('view'),
                           ]
                         "
                       >
-                        {{ task.taskId }}
+                        {{ index + 1 }}
                       </div>
                       <div
                         class="w-[22%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
                         @click="
                           [
                             (showDetail = true),
-                            fetchById(task.taskId),
-                            setMode('view')
+                            fetchById(task.id),
+                            setMode('view'),
                           ]
                         "
                       >
@@ -264,17 +307,17 @@ async function addNewTask(taskData) {
                         class="w-[22%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
                         :class="{ 'text-red-300': !task.assignees }"
                         :style="{
-                          fontStyle: task.assignees ? 'normal' : 'italic'
+                          fontStyle: task.assignees ? 'normal' : 'italic',
                         }"
                         @click="
                           [
                             (showDetail = true),
-                            fetchById(task.taskId),
-                            setMode('view')
+                            fetchById(task.id),
+                            setMode('view'),
                           ]
                         "
                       >
-                        {{ task.assignees ? task.assignees : 'Unassigned' }}
+                        {{ task.assignees ? task.assignees : "Unassigned" }}
                       </div>
                       <div
                         class="w-[22%] itbkk-status px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
@@ -284,12 +327,12 @@ async function addNewTask(taskData) {
                           @click="
                             [
                               (showDetail = true),
-                              fetchById(task.taskId),
-                              setMode('view')
+                              fetchById(task.id),
+                              setMode('view'),
                             ]
                           "
                           :style="{
-                            backgroundColor: getStatusColor(task.status)
+                            backgroundColor: getStatusColor(task.status),
                           }"
                         >
                           {{ convertStatus(task.status) }}
@@ -304,10 +347,10 @@ async function addNewTask(taskData) {
                             [
                               setMode('edit'),
                               (showDetail = true),
-                              fetchById(task.taskId)
+                              fetchById(task.taskId),
                             ]
                           "
-                        >
+                        >{{task?.taskId}}
                           Edit
                         </div>
                         <div
@@ -316,7 +359,7 @@ async function addNewTask(taskData) {
                             [
                               (showDelete = true),
                               fetchById(task.taskId),
-                              setTaskId(task.taskId)
+                              setTaskId(task.taskId),
                             ]
                           "
                         >
@@ -334,6 +377,7 @@ async function addNewTask(taskData) {
               @setDetail="setDetail"
               :tasks="dataById"
               :mode="storeMode"
+              @saveTask="updateEdit"
             ></Modal>
           </teleport>
           <Teleport to="body" v-if="showDelete">

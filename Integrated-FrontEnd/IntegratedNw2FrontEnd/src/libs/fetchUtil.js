@@ -1,3 +1,4 @@
+//BackEnd
 async function getTaskData(url) {
   try {
     const res = await fetch(`${url}/v1/tasks`);
@@ -19,7 +20,28 @@ async function getTaskById(url,id) {
   }
 }
 
-async function addTask(url, taskData) {
+// async function addTask(url, taskData) {
+//   try {
+//     const res = await fetch(`${url}/v1/tasks`, {
+//       method: 'POST',
+//       headers: {
+//         'content-type': 'application/json'
+//       },
+//       body: JSON.stringify({
+//         title: taskData.title.trim(),
+//         assignees: taskData.assignees.trim(),
+//         description: taskData.description.trim(),
+//         status: taskData.status.trim()
+//       })
+//     });
+//     const addedItem = await res.json();
+//     return addedItem;
+//   } catch (error) {
+//     console.error('Error adding task:', error);
+//     return null;
+//   }
+// }
+async function addTask(url, newTask) {
   try {
     const res = await fetch(`${url}/v1/tasks`, {
       method: 'POST',
@@ -27,17 +49,14 @@ async function addTask(url, taskData) {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        title: taskData.title.trim(),
-        assignees: taskData.assignees.trim(),
-        description: taskData.description.trim(),
-        status: taskData.status.trim()
+        ...newTask
       })
-    });
-    const addedItem = await res.json();
-    return addedItem;
+    })
+    const addedTask = await res.json()
+    console.log(addedTask.id);
+    return addedTask
   } catch (error) {
-    console.error('Error adding task:', error);
-    return null;
+    console.log(`error: ${error}`)
   }
 }
 async function deleteItemById(url, id) {
@@ -52,6 +71,42 @@ async function deleteItemById(url, id) {
     return null;
   }
 }
-
-
-export { getTaskData , getTaskById , addTask, deleteItemById }
+// async function editTask(url, id) {
+//   try {
+//     const res = await fetch(`${url}/v1/tasks/${id}`, {
+//       method:'PUT',
+//       headers: {
+//         'content-type': 'application/json'
+//       },
+//       body: JSON.stringify({
+//         title: id.title,
+//         assignees: id.assignees,
+//         description: id.description,
+//         status: id.status
+//       })
+//     })
+//     const editTask = await res.json()
+//     return editTask
+//   } catch (error) {
+//     console.log(`error:${error}`);
+//   }
+// }
+async function updateTask(url, id, editTask) {
+  try {
+    console.log(id);
+    const res = await fetch(`${url}/v1/tasks/${id}`, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...editTask
+      })
+    })
+    const editedTask = await res.json()
+    return editedTask
+  } catch (error) {
+    console.log(`error: ${error}`)
+  }
+}
+export { getTaskData , getTaskById , addTask, deleteItemById , updateTask}

@@ -1,8 +1,8 @@
-import { ref } from "vue";
-
+import { pushScopeId, reactive, ref } from "vue";
+//frontEnd
 class TaskManagement {
   constructor() {
-    this.tasks = []
+    this.tasks = [];
   }
   getTask() {
     return this.tasks;
@@ -25,6 +25,19 @@ class TaskManagement {
       resolve();
     });
   }
+  addTask({id, title, assignees, description, status, createdOn, updatedOn}) {
+    console.log(id);
+    this.tasks.push({
+      id: id,
+      title: title,
+      assignees: assignees,
+      description: description,
+      status: status,
+      createdOn: createdOn,
+      updatedOn: updatedOn
+    });
+    console.log(this.tasks);
+  }
 
   convertStatus(status) {
     const lowerLetter = status.toLowerCase();
@@ -34,17 +47,43 @@ class TaskManagement {
     return convertStatus;
   }
   removeTask(removeId) {
-    console.log(removeId);
-    console.log(this.tasks.findIndex((task) => task.id === removeId));
-    this.tasks.splice(
-      this.tasks.findIndex((task) => task.id === removeId),
-      1
-    )
+    this.tasks = this.tasks.filter((task) => {
+      return task.taskId != removeId;
+    });
   }
-  
-
+  // editTask(taskId) {
+  //   this.tasks = this.tasks.map((task) => {
+  //     return task.taskId === taskId
+  //     ?{...task, taskId: taskId}
+  //     :task
+  //   })
+  // }
+  updateTask({
+    id,
+    title,
+    description,
+    status,
+    assignees,
+    createdOn,
+    updatedOn,
+  }) {
+    this.tasks = this.tasks.map((task) => {
+      console.log(task);
+      return task.taskId === id
+        ? {
+            ...task,
+            title: title,
+            description: description,
+            status: status,
+            assignees: assignees,
+            createdOn: createdOn,
+            updatedOn: updatedOn,
+          }
+        : task;
+    });
+  }
   getTaskById() {
     return this.tasks;
   }
 }
-export default new TaskManagement() 
+export default new TaskManagement();

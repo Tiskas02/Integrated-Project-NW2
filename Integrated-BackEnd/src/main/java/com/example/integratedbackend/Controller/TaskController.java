@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/tasks")
-@CrossOrigin(origins = {"http://localhost, http://ip23nw2.sit.kmutt.ac.th"})
+@CrossOrigin(origins = {"http://localhost:5173, http://ip23nw2.sit.kmutt.ac.th"})
 public class TaskController {
     @Autowired
     TaskService service;
@@ -32,15 +32,16 @@ public class TaskController {
         return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTO.class));
     }
     @PostMapping("")
-    public NewTaskDTO createTask(@RequestBody NewTaskDTO newTask) {
-        return service.createTask(newTask);
+    public ResponseEntity<Object> createTask(@RequestBody NewTaskDTO newTask) {
+        return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTO.class));
     }
+
     @DeleteMapping("{id}")
     public TaskDTO deleteTask(@PathVariable Integer id) {
         return service.deleteTask(id);
     }
-    @PutMapping("/{id}")
-    public NewTaskDTO updateTask(@RequestBody NewTaskDTO editTask,@PathVariable Integer id){
-        return service.updateTask(editTask,id);
+    @PutMapping("{id}")
+    public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTO editTask,@PathVariable Integer id){
+        return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTO.class));
     }
 }
