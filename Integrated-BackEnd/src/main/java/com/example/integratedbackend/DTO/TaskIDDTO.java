@@ -4,6 +4,8 @@ import com.example.integratedbackend.Entities.ResourceType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
@@ -11,7 +13,7 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 public class TaskIDDTO {
-    private int id;
+    private int taskId;
     private String Title;
     private String Assignees;
     private String Description;
