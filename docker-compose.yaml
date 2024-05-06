@@ -34,6 +34,8 @@ services:
     volumes:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
+    ports:
+      - '3306:3306'
     healthcheck:
       test: "exit 0"
     # networks: 
