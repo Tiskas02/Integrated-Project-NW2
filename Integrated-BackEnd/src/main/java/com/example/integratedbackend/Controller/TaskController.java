@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/tasks")
-@CrossOrigin(origins = {"http://localhost:5173, http://ip23nw2.sit.kmutt.ac.th,http://localhost:5175"})
+@CrossOrigin(origins = {"http://localhost, http://ip23nw2.sit.kmutt.ac.th"})
 public class TaskController {
     @Autowired
     TaskService service;
