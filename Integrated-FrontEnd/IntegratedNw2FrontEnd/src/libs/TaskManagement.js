@@ -17,7 +17,6 @@ class TaskManagement {
       }
 
       tasks.forEach((task) => {
-        console.log('pussy');
         task.status = this.convertStatus(task.status);
         this.tasks.push(task);
       });
@@ -26,43 +25,19 @@ class TaskManagement {
     });
   }
   addTask({taskId, title, assignees, description, status, createdOn, updatedOn}) {
-    let convertedStatus = '';
-      switch (status) {
-        case "NO_STATUS":
-          convertedStatus = "No Status";
-        case "TO_DO":
-          convertedStatus = "To Do";
-        case "DOING":
-          convertedStatus = "Doing";
-        case "DONE":
-          convertedStatus = "Done";
-      }
-   
      this.tasks.push({
       taskId: taskId,
       title: title,
       assignees: assignees,
       description: description,
-      status: convertedStatus,
+      status: status,
       createdOn: createdOn,
       updatedOn: updatedOn
     });
     
     
   }
-  convertStatusTwo(status) {
-    switch (status) {
-      case "No Status":
-        return "No Status";
-      case "To Do":
-        return "To Do";
-      case "Doing":
-        return "Doing";
-      case "Done":
-        return "Done";
-    }
-  }
-
+  
   convertStatus(status) {
     switch (status) {
       case "NO_STATUS":
