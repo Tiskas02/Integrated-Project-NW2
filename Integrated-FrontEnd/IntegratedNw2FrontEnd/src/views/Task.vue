@@ -5,172 +5,180 @@ import {
   addTask,
   deleteItemById,
   updateTask,
-} from "../libs/fetchUtil.js";
-import { onMounted, ref, computed } from "vue";
-import taskManagement from "../libs/TaskManagement.js";
-import { useRoute, useRouter } from "vue-router";
-import router from "../router/router.js";
-import Modal from "../components/Modal.vue";
-import Delete from "../views/Delete.vue";
+} from "../libs/fetchUtil.js"
+import { onMounted, ref, computed } from "vue"
+import taskManagement from "../libs/TaskManagement.js"
+import { useRoute, useRouter } from "vue-router"
+import router from "../router/router.js"
+import Modal from "../components/Modal.vue"
+import Delete from "../views/Delete.vue"
 
-const showDetail = ref(false);
-const showDelete = ref(false);
-const route = useRoute();
-const dataById = ref();
-const storeMode = ref(null);
-let historyStack = [];
-const myTasks = ref(taskManagement);
-const removeId = ref();
+const showDetail = ref(false)
+const showDelete = ref(false)
+const route = useRoute()
+const dataById = ref()
+const storeMode = ref(null)
+let historyStack = []
+const myTasks = ref(taskManagement)
+const removeId = ref()
 const updateEdit = async (newEdit) => {
   if (newEdit.taskId === undefined) {
-    let convertedStatus = '';
+    let convertedStatus = ""
     //backend
     const addedTask = await addTask(import.meta.env.VITE_BASE_URL, {
       assignees: newEdit.assignees,
       status: newEdit.status,
       title: newEdit.title,
       description: newEdit.description,
-    });
-    console.log(addedTask.taskId);
+    })
+    console.log(addedTask.taskId)
     switch (addedTask.status) {
-    case "NO_STATUS":
-      convertedStatus = "No Status";
-      break;
-    case "TO_DO":
-      convertedStatus = "To Do";
-      break;
-    case "DOING":
-      convertedStatus = "Doing";
-      break;
-    case "DONE":
-      convertedStatus = "Done";
-      break;
-    default:
-      convertedStatus = "No Status"; // Handle any other status
-      break;
-  }
+      case "NO_STATUS":
+        convertedStatus = "No Status"
+        break
+      case "TO_DO":
+        convertedStatus = "To Do"
+        break
+      case "DOING":
+        convertedStatus = "Doing"
+        break
+      case "DONE":
+        convertedStatus = "Done"
+        break
+      default:
+        convertedStatus = "No Status" // Handle any other status
+        break
+    }
     //frontend
     myTasks.value.addTask({
       taskId: addedTask.taskId,
       title: addedTask.title,
       assignees: addedTask.assignees,
-      status:convertedStatus,
+      status: convertedStatus,
       description: addedTask.description,
       createdOn: addedTask.createdOn,
-      updatedOn: addedTask.updatedOn
-    });
+      updatedOn: addedTask.updatedOn,
+    })
   } else {
-  const updatedTask = await updateTask(
-    import.meta.env.VITE_BASE_URL,
-    newEdit.taskId,
-    newEdit
-  );
-  let convertedStatus = '';
-  switch (updatedTask.status) {
-    case "NO_STATUS":
-      convertedStatus = "No Status";
-      break;
-    case "TO_DO":
-      convertedStatus = "To Do";
-      break;
-    case "DOING":
-      convertedStatus = "Doing";
-      break;
-    case "DONE":
-      convertedStatus = "Done";
-      break;
-    default:
-      convertedStatus = "No Status"; // Handle any other status
-      break;
+    const updatedTask = await updateTask(
+      import.meta.env.VITE_BASE_URL,
+      newEdit.taskId,
+      newEdit
+    )
+    let convertedStatus = ""
+    switch (updatedTask.status) {
+      case "NO_STATUS":
+        convertedStatus = "No Status"
+        break
+      case "TO_DO":
+        convertedStatus = "To Do"
+        break
+      case "DOING":
+        convertedStatus = "Doing"
+        break
+      case "DONE":
+        convertedStatus = "Done"
+        break
+      default:
+        convertedStatus = "No Status" // Handle any other status
+        break
+    }
+    console.log(convertedStatus)
+    myTasks.value.updateTask({
+      taskId: updatedTask.taskId,
+      assignees: updatedTask.assignees,
+      status: convertedStatus,
+      title: updatedTask.title,
+      description: updatedTask.description,
+      createdOn: updatedTask.createdOn,
+      updatedOn: updatedTask.updatedOn,
+    })
   }
-  console.log(convertedStatus);
-  myTasks.value.updateTask({
-    taskId: updatedTask.taskId,
-    assignees: updatedTask.assignees,
-    status: convertedStatus,
-    title: updatedTask.title,
-    description: updatedTask.description,
-    createdOn: updatedTask.createdOn,
-    updatedOn: updatedTask.updatedOn,
-  });
 }
-};
+
+const setTaskId = (id) => {
+  removeId.value = id
+}
+
+const setBeforeDelete = (id) => {
+  // console.log("delete id", id)
+  showDelete.value = true
+  setTaskId(id)
+  // console.log("removeId", removeId.value)
+  fetchById(id)
+}
 
 const removeTask = async (removeId) => {
-  
   const removeTask = await deleteItemById(
     import.meta.env.VITE_BASE_URL,
     removeId
-  );
-  
+  )
   if (removeTask === 200) {
-    myTasks.value.removeTask(removeId);
+    myTasks.value.removeTask(removeId)
   } else {
-    alert("Error deleting task ");
+    alert("Error deleting task ")
   }
-};
-const setTaskId = (id) => {
-  removeId.value = id;
-};
+}
+
 onMounted(async () => {
-  myTasks.value.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
-});
+  myTasks.value.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL))
+})
+
 const setDelete = (del) => {
-  showDelete.value = del;
-};
+  showDelete.value = del
+}
 const setMode = (mode) => {
-  storeMode.value = mode;
-};
+  storeMode.value = mode
+}
 const setDetail = (set) => {
-  showDetail.value = set;
-};
+  showDetail.value = set
+}
 function routeToadd() {
-  router.push({ name: "addTask" });
+  router.push({ name: "addTask" })
 }
 
 // Fetch task by id
 async function fetchById(id) {
-  
   if (!id) {
-    throw new Error('Missing required param "id"');
+    throw new Error('Missing required param "id"')
   }
-  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
+  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id)
   if (showDetail.value === true) {
     if (storeMode.value === "edit") {
       router.push({ name: "taskDetail", params: { id: id } }).then(() => {
-        router.push({ name: "editTask", params: { id: id } });
-      });
+        router.push({ name: "editTask", params: { id: id } })
+      })
     } else {
-      router.push({ name: "taskDetail", params: { id: id } });
+      router.push({ name: "taskDetail", params: { id: id } })
     }
 
     if (dataById.value.status == "404") {
-      alert("The requested task does not exist");
-      router.replace({ name: "task" });
-      return;
+      alert("The requested task does not exist")
+      router.replace({ name: "task" })
+      return
     }
 
-    setDetail(true);
+    setDetail(true)
   }
 }
 
 // Add Task
 
 window.onpopstate = function () {
-  const previousState = historyStack.pop();
+  const previousState = historyStack.pop()
   if (previousState === true) {
-    setDetail(true); // Forward navigation
+    setDetail(true) // Forward navigation
   } else {
-    setDetail(false); // Backward navigation or initial load
+    setDetail(false) // Backward navigation or initial load
   }
-};
+}
 
 function navigateToDetail(showDetail) {
-  historyStack.push(showDetail);
+  historyStack.push(showDetail)
 }
 
 if (route.params.id) {
-  fetchById(route.params.id);
+  fetchById(route.params.id)
 }
 
 const task = ref({
@@ -178,25 +186,22 @@ const task = ref({
   todo: "To Do",
   doing: "Doing",
   done: "Done",
-});
+})
 
 const getStatusColor = (status) => {
   switch (status) {
     case "No Status":
-      return "SlateGray";
+      return "SlateGray"
     case "To Do":
-      return "Tomato";
+      return "Tomato"
     case "Doing":
-      return "Orange";
+      return "Orange"
     case "Done":
-      return "LimeGreen";
+      return "LimeGreen"
     default:
-      return "transparent";
+      return "transparent"
   }
-};
-
-
-
+}
 </script>
 
 <template>
@@ -213,8 +218,8 @@ const getStatusColor = (status) => {
           <div class="mr-20 mt-2 flex-row items-center">
             <!-- Add Task-->
             <div
-              class="btn btn-outline btn-primary"
-              @click="[setMode('add'), (showDetail = true), routeToadd()]"
+              class="itbkk-button-add btn btn-outline btn-primary"
+              @click=";[setMode('add'), (showDetail = true), routeToadd()]"
             >
               <svg
                 width="20"
@@ -298,7 +303,7 @@ const getStatusColor = (status) => {
                       <div
                         class="w-[10%] px-6 py-4 whitespace-nowrap"
                         @click="
-                          [
+                          ;[
                             (showDetail = true),
                             fetchById(task.taskId),
                             setMode('view'),
@@ -310,7 +315,7 @@ const getStatusColor = (status) => {
                       <div
                         class="w-[22%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
                         @click="
-                          [
+                          ;[
                             (showDetail = true),
                             fetchById(task.taskId),
                             setMode('view'),
@@ -326,7 +331,7 @@ const getStatusColor = (status) => {
                           fontStyle: task.assignees ? 'normal' : 'italic',
                         }"
                         @click="
-                          [
+                          ;[
                             (showDetail = true),
                             fetchById(task.taskId),
                             setMode('view'),
@@ -339,9 +344,9 @@ const getStatusColor = (status) => {
                         class="w-[22%] itbkk-status px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
                       >
                         <div
-                          class="btn shadow text-white overflow-x-auto"
+                          class="itbkk-button-action btn shadow text-white overflow-x-auto"
                           @click="
-                            [
+                            ;[
                               (showDetail = true),
                               fetchById(task.taskId),
                               setMode('view'),
@@ -360,24 +365,19 @@ const getStatusColor = (status) => {
                         <div
                           class="btn btn-outline btn-warning"
                           @click="
-                            [
+                            ;[
                               setMode('edit'),
                               (showDetail = true),
                               fetchById(task.taskId),
                             ]
                           "
-                        >{{task?.id}}
+                        >
+                          {{ task?.id }}
                           Edit
                         </div>
                         <div
-                          class="btn btn-outline btn-error"
-                          @click="
-                            [
-                              (showDelete = true),
-                              fetchById(task.taskId),
-                              setTaskId(task.taskId),
-                            ]
-                          "
+                          class="itbkk-button-delete btn btn-outline btn-error"
+                          @click="setBeforeDelete(task.taskId)"
                         >
                           Delete
                         </div>

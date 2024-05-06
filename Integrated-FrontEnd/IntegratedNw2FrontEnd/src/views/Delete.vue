@@ -1,9 +1,9 @@
 <script setup>
-import { deleteItemById } from '../libs/fetchUtil.js';
-import { defineProps, defineEmits, ref } from 'vue';
-const emit = defineEmits(['setDelete','statusCode'])
+import { deleteItemById } from "../libs/fetchUtil.js"
+import { defineProps, defineEmits, ref } from "vue"
+const emit = defineEmits(["setDelete", "statusCode"])
 const props = defineProps({
-  tasks: Object
+  tasks: Object,
 })
 </script>
 
@@ -24,7 +24,7 @@ const props = defineProps({
           <div class="flex justify-end my-4">
             <div
               @click="
-                [$emit('setDelete', false), $router.replace({ name: 'task' })]
+                ;[$emit('setDelete', false), $router.replace({ name: 'task' })]
               "
               class="itbkk-button btn btn-error text-white mx-2"
             >
@@ -32,11 +32,14 @@ const props = defineProps({
             </div>
             <div
               @click="
-                [$emit('setDelete', false), $router.replace({ name: 'task' }),$emit('statusCode', tasks?.taskId)]
+                ;[
+                  $emit('setDelete', false),
+                  $router.replace({ name: 'task' }),
+                  $emit('statusCode', tasks?.id),
+                ]
               "
               class="itbkk-button btn btn-success text-white"
             >
-              
               Confirm
             </div>
           </div>

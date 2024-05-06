@@ -35,8 +35,8 @@ const routes = [
     {
 		path: "/:notfoundpath(.*)",
 		name: "NotFound",
-		component: NotFound,
-		redirect: "/"
+		component: Task,
+		redirect: "/task"
 	}
 ]
 

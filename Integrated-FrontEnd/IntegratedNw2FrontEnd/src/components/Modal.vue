@@ -1,43 +1,46 @@
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue"
 
-const emit = defineEmits(["setDetail", "saveTask"]);
+const emit = defineEmits(["setDetail", "saveTask"])
 const props = defineProps({
   tasks: {
     type: Object,
     default: {
       id: undefined,
       assignees: "",
-      status: "N0_STATUS",
+      status: "NO_STATUS",
       title: "",
       description: "",
       createdOn: "",
-      updatedOn: ""
+      updatedOn: "",
     },
   },
   mode: String,
-});
+})
 
 const newTask = ref({
-    id: undefined,
-    assignees: "",
-    status: "N0_STATUS",
-    title: "",
-    description: "",
-    createdOn: "",
-    updatedOn: ""
-  })
-
+  id: undefined,
+  assignees: "",
+  status: "NO_STATUS",
+  title: "",
+  description: "",
+  createdOn: "",
+  updatedOn: "",
+})
 
 watch(
   () => props.tasks,
   () => {
-    if (props.mode === 'edit') {
-      newTask.value = props.tasks;
+    if (props.mode === "edit") {
+      newTask.value = props.tasks
     }
   },
   { deep: true }
-);
+)
+
+const isDisabled = computed(() => {
+  return newTask.value.title.trim() === ""
+})
 </script>
 
 <template>
@@ -61,13 +64,14 @@ watch(
               {{ mode === "add" ? "Add New Task" : "Edit Task" }}
             </div>
             <div class="border-b my-2"></div>
-            <div class="text-lg">Title</div>{{mode}}
+            <div class="text-lg z-0">Title</div>
             <div>
               <textarea
                 class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder="Enter your title here..."
-                v-model="newTask.title" required
-                >{{ mode === 'add' ? '' : tasks?.title }}</textarea
+                v-model="newTask.title"
+                required
+                >{{ mode === "add" ? "" : tasks?.title }}</textarea
               >
             </div>
           </div>
@@ -114,7 +118,7 @@ watch(
             <div v-else>
               <div class="w-full">
                 <textarea
-                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic"
                   placeholder="Enter your assign here..."
                   v-model="newTask.assignees"
                   >{{ tasks?.assignees }}</textarea
@@ -150,7 +154,7 @@ watch(
             </div>
             <div>
               <div>
-                <div v-if="mode === 'view'" class="break-all">
+                <div v-if="mode === 'view'" class="itbkk-description break-all italic">
                   {{ tasks?.description }}
                 </div>
                 <textarea
@@ -163,30 +167,37 @@ watch(
               </div>
             </div>
           </div>
-          
+
           <div class="flex flex-row w-full justify-end">
-            <div class="mr-2"><div v-if="mode !== 'view'">
-              <div
-                @click="
-                  [
-                    $emit('setDetail', false),
-                    $router.replace({ name: 'task' }),
-                    $emit('saveTask', newTask),
-                  ]
-                "
-                class="itbkk-button btn btn-info text-white"
-              >
-                save
-              </div></div>
+            <div class="mr-2">
+              <div v-if="mode !== 'view'">
+                <button
+                  @click="
+                    ;[
+                      $emit('setDetail', false),
+                      $router.replace({ name: 'task' }),
+                      $emit('saveTask', newTask),
+                    ]
+                  "
+                  class="itbkk-button-confirm disabled btn btn-info text-white"
+                  :class="isDisabled ? 'bg-gray-300' : 'bg-info'"
+                  :disabled="isDisabled"
+                >
+                  Save
+                </button>
+              </div>
             </div>
             <div>
               <div
                 @click="
-                  [$emit('setDetail', false), $router.replace({ name: 'task' })]
+                  ;[
+                    $emit('setDetail', false),
+                    $router.replace({ name: 'task' }),
+                  ]
                 "
-                class="itbkk-button btn btn-error text-white"
+                class="itbkk-button-cancel btn btn-error text-white"
               >
-                close
+                Cancel
               </div>
             </div>
           </div>

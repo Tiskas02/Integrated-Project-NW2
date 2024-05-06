@@ -11,7 +11,12 @@ async function getTaskData(url) {
 }
 async function getTaskById(url,id) {
   try {
-    const res = await fetch(`${url}/v1/tasks/${id}`);
+    
+    const res = await fetch(`${url}/v1/tasks/${id}`)
+    if(!res.ok){
+      window.location.href = '/task';
+      return null;
+    }
     const data = await res.json();
     return data
   } catch (error) {
