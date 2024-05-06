@@ -39,24 +39,43 @@ const updateEdit = async (newEdit) => {
       status:addedTask.status,
       description: addedTask.description,
       createdOn: addedTask.createdOn,
-      updatedOn: addedTask.updatedOn}
-    );
-  } else {
-    const updatedTask = await updateTask(
-      import.meta.env.VITE_BASE_URL,
-      newEdit.taskId,
-      newEdit
-    );
-    myTasks.value.updateTask({
-      taskId: updatedTask.taskId,
-      assignees: updatedTask.assignees,
-      status: updatedTask.status,
-      title: updatedTask.title,
-      description: updatedTask.description,
-      createdOn: updatedTask.createdOn,
-      updatedOn: updatedTask.updatedOn,
+      updatedOn: addedTask.updatedOn
     });
+  } else {
+  const updatedTask = await updateTask(
+    import.meta.env.VITE_BASE_URL,
+    newEdit.taskId,
+    newEdit
+  );
+  let convertedStatus = '';
+  switch (updatedTask.status) {
+    case "NO_STATUS":
+      convertedStatus = "No Status";
+      break;
+    case "TO_DO":
+      convertedStatus = "To Do";
+      break;
+    case "DOING":
+      convertedStatus = "Doing";
+      break;
+    case "DONE":
+      convertedStatus = "Done";
+      break;
+    default:
+      convertedStatus = "No Status"; // Handle any other status
+      break;
   }
+  console.log(convertedStatus);
+  myTasks.value.updateTask({
+    taskId: updatedTask.taskId,
+    assignees: updatedTask.assignees,
+    status: convertedStatus,
+    title: updatedTask.title,
+    description: updatedTask.description,
+    createdOn: updatedTask.createdOn,
+    updatedOn: updatedTask.updatedOn,
+  });
+}
 };
 
 const removeTask = async (removeId) => {
@@ -145,9 +164,9 @@ const task = ref({
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "No status":
+    case "No Status":
       return "SlateGray";
-    case "To do":
+    case "To Do":
       return "Tomato";
     case "Doing":
       return "Orange";
@@ -157,18 +176,7 @@ const getStatusColor = (status) => {
       return "transparent";
   }
 };
-const convertStatus = (status) => {
-  switch (status) {
-    case "No status":
-      return "No Status";
-    case "To do":
-      return "To Do";
-    case "Doing":
-      return "Doing";
-    case "Done":
-      return "Done";
-  }
-};
+
 
 
 </script>
@@ -325,7 +333,7 @@ const convertStatus = (status) => {
                             backgroundColor: getStatusColor(task.status),
                           }"
                         >
-                          {{ convertStatus(task.status) }}
+                          {{ task?.status }}
                         </div>
                       </div>
                       <div
