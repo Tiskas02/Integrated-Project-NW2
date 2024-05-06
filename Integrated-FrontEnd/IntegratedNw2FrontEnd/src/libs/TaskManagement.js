@@ -18,17 +18,16 @@ class TaskManagement {
 
       tasks.forEach((task) => {
         task.status = this.convertStatus(task.status);
-        console.log(task);
         this.tasks.push(task);
       });
 
       resolve();
     });
   }
-  addTask({id, title, assignees, description, status, createdOn, updatedOn}) {
-    console.log(id);
+  addTask({taskId, title, assignees, description, status, createdOn, updatedOn}) {
+    console.log(taskId);
     this.tasks.push({
-      id: id,
+      taskId: taskId,
       title: title,
       assignees: assignees,
       description: description,
@@ -36,7 +35,6 @@ class TaskManagement {
       createdOn: createdOn,
       updatedOn: updatedOn
     });
-    console.log(this.tasks);
   }
 
   convertStatus(status) {
@@ -59,7 +57,7 @@ class TaskManagement {
   //   })
   // }
   updateTask({
-    id,
+    taskId,
     title,
     description,
     status,
@@ -68,8 +66,7 @@ class TaskManagement {
     updatedOn,
   }) {
     this.tasks = this.tasks.map((task) => {
-      console.log(task);
-      return task.taskId === id
+      return task.taskId === taskId
         ? {
             ...task,
             title: title,

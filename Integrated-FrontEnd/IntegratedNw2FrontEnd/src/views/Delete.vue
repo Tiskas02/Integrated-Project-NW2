@@ -32,7 +32,7 @@ const props = defineProps({
             </div>
             <div
               @click="
-                [$emit('setDelete', false), $router.replace({ name: 'task' }),$emit('statusCode', tasks?.id)]
+                [$emit('setDelete', false), $router.replace({ name: 'task' }),$emit('statusCode', tasks?.taskId)]
               "
               class="itbkk-button btn btn-success text-white"
             >

@@ -27,19 +27,13 @@ const newTask = ref({
     createdOn: "",
     updatedOn: ""
   })
-// const resetNewTask = () => {
-//   newTask.value = ;
-//   console.log(newTask.value);
-// };
-console.log('1111111111');
-console.log(newTask.value);
+
 
 watch(
   () => props.tasks,
   () => {
     if (props.mode === 'edit') {
       newTask.value = props.tasks;
-      
     }
   },
   { deep: true }
@@ -169,8 +163,9 @@ watch(
               </div>
             </div>
           </div>
+          
           <div class="flex flex-row w-full justify-end">
-            <div class="mr-2">
+            <div class="mr-2"><div v-if="mode !== 'view'">
               <div
                 @click="
                   [
@@ -182,7 +177,7 @@ watch(
                 class="itbkk-button btn btn-info text-white"
               >
                 save
-              </div>
+              </div></div>
             </div>
             <div>
               <div

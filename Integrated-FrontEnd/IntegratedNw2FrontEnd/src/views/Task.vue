@@ -21,9 +21,8 @@ const storeMode = ref(null);
 let historyStack = [];
 const myTasks = ref(taskManagement);
 const removeId = ref();
-console.log(myTasks.value.getTask());
 const updateEdit = async (newEdit) => {
-  if (newEdit.id === undefined) {
+  if (newEdit.taskId === undefined) {
     //backend
     const addedTask = await addTask(import.meta.env.VITE_BASE_URL, {
       assignees: newEdit.assignees,
@@ -31,10 +30,10 @@ const updateEdit = async (newEdit) => {
       title: newEdit.title,
       description: newEdit.description,
     });
-    console.log(addedTask.id);
+    console.log(addedTask.taskId);
     //frontend
     myTasks.value.addTask({
-      id: addedTask.id,
+      taskId: addedTask.taskId,
       title: addedTask.title,
       assignees: addedTask.assignees,
       status:addedTask.status,
@@ -45,11 +44,11 @@ const updateEdit = async (newEdit) => {
   } else {
     const updatedTask = await updateTask(
       import.meta.env.VITE_BASE_URL,
-      newEdit.id,
+      newEdit.taskId,
       newEdit
     );
     myTasks.value.updateTask({
-      id: updatedTask.id,
+      taskId: updatedTask.taskId,
       assignees: updatedTask.assignees,
       status: updatedTask.status,
       title: updatedTask.title,
@@ -61,12 +60,12 @@ const updateEdit = async (newEdit) => {
 };
 
 const removeTask = async (removeId) => {
-  console.log(removeId);
+  
   const removeTask = await deleteItemById(
     import.meta.env.VITE_BASE_URL,
     removeId
   );
-  console.log(removeTask);
+  
   if (removeTask === 200) {
     myTasks.value.removeTask(removeId);
   } else {
@@ -94,7 +93,7 @@ function routeToadd() {
 
 // Fetch task by id
 async function fetchById(id) {
-  console.log(id);
+  
   if (!id) {
     throw new Error('Missing required param "id"');
   }
@@ -171,16 +170,7 @@ const convertStatus = (status) => {
   }
 };
 
-// Add Task
-async function addNewTask(taskData) {
-  try {
-    const addedTask = await addTask(import.meta.env.VITE_BASE_URL, taskData);
-    console.log("New task added:", addedTask);
-    taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
-  } catch (error) {
-    console.error("Error adding task:", error);
-  }
-}
+
 </script>
 
 <template>
@@ -284,7 +274,7 @@ async function addNewTask(taskData) {
                         @click="
                           [
                             (showDetail = true),
-                            fetchById(task.id),
+                            fetchById(task.taskId),
                             setMode('view'),
                           ]
                         "
@@ -296,7 +286,7 @@ async function addNewTask(taskData) {
                         @click="
                           [
                             (showDetail = true),
-                            fetchById(task.id),
+                            fetchById(task.taskId),
                             setMode('view'),
                           ]
                         "
@@ -312,7 +302,7 @@ async function addNewTask(taskData) {
                         @click="
                           [
                             (showDetail = true),
-                            fetchById(task.id),
+                            fetchById(task.taskId),
                             setMode('view'),
                           ]
                         "
@@ -327,7 +317,7 @@ async function addNewTask(taskData) {
                           @click="
                             [
                               (showDetail = true),
-                              fetchById(task.id),
+                              fetchById(task.taskId),
                               setMode('view'),
                             ]
                           "
@@ -350,7 +340,7 @@ async function addNewTask(taskData) {
                               fetchById(task.taskId),
                             ]
                           "
-                        >{{task?.taskId}}
+                        >{{task?.id}}
                           Edit
                         </div>
                         <div
