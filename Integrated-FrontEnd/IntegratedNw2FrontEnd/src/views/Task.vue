@@ -23,6 +23,7 @@ const myTasks = ref(taskManagement);
 const removeId = ref();
 const updateEdit = async (newEdit) => {
   if (newEdit.taskId === undefined) {
+    let convertedStatus = '';
     //backend
     const addedTask = await addTask(import.meta.env.VITE_BASE_URL, {
       assignees: newEdit.assignees,
@@ -31,12 +32,29 @@ const updateEdit = async (newEdit) => {
       description: newEdit.description,
     });
     console.log(addedTask.taskId);
+    switch (addedTask.status) {
+    case "NO_STATUS":
+      convertedStatus = "No Status";
+      break;
+    case "TO_DO":
+      convertedStatus = "To Do";
+      break;
+    case "DOING":
+      convertedStatus = "Doing";
+      break;
+    case "DONE":
+      convertedStatus = "Done";
+      break;
+    default:
+      convertedStatus = "No Status"; // Handle any other status
+      break;
+  }
     //frontend
     myTasks.value.addTask({
       taskId: addedTask.taskId,
       title: addedTask.title,
       assignees: addedTask.assignees,
-      status:addedTask.status,
+      status:convertedStatus,
       description: addedTask.description,
       createdOn: addedTask.createdOn,
       updatedOn: addedTask.updatedOn
