@@ -153,6 +153,7 @@ async function fetchById(id) {
     throw new Error('Missing required param "id"');
   }
   dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
+  console.log(dataById.value);
   if (showDetail.value === true) {
     if (storeMode.value === "edit") {
       router.push({ name: "editTask", params: { id: id } });
@@ -332,7 +333,7 @@ const getStatusColor = (status) => {
                           ]
                         "
                       >
-                        {{ task.title }}
+                        {{ task.title }}{{ task.taskId}}
                       </div>
                       <div
                         class="w-[22%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
@@ -390,7 +391,7 @@ const getStatusColor = (status) => {
                           @click="
                             [
                               (showDelete = true),
-                              // fetchById(task.taskId),
+                              fetchById(task.taskId),
                               setIndex(index + 1),
                             ]
                           "

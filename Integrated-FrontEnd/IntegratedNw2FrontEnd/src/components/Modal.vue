@@ -17,6 +17,8 @@ const props = defineProps({
   },
   mode: String,
 });
+const initialTask = ref({});
+
 
 const newTask = ref({
   id: undefined,
@@ -38,9 +40,16 @@ watch(
   { deep: true }
 );
 
+
+console.log(newTask.value.id);
 const isDisabled = computed(() => {
-  console.log(newTask.value, newTask.value.title.trim() === "");
-  return newTask.value.title.trim() === "";
+  // return newTask.value.title.trim() === "";JSON.stringify(initialTask.value)
+  if(props.mode === 'view' ) {
+    return true
+  }else {
+    return newTask.value.title.trim() === "" || initialTask.value === newTask.value;
+  }
+
 });
 </script>
 
