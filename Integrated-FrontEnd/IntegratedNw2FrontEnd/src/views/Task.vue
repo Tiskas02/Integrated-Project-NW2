@@ -75,7 +75,8 @@ const updateEdit = async (newEdit) => {
         title: newEdit.title.trim(),
         description: newEdit.description.trim(),
       }
-    );
+    )
+    
     let convertedStatus = "";
     switch (updatedTask.status) {
       case "NO_STATUS":
