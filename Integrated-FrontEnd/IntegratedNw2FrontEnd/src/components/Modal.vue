@@ -1,20 +1,58 @@
 <script setup>
-const emit = defineEmits(["setDetail"]);
+import { computed, onBeforeUnmount, ref, watch } from "vue";
+
+const emit = defineEmits(["setDetail", "saveTask"]);
 const props = defineProps({
-  tasks: Object,
+  tasks: {
+    type: Object,
+    default: {
+      id: undefined,
+      assignees: null,
+      status: "NO_STATUS",
+      title: "",
+      description: null,
+      createdOn: null,
+      updatedOn: null,
+    },
+  },
   mode: String,
+});
+
+const newTask = ref({
+  id: undefined,
+  assignees: null,
+  status: "NO_STATUS",
+  title: "",
+  description: null,
+  createdOn: null,
+  updatedOn: null,
+});
+
+watch(
+  () => props.tasks,
+  () => {
+    if (props.mode === "edit") {
+      newTask.value = props.tasks;
+    }
+  },
+  { deep: true }
+);
+
+const isDisabled = computed(() => {
+  console.log(newTask.value, newTask.value.title.trim() === "");
+  return newTask.value.title.trim() === "";
 });
 </script>
 
 <template>
   <div>
     <div
-
-      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px]"
+      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50"
+      style="translate: transform(-50%, -50%)"
     >
       <div class="w-[60%] m-[auto] max-h-screen">
         <div
-          class="flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
+          class="overflow-auto max-h-screen flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
         >
           <div v-if="mode === 'view'">
             <div
@@ -28,12 +66,14 @@ const props = defineProps({
               {{ mode === "add" ? "Add New Task" : "Edit Task" }}
             </div>
             <div class="border-b my-2"></div>
-            <div class="text-lg">Title</div>
+            <div class="text-lg z-0">Title</div>
             <div>
               <textarea
-                class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder="Enter your title here..."
-                >{{ tasks?.title }}</textarea
+                v-model="newTask.title"
+                required
+                >{{ mode === "add" ? "" : tasks?.title }}</textarea
               >
             </div>
           </div>
@@ -48,13 +88,23 @@ const props = defineProps({
               <label class="form-control w-full">
                 <select
                   class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  v-model="newTask.status"
                 >
                   <option disabled selected>Status</option>
-                  <option :selected="tasks?.status === 'TO_DO'">To do</option>
-                  <option :selected="tasks?.status === 'DOING'">Doing</option>
-                  <option :selected="tasks?.status === 'DONE'">Done</option>
-                  <option :selected="tasks?.status === 'NO_STATUS'">
-                    No status
+                  <option value="TO_DO" :selected="tasks?.status === 'TO_DO'">
+                    To Do
+                  </option>
+                  <option value="DOING" :selected="tasks?.status === 'DOING'">
+                    Doing
+                  </option>
+                  <option value="DONE" :selected="tasks?.status === 'DONE'">
+                    Done
+                  </option>
+                  <option
+                    value="NO_STATUS"
+                    :selected="tasks?.status === 'NO_STATUS'"
+                  >
+                    No Status
                   </option>
                 </select>
               </label>
@@ -70,9 +120,12 @@ const props = defineProps({
             <div v-else>
               <div class="w-full">
                 <textarea
-                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic"
                   placeholder="Enter your assign here..."
-                  >{{ tasks?.assignees }}</textarea
+                  v-model="newTask.assignees"
+                >
+                  {{ tasks?.assignees }}
+                  </textarea
                 >
               </div>
             </div>
@@ -93,10 +146,6 @@ const props = defineProps({
               <div>
                 {{ new Date(tasks?.updatedOn).toLocaleString("en-GB") }}
               </div>
-              <div class="mt-10 ml-4">
-              <div class="itbkk-timezone text-black"><div class="font-semibold">TimeZone</div><div>{{ Intl.DateTimeFormat().resolvedOptions().timeZone }}</div></div>
-              <div class="itbkk-created-on text-black"><div class="font-semibold">Created On</div><div>{{ new Date(tasks?.createdOn).toLocaleString("en-GB") }}</div></div>
-              <div class="itbkk-updated-on text-black"><div class="font-semibold">Updated On</div><div>{{ new Date(tasks?.updatedOn).toLocaleString("en-GB") }}</div></div>
             </div>
           </div>
           <div class="mt-5">
@@ -109,23 +158,44 @@ const props = defineProps({
             </div>
             <div>
               <div>
-                <div v-if="mode === 'view'" class="break-all">
-                  {{ tasks?.description }}
+                <div
+                  v-if="mode === 'view'"
+                  class="itbkk-description break-all italic"
+                  placeholder="No Description Provided"
+                >
+                  {{
+                    tasks?.description == "" || tasks?.description === null
+                      ? "No Description Provided"
+                      : tasks?.description
+                  }}
                 </div>
                 <textarea
                   v-else
-                  v-model="tasksCopy.description"
-                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
+                  class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
                   placeholder="Enter your description here..."
+                  v-model="newTask.description"
                   >{{ tasks?.description }}</textarea
                 >
               </div>
             </div>
           </div>
+
           <div class="flex flex-row w-full justify-end">
             <div class="mr-2">
-              <div @click="saveChanges" class="itbkk-button btn btn-info text-white">
-                save
+              <div v-if="mode !== 'view'">
+                <button
+                  @click="
+                    () => {
+                      $emit('setDetail', false);
+                      $emit('saveTask', newTask);
+                    }
+                  "
+                  class="itbkk-button-confirm disabled btn btn-info text-white"
+                  :class="isDisabled ? 'bg-gray-300' : 'bg-info'"
+                  :disabled="isDisabled"
+                >
+                  Save
+                </button>
               </div>
             </div>
             <div>
@@ -133,21 +203,18 @@ const props = defineProps({
                 @click="
                   [$emit('setDetail', false), $router.replace({ name: 'task' })]
                 "
-                class="itbkk-button btn btn-error text-white"
+                class="itbkk-button-cancel btn btn-error text-white"
               >
-                close
+                Cancel
               </div>
             </div>
           </div>
-          <div >
-            <div @click="[$emit('setDetail', false), $router.replace({ name: 'task'})]" class="itbkk-button btn bg-red-500 hover:bg-red-600 text-white">close</div>
-          </div>
-        </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <style scoped>
 .view {
   color: #047857;

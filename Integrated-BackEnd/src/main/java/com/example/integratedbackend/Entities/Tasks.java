@@ -3,6 +3,11 @@ package com.example.integratedbackend.Entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
@@ -16,25 +21,29 @@ public class Tasks {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
     private Integer taskId;
-    
+
     @Column(name = "taskTitle")
     private String taskTitle;
-    
+
     @Column(name = "taskDescription")
     private String taskDescription;
-    
+
     @Column(name = "taskAssignees")
     private String taskAssignees;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "taskStatus")
     private ResourceType taskStatus;
-    
-    @Column(name = "createdOn",insertable = false,updatable = false)
+
+    @CreationTimestamp
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "createdOn", insertable = false, updatable = false)
     private ZonedDateTime createdOn;
-    
-    @Column(name = "updatedOn",insertable = false,updatable = false)
+
+    @UpdateTimestamp
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "updatedOn", insertable = false, updatable = false)
     private ZonedDateTime updatedOn;
 
-    
+
 }

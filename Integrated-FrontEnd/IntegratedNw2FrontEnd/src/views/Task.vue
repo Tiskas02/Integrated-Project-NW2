@@ -1,31 +1,137 @@
 <script setup>
-import { getTaskById, getTaskData, addTask , updateTask} from "../libs/fetchUtil.js";
-import { onMounted, ref, computed } from "vue";
-import { TaskManagement } from "/src/libs/TaskManagement.js";
+import {
+  getTaskById,
+  getTaskData,
+  addTask,
+  deleteItemById,
+  updateTask,
+} from "../libs/fetchUtil.js";
+import { onMounted, ref, computed, defineEmits } from "vue";
+import taskManagement from "../libs/TaskManagement.js";
 import { useRoute, useRouter } from "vue-router";
-import router from "../router/router.js";
 import Modal from "../components/Modal.vue";
 import Delete from "../views/Delete.vue";
 
-const tasksCopy = ref({});
+import useToasterStore from "../stores/notificationStores.js";
+
 const showDetail = ref(false);
 const showDelete = ref(false);
 const route = useRoute();
-const taskManagement = new TaskManagement();
 const dataById = ref();
 const storeMode = ref(null);
 let historyStack = [];
-onMounted(async () => {
-  taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
-});
-const saveChanges = async () => {
-  try {
-    await updateTask(import.meta.env.VITE_BASE_URL, tasksCopy.value);
-    $router.replace({ name: "task" });
-  } catch (error) {
-    console.error("Error saving task:", error);
+const showDeleteStatus = ref(false);
+const myTasks = ref(taskManagement);
+const removeId = ref();
+const storeIndex = ref(0);
+const emit = defineEmits(["statusDelete"]);
+const toastStore = useToasterStore();
+const router = useRouter();
+const updateEdit = async (newEdit) => {
+  if (newEdit.taskId === undefined) {
+    let convertedStatus = "";
+    //backend
+    const addedTask = await addTask(import.meta.env.VITE_BASE_URL, {
+      assignees: newEdit?.assignees?.trim() ?? "",
+      status: newEdit.status,
+      title: newEdit?.title?.trim() ?? "",
+      description: newEdit?.description?.trim() ?? "",
+    });
+    console.log(addedTask.taskId);
+    switch (addedTask.status) {
+      case "NO_STATUS":
+        convertedStatus = "No Status";
+        break;
+      case "TO_DO":
+        convertedStatus = "To Do";
+        break;
+      case "DOING":
+        convertedStatus = "Doing";
+        break;
+      case "DONE":
+        convertedStatus = "Done";
+        break;
+      default:
+        convertedStatus = "No Status"; // Handle any other status
+        break;
+    }
+    //frontend
+    myTasks.value.addTask({
+      taskId: addedTask.taskId,
+      title: addedTask.title,
+      assignees: addedTask.assignees,
+      status: convertedStatus,
+      description: addedTask.description,
+      createdOn: addedTask.createdOn,
+      updatedOn: addedTask.updatedOn,
+    });
+  } else {
+    const updatedTask = await updateTask(
+      import.meta.env.VITE_BASE_URL,
+      newEdit.taskId,
+      {
+        assignees: newEdit.assignees.trim(),
+        status: newEdit.status,
+        title: newEdit.title.trim(),
+        description: newEdit.description.trim(),
+      }
+    );
+    let convertedStatus = "";
+    switch (updatedTask.status) {
+      case "NO_STATUS":
+        convertedStatus = "No Status";
+        break;
+      case "TO_DO":
+        convertedStatus = "To Do";
+        break;
+      case "DOING":
+        convertedStatus = "Doing";
+        break;
+      case "DONE":
+        convertedStatus = "Done";
+        break;
+      default:
+        convertedStatus = "No Status";
+        break;
+    }
+    myTasks.value.updateTask({
+      taskId: updatedTask.taskId,
+      assignees: updatedTask.assignees,
+      status: convertedStatus,
+      title: updatedTask.title,
+      description: updatedTask.description,
+      createdOn: updatedTask.createdOn,
+      updatedOn: updatedTask.updatedOn,
+    });
   }
 };
+
+const setIndex = (index) => {
+  storeIndex.value = index;
+};
+const setShowdelete = (status) => {
+  showDeleteStatus.value = status;
+};
+const removeTask = async (removeId) => {
+  console.log(removeId);
+  const removeTask = await deleteItemById(
+    import.meta.env.VITE_BASE_URL,
+    removeId
+  );
+  if (removeTask === 200) {
+    myTasks.value.removeTask(removeId);
+    toastStore.success({ text: "The task has been deleted" });
+  } else {
+    toastStore.error({
+      text: "An error has occurred, the task does not exist",
+    });
+  }
+};
+
+onMounted(async () => {
+  myTasks.value.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
+});
+
 const setDelete = (del) => {
   showDelete.value = del;
 };
@@ -33,9 +139,9 @@ const setMode = (mode) => {
   storeMode.value = mode;
 };
 const setDetail = (set) => {
+  console.log("Hi");
   showDetail.value = set;
 };
-
 function routeToadd() {
   router.push({ name: "addTask" });
 }
@@ -45,14 +151,10 @@ async function fetchById(id) {
   if (!id) {
     throw new Error('Missing required param "id"');
   }
-
   dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
-
   if (showDetail.value === true) {
     if (storeMode.value === "edit") {
-      router.push({ name: "taskDetail", params: { id: id } }).then(() => {
-        router.push({ name: "editTask", params: { id: id } });
-      });
+      router.push({ name: "editTask", params: { id: id } });
     } else {
       router.push({ name: "taskDetail", params: { id: id } });
     }
@@ -67,14 +169,16 @@ async function fetchById(id) {
   }
 }
 
-window.onpopstate = function () {
-  const previousState = historyStack.pop();
-  if (previousState === true) {
-    setDetail(true); // Forward navigation
-  } else {
-    setDetail(false); // Backward navigation or initial load
-  }
-};
+// Add Task
+
+// window.onpopstate = function () {
+//   const previousState = historyStack.pop();
+//   if (previousState === true) {
+//     setDetail(true);
+//   } else {
+//     setDetail(false);
+//   }
+// };
 
 function navigateToDetail(showDetail) {
   historyStack.push(showDetail);
@@ -93,9 +197,9 @@ const task = ref({
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "No status":
+    case "No Status":
       return "SlateGray";
-    case "To do":
+    case "To Do":
       return "Tomato";
     case "Doing":
       return "Orange";
@@ -105,94 +209,6 @@ const getStatusColor = (status) => {
       return "transparent";
   }
 };
-const convertStatus = (status) => {
-  switch (status) {
-    case "No status":
-      return "No Status";
-    case "To do":
-      return "To Do";
-    case "Doing":
-      return "Doing";
-    case "Done":
-      return "Done";
-  }
-};
-
-// Add Task
-async function addNewTask(taskData) {
-  try {
-    const addedTask = await addTask(import.meta.env.VITE_BASE_URL, taskData);
-    console.log("New task added:", addedTask);
-    taskManagement.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
-  } catch (error) {
-    console.error("Error adding task:", error);
-  }
-};
-const onSetDelete = (value) => {
-  if (value) {
-    handleDelete();
-  } else {
-    console.log("Deletion cancelled");
-  }
-};
-
-async function fetchById(id) {
-  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
-  router.push({ name: "taskDetail", params: { id: id } });
-  if (dataById.value.status == "404") {
-    alert("The requested task does not exist");
-    router.replace({ name: "task" });
-    return;
-    setDetail(true);
-  }
-  window.onpopstate = function () {
-    const previousState = historyStack.pop();
-    if (previousState === true) {
-      setDetail(true); // Forward navigation
-    } else {
-      setDetail(false); // Backward navigation or initial load
-    }
-  };
-  function navigateToDetail(showDetail) {
-    historyStack.push(showDetail);
-  }
-  if (route.params.id) {
-    fetchById(route.params.id);
-  }
-  const task = ref({
-    status: "No Status",
-    todo: "To Do",
-    doing: "Doing",
-    done: "Done",
-  });
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "No status":
-        return "SlateGray";
-      case "To do":
-        return "Tomato";
-      case "Doing":
-        return "Orange";
-      case "Done":
-        return "LimeGreen";
-      default:
-        return "transparent";
-    }
-  };
-  const convertStatus = (status) => {
-    switch (status) {
-      case "No status":
-        return "No Status";
-      case "To do":
-        return "To Do";
-      case "Doing":
-        return "Doing";
-      case "Done":
-        return "Done";
-    }
-  };
-}
 </script>
 
 <template>
@@ -205,12 +221,11 @@ async function fetchById(id) {
               IT-Bangmod Kradan Kanban
             </div>
           </div>
-
           <div class="grow"></div>
           <div class="mr-20 mt-2 flex-row items-center">
-            <!-- Added items-center class -->
+            <!-- Add Task-->
             <div
-              class="btn btn-outline btn-primary"
+              class="itbkk-button-add btn btn-outline btn-primary"
               @click="[setMode('add'), (showDetail = true), routeToadd()]"
             >
               <svg
@@ -237,7 +252,9 @@ async function fetchById(id) {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
-
+        <!-- <div  class="flex justify-center">
+          <AlertStatus @statusdelete=""></AlertStatus>
+        </div> -->
         <!-- No Task -->
         <div class="w-full flex justify-center">
           <div
@@ -270,7 +287,7 @@ async function fetchById(id) {
                 </div>
               </div>
               <div
-                v-if="taskManagement.getTask().length === 0"
+                v-if="myTasks.getTask().length === 0"
                 class="w-full border bg-white"
               >
                 <div class="w-full">
@@ -280,13 +297,14 @@ async function fetchById(id) {
                   <div></div>
                 </div>
               </div>
+              <!-- Edit Task -->
               <div
                 v-else
                 class="bg-white divide-y divide-gray-200 overflow-auto"
               >
                 <div class="w-full max-h-[550px]">
                   <div
-                    v-for="task in taskManagement.getTask()"
+                    v-for="(task, index) in myTasks.getTask()"
                     :key="task.taskId"
                     class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
                   >
@@ -301,7 +319,7 @@ async function fetchById(id) {
                           ]
                         "
                       >
-                        {{ task.taskId }}
+                        {{ index + 1 }}
                       </div>
                       <div
                         class="w-[22%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
@@ -347,14 +365,14 @@ async function fetchById(id) {
                             backgroundColor: getStatusColor(task.status),
                           }"
                         >
-                          {{ convertStatus(task.status) }}
+                          {{ task?.status }}
                         </div>
                       </div>
                       <div
-                        class="w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
+                        class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
                       >
                         <div
-                          class="btn btn-outline btn-warning"
+                          class="itbkk-button-edit btn btn-outline btn-warning"
                           @click="
                             [
                               setMode('edit'),
@@ -363,12 +381,18 @@ async function fetchById(id) {
                             ]
                           "
                         >
-
+                          {{ task?.id }}
                           Edit
                         </div>
                         <div
-                          class="btn btn-outline btn-error"
-                          @click="[(showDelete = true), fetchById(task.taskId)]"
+                          class="itbkk-button-delete btn btn-outline btn-error"
+                          @click="
+                            [
+                              (showDelete = true),
+                              // fetchById(task.taskId),
+                              setIndex(index + 1),
+                            ]
+                          "
                         >
                           Delete
                         </div>
@@ -384,10 +408,16 @@ async function fetchById(id) {
               @setDetail="setDetail"
               :tasks="dataById"
               :mode="storeMode"
-            ></Modal>
+              @saveTask="updateEdit"
+            />
           </teleport>
           <Teleport to="body" v-if="showDelete">
-            <Delete @setDelete="setDelete" :tasks="dataById"></Delete>
+            <Delete
+              @setDelete="setDelete"
+              :tasks="myTasks.getTask()[storeIndex - 1]"
+              :index="storeIndex"
+              @statusCode="removeTask"
+            ></Delete>
           </Teleport>
         </div>
       </div>
