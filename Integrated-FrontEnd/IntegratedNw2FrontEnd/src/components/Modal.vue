@@ -34,19 +34,12 @@ watch(
   () => {
     if (props.mode === 'edit') {
       newTask.value = { ...props.tasks };
-      // fetchById(props.tasks.id);
     }
   },
   { deep: true }
 );
-console.log(props.tasks);
-// const dataFetch = ref(null);
-// async function fetchById(id){
-//   const response = await getTaskById(import.meta.env.VITE_BASE_URL, id)
-//   const data = await response.json();
-//   dataFetch.value = data;
 
-// }
+
 const isDisabled = computed(() => {
   if (props.mode === 'add') {
     return newTask.value.title.trim() === '';
