@@ -14,19 +14,19 @@ public class NewTaskDTO {
             this.Description = description.trim();
         }
     }
-    public void setAssignees(String assignees) {
-        if(assignees != null) {
-            this.Assignees = assignees.trim();
-        }
-    }
-    public void setTitle(String title) {
-        if(title != null) {
-            this.Title = title.trim();
-        }
-    }
-    public void setStatus(ResourceType status) {
-        if(status == null ) {
-            this.Status = ResourceType.NO_STATUS;
-        }
-    }
+//    public void setAssignees(String assignees) {
+//        if(assignees != null) {
+//            this.Assignees = assignees.trim();
+//        }
+//    }
+//    public void setTitle(String title) {
+//        if(title != null) {
+//            this.Title = title.trim();
+//        }
+//    }
+//    public void setStatus(ResourceType status) {
+//        if(status == null ) {
+//            this.Status = ResourceType.NO_STATUS;
+//        }
+//    }
 }
