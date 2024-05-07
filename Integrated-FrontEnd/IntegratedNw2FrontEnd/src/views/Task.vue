@@ -12,6 +12,7 @@ import { useRoute, useRouter } from "vue-router"
 import router from "../router/router.js"
 import Modal from "../components/Modal.vue"
 import Delete from "../views/Delete.vue"
+import DeleteStatus from "./DeleteStatus.vue"
 
 const showDetail = ref(false)
 const showDelete = ref(false)
@@ -21,6 +22,7 @@ const storeMode = ref(null)
 let historyStack = []
 const myTasks = ref(taskManagement)
 const removeId = ref()
+const storeIndex = ref(0)
 const updateEdit = async (newEdit) => {
   if (newEdit.taskId === undefined) {
     let convertedStatus = ""
@@ -96,19 +98,12 @@ const updateEdit = async (newEdit) => {
   }
 }
 
-const setTaskId = (id) => {
-  removeId.value = id
-}
-
-const setBeforeDelete = (id) => {
-  // console.log("delete id", id)
-  showDelete.value = true
-  setTaskId(id)
-  // console.log("removeId", removeId.value)
-  fetchById(id)
+const setIndex = (index) => {
+  storeIndex.value = index
 }
 
 const removeTask = async (removeId) => {
+  console.log(removeId);
   const removeTask = await deleteItemById(
     import.meta.env.VITE_BASE_URL,
     removeId
@@ -143,6 +138,7 @@ async function fetchById(id) {
     throw new Error('Missing required param "id"')
   }
   dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id)
+  console.log(dataById.value);
   if (showDetail.value === true) {
     if (storeMode.value === "edit") {
       router.push({ name: "taskDetail", params: { id: id } }).then(() => {
@@ -157,7 +153,7 @@ async function fetchById(id) {
       router.replace({ name: "task" })
       return
     }
-
+    
     setDetail(true)
   }
 }
@@ -245,7 +241,9 @@ const getStatusColor = (status) => {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
-
+        <div class="flex justify-center">
+          <DeleteStatus></DeleteStatus>
+        </div>
         <!-- No Task -->
         <div class="w-full flex justify-center">
           <div
@@ -377,7 +375,7 @@ const getStatusColor = (status) => {
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="setBeforeDelete(task.taskId)"
+                          @click="[(showDelete = true), fetchById(task.taskId),setIndex(index+1)]"
                         >
                           Delete
                         </div>
@@ -400,6 +398,7 @@ const getStatusColor = (status) => {
             <Delete
               @setDelete="setDelete"
               :tasks="dataById"
+              :index="storeIndex"
               @statusCode="removeTask"
             ></Delete>
           </Teleport>
