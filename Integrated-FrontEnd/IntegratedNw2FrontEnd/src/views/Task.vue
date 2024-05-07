@@ -12,7 +12,7 @@ import { useRoute, useRouter } from "vue-router"
 import router from "../router/router.js"
 import Modal from "../components/Modal.vue"
 import Delete from "../views/Delete.vue"
-import DeleteStatus from "./DeleteStatus.vue"
+
 
 const showDetail = ref(false)
 const showDelete = ref(false)
@@ -23,6 +23,7 @@ let historyStack = []
 const myTasks = ref(taskManagement)
 const removeId = ref()
 const storeIndex = ref(0)
+
 const updateEdit = async (newEdit) => {
   if (newEdit.taskId === undefined) {
     let convertedStatus = ""
@@ -33,7 +34,6 @@ const updateEdit = async (newEdit) => {
       title: newEdit.title,
       description: newEdit.description,
     })
-    console.log(addedTask.taskId)
     switch (addedTask.status) {
       case "NO_STATUS":
         convertedStatus = "No Status"
@@ -126,7 +126,9 @@ const setMode = (mode) => {
   storeMode.value = mode
 }
 const setDetail = (set) => {
+  
   showDetail.value = set
+  console.log(showDetail.value);
 }
 function routeToadd() {
   router.push({ name: "addTask" })
@@ -153,10 +155,11 @@ async function fetchById(id) {
       router.replace({ name: "task" })
       return
     }
-    
+    console.log(dataById.value);
     setDetail(true)
   }
 }
+
 
 // Add Task
 
@@ -241,9 +244,7 @@ const getStatusColor = (status) => {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
-        <div class="flex justify-center">
-          <DeleteStatus></DeleteStatus>
-        </div>
+        
         <!-- No Task -->
         <div class="w-full flex justify-center">
           <div

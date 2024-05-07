@@ -1,28 +1,14 @@
 <script setup>
-import { deleteItemById } from "../libs/fetchUtil.js"
-import { defineProps, defineEmits, ref ,watch} from "vue"
-const emit = defineEmits(["setDelete", "statusCode"])
+import { deleteItemById } from "../libs/fetchUtil.js";
+import { defineProps, defineEmits, ref, watch, computed } from "vue";
+const emit = defineEmits(["setDelete", "statusCode"]);
 const props = defineProps({
   tasks: Object,
-  index: Number
-})
-watch(
-  () => props.tasks,
-  () => {
-      oldTask.value = props.tasks
-    },
-  { deep: true }
-)
+  index: Number,
+});
+const oldTask = computed(() => props.tasks);
 
-const oldTask = ref({
-  id: undefined,
-  assignees: "",
-  status: "NO_STATUS",
-  title: "",
-  description: "",
-  createdOn: "",
-  updatedOn: "",
-})
+console.log(props.tasks, oldTask.value);
 </script>
 
 <template>
@@ -36,27 +22,28 @@ const oldTask = ref({
         >
           <div class="text-xl font-semibold text-red-400">Delete Task</div>
           <div class="border-b my-3"></div>
-          <div class="break-all">
-            Do you want to delete the task "{{index+1}} {{ oldTask?.title }} " ?
+          <div class="break-all itbkk-message">
+            Do you want to delete the task number "{{ oldTask?.taskId }}
+            {{ oldTask?.title }}" ?
           </div>
           <div class="flex justify-end my-4">
             <div
               @click="
-                ;[$emit('setDelete', false), $router.replace({ name: 'task' })]
+                [$emit('setDelete', false), $router.replace({ name: 'task' })]
               "
-              class="itbkk-button btn btn-error text-white mx-2"
+              class="itbkk-button-cancel btn btn-error text-white mx-2"
             >
-              Cancle
+              Cancel
             </div>
             <div
               @click="
-                ;[
+                [
                   $emit('setDelete', false),
                   $router.replace({ name: 'task' }),
                   $emit('statusCode', oldTask?.taskId),
                 ]
               "
-              class="itbkk-button btn btn-success text-white"
+              class="itbkk-button-confirm btn btn-success text-white"
             >
               Confirm
             </div>
