@@ -1,56 +1,58 @@
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue"
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 
-const emit = defineEmits(["setDetail", "saveTask"])
+const emit = defineEmits(["setDetail", "saveTask"]);
 const props = defineProps({
   tasks: {
     type: Object,
     default: {
       id: undefined,
-      assignees: "",
+      assignees: null,
       status: "NO_STATUS",
       title: "",
-      description: "",
-      createdOn: "",
-      updatedOn: "",
+      description: null,
+      createdOn: null,
+      updatedOn: null,
     },
   },
   mode: String,
-})
+});
 
 const newTask = ref({
   id: undefined,
-  assignees: "",
+  assignees: null,
   status: "NO_STATUS",
   title: "",
-  description: "",
-  createdOn: "",
-  updatedOn: "",
-})
+  description: null,
+  createdOn: null,
+  updatedOn: null,
+});
 
 watch(
   () => props.tasks,
   () => {
     if (props.mode === "edit") {
-      newTask.value = props.tasks
+      newTask.value = props.tasks;
     }
   },
   { deep: true }
-)
+);
 
 const isDisabled = computed(() => {
-  return newTask.value.title.trim() === ""
-})
+  console.log(newTask.value, newTask.value.title.trim() === "");
+  return newTask.value.title.trim() === "";
+});
 </script>
 
 <template>
   <div>
     <div
-      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px]"
+      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50"
+      style="translate: transform(-50%, -50%)"
     >
       <div class="w-[60%] m-[auto] max-h-screen">
         <div
-          class="flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
+          class="overflow-auto max-h-screen flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
         >
           <div v-if="mode === 'view'">
             <div
@@ -67,7 +69,7 @@ const isDisabled = computed(() => {
             <div class="text-lg z-0">Title</div>
             <div>
               <textarea
-                class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder="Enter your title here..."
                 v-model="newTask.title"
                 required
@@ -90,7 +92,7 @@ const isDisabled = computed(() => {
                 >
                   <option disabled selected>Status</option>
                   <option value="TO_DO" :selected="tasks?.status === 'TO_DO'">
-                    To do
+                    To Do
                   </option>
                   <option value="DOING" :selected="tasks?.status === 'DOING'">
                     Doing
@@ -102,7 +104,7 @@ const isDisabled = computed(() => {
                     value="NO_STATUS"
                     :selected="tasks?.status === 'NO_STATUS'"
                   >
-                    No status
+                    No Status
                   </option>
                 </select>
               </label>
@@ -121,7 +123,9 @@ const isDisabled = computed(() => {
                   class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic"
                   placeholder="Enter your assign here..."
                   v-model="newTask.assignees"
-                  >{{ tasks?.assignees }}</textarea
+                >
+                  {{ tasks?.assignees }}
+                  </textarea
                 >
               </div>
             </div>
@@ -154,12 +158,20 @@ const isDisabled = computed(() => {
             </div>
             <div>
               <div>
-                <div v-if="mode === 'view'" class="itbkk-description break-all italic">
-                  {{ tasks?.description }}
+                <div
+                  v-if="mode === 'view'"
+                  class="itbkk-description break-all italic"
+                  placeholder="No Description Provided"
+                >
+                  {{
+                    tasks?.description == "" || tasks?.description === null
+                      ? "No Description Provided"
+                      : tasks?.description
+                  }}
                 </div>
                 <textarea
                   v-else
-                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
+                  class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
                   placeholder="Enter your description here..."
                   v-model="newTask.description"
                   >{{ tasks?.description }}</textarea
@@ -173,11 +185,10 @@ const isDisabled = computed(() => {
               <div v-if="mode !== 'view'">
                 <button
                   @click="
-                    ;[
-                      $emit('setDetail', false),
-                      $router.replace({ name: 'task' }),
-                      $emit('saveTask', newTask),
-                    ]
+                    () => {
+                      $emit('setDetail', false);
+                      $emit('saveTask', newTask);
+                    }
                   "
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   :class="isDisabled ? 'bg-gray-300' : 'bg-info'"
@@ -190,10 +201,7 @@ const isDisabled = computed(() => {
             <div>
               <div
                 @click="
-                  ;[
-                    $emit('setDetail', false),
-                    $router.replace({ name: 'task' }),
-                  ]
+                  [$emit('setDetail', false), $router.replace({ name: 'task' })]
                 "
                 class="itbkk-button-cancel btn btn-error text-white"
               >
