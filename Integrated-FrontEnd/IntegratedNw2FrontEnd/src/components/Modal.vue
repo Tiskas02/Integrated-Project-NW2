@@ -7,12 +7,12 @@ const props = defineProps({
     type: Object,
     default: {
       id: undefined,
-      assignees: "",
+      assignees: null,
       status: "NO_STATUS",
-      title: "",
-      description: "",
-      createdOn: "",
-      updatedOn: "",
+      title: null,
+      description: null,
+      createdOn: null,
+      updatedOn: null,
     },
   },
   mode: String,
@@ -20,12 +20,12 @@ const props = defineProps({
 
 const newTask = ref({
   id: undefined,
-  assignees: "",
+  assignees: null,
   status: "NO_STATUS",
-  title: "",
-  description: "",
-  createdOn: "",
-  updatedOn: "",
+  title: null,
+  description: null,
+  createdOn: null,
+  updatedOn: null,
 })
 
 watch(
