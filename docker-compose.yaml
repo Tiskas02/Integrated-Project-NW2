@@ -11,6 +11,20 @@ services:
     #   - external
     depends_on:
       - backend
+
+    frontendV2:
+    container_name: frontEndContainerV2
+    build:
+      context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3000:80'
+    # networks: 
+    #   - external
+    depends_on:
+      - backend
+
   backend:
     container_name: backEndContainer
     build:
@@ -46,13 +60,13 @@ volumes:
   mysqldb:
   mysqlconfig:
 
-# reverse_proxy:
-#     image: nginx:1.20.2-alpine
-#     container_name: reverse_proxy
-#     ports:
-#       - 80:80
-#     volumes: 
-#       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-#     depends_on:
-#       - dbserver
-#       - backend
+reverse_proxy:
+    image: nginx:1.20.2-alpine
+    container_name: reverse_proxy
+    ports:
+      - 80:80
+    volumes: 
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - dbserver
+      - backend
