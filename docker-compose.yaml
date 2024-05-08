@@ -68,6 +68,6 @@ services:
       - dbserver
       - backend
 
-# volumes:
-#   mysqldb:
-#   mysqlconfig:
+volumes:
+  mysqldb:
+  mysqlconfig:
