@@ -57,11 +57,7 @@ services:
     #   internal:
     #     driver: bridge
 
-volumes:
-  mysqldb:
-  mysqlconfig:
-
-reverse_proxy:
+  reverse_proxy:
     image: nginx:latest
     container_name: reverse_proxy
     ports:
@@ -71,3 +67,7 @@ reverse_proxy:
     depends_on:
       - dbserver
       - backend
+
+# volumes:
+#   mysqldb:
+#   mysqlconfig:
