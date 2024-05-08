@@ -39,3 +39,8 @@ jobs:
       - name: Remove used images
         run: |
           docker image prune -af
+
+      # Clear Memory
+      - name: | Clear used memory
+        run: |
+          docker builder prune -af
