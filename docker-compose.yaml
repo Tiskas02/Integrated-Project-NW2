@@ -61,7 +61,7 @@ volumes:
   mysqlconfig:
 
 reverse_proxy:
-    image: nginx:1.20.2-alpine
+    image: nginx:latest
     container_name: reverse_proxy
     ports:
       - 80:80
