@@ -1,3 +1,4 @@
+version: "3.3"
 services:
   frontend:
     container_name: frontEndContainer
@@ -5,8 +6,8 @@ services:
       context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - '80:80'
+    # ports:
+    #   - '80:80'
     # networks: 
     #   - external
     depends_on:
@@ -18,8 +19,8 @@ services:
       context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - '3000:80'
+    # ports:
+    #   - '3000:80'
     # networks: 
     #   - external
     depends_on:
@@ -31,8 +32,8 @@ services:
       context: ./Integrated-BackEnd
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - '8080:8080'
+    # ports:
+    #   - '8080:8080'
     # networks: 
     #   - internal
     depends_on:
