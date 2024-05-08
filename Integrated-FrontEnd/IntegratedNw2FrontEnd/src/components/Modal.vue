@@ -1,53 +1,68 @@
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
-const emit = defineEmits(["setDetail", "saveTask"]);
+const emit = defineEmits(['setDetail', 'saveTask']);
 const props = defineProps({
   tasks: {
     type: Object,
     default: {
       id: undefined,
-      assignees: "",
-      status: "N0_STATUS",
-      title: "",
-      description: "",
-      createdOn: "",
-      updatedOn: ""
-    },
+      assignees: null,
+      assignees: null,
+      status: 'NO_STATUS',
+      title: '',
+      description: null,
+      createdOn: null,
+      updatedOn: null
+    }
   },
-  mode: String,
+  mode: String
 });
 
 const newTask = ref({
-    id: undefined,
-    assignees: "",
-    status: "N0_STATUS",
-    title: "",
-    description: "",
-    createdOn: "",
-    updatedOn: ""
-  })
-
+  id: undefined,
+  assignees: null,
+  status: 'NO_STATUS',
+  title: '',
+  description: '',
+  createdOn: '',
+  updatedOn: ''
+});
 
 watch(
   () => props.tasks,
   () => {
     if (props.mode === 'edit') {
-      newTask.value = props.tasks;
+      newTask.value = { ...props.tasks };
     }
   },
   { deep: true }
 );
+
+
+const isDisabled = computed(() => {
+  if (props.mode === 'add') {
+    return newTask.value.title.trim() === '';
+  }
+  if (props.mode === 'edit') {
+    console.log(newTask.value.title.length);
+    if (newTask.value.title.length !== 0) {
+      return false;
+    }
+    return newTask.value.title.length;
+  }
+});
 </script>
 
 <template>
   <div>
     <div
-      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px]"
+      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50"
+      style="translate: transform(-50%, -50%)"
     >
       <div class="w-[60%] m-[auto] max-h-screen">
         <div
-          class="flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
+          class="overflow-auto max-h-screen flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
         >
           <div v-if="mode === 'view'">
             <div
@@ -58,15 +73,16 @@ watch(
           </div>
           <div v-else>
             <div class="text-xl font-bold my-3">
-              {{ mode === "add" ? "Add New Task" : "Edit Task" }}
+              {{ mode === 'add' ? 'Add New Task' : 'Edit Task' }}
             </div>
             <div class="border-b my-2"></div>
-            <div class="text-lg">Title</div>{{mode}}
+            <div class="text-lg z-0">Title</div>
             <div>
               <textarea
-                class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder="Enter your title here..."
-                v-model="newTask.title" required
+                v-model="newTask.title"
+                required
                 >{{ mode === 'add' ? '' : tasks?.title }}</textarea
               >
             </div>
@@ -86,7 +102,7 @@ watch(
                 >
                   <option disabled selected>Status</option>
                   <option value="TO_DO" :selected="tasks?.status === 'TO_DO'">
-                    To do
+                    To Do
                   </option>
                   <option value="DOING" :selected="tasks?.status === 'DOING'">
                     Doing
@@ -98,7 +114,7 @@ watch(
                     value="NO_STATUS"
                     :selected="tasks?.status === 'NO_STATUS'"
                   >
-                    No status
+                    No Status
                   </option>
                 </select>
               </label>
@@ -114,10 +130,12 @@ watch(
             <div v-else>
               <div class="w-full">
                 <textarea
-                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic"
                   placeholder="Enter your assign here..."
                   v-model="newTask.assignees"
-                  >{{ tasks?.assignees }}</textarea
+                >
+                  {{ tasks?.assignees }}
+                  </textarea
                 >
               </div>
             </div>
@@ -130,13 +148,13 @@ watch(
             <div class="flex itbkk-created-on my-1">
               <div class="2xl:w-[13%] sm:w-[17%]">Created On</div>
               <div>
-                {{ new Date(tasks?.createdOn).toLocaleString("en-GB") }}
+                {{ new Date(tasks?.createdOn).toLocaleString('en-GB') }}
               </div>
             </div>
             <div class="flex itbkk-updated-on my-1">
               <div class="2xl:w-[13%] sm:w-[17%]">Updated On</div>
               <div>
-                {{ new Date(tasks?.updatedOn).toLocaleString("en-GB") }}
+                {{ new Date(tasks?.updatedOn).toLocaleString('en-GB') }}
               </div>
             </div>
           </div>
@@ -150,12 +168,20 @@ watch(
             </div>
             <div>
               <div>
-                <div v-if="mode === 'view'" class="break-all">
-                  {{ tasks?.description }}
+                <div
+                  v-if="mode === 'view'"
+                  class="itbkk-description break-all italic"
+                  placeholder="No Description Provided"
+                >
+                  {{
+                    tasks?.description == '' || tasks?.description === null
+                      ? 'No Description Provided'
+                      : tasks?.description
+                  }}
                 </div>
                 <textarea
                   v-else
-                  class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
+                  class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
                   placeholder="Enter your description here..."
                   v-model="newTask.description"
                   >{{ tasks?.description }}</textarea
@@ -163,30 +189,41 @@ watch(
               </div>
             </div>
           </div>
-          
+
           <div class="flex flex-row w-full justify-end">
-            <div class="mr-2"><div v-if="mode !== 'view'">
-              <div
-                @click="
-                  [
-                    $emit('setDetail', false),
-                    $router.replace({ name: 'task' }),
-                    $emit('saveTask', newTask),
-                  ]
-                "
-                class="itbkk-button btn btn-info text-white"
-              >
-                save
-              </div></div>
+            <div class="mr-2">
+              <div v-if="mode !== 'view'">
+                <button
+                  @click="
+                    () => {
+                      $emit('setDetail', false);
+                      $emit('saveTask', newTask);
+                    }
+                  "
+                  class="itbkk-button-confirm disabled btn btn-info text-white"
+                  :class="isDisabled ? 'bg-gray-300' : 'bg-info'"
+                  :disabled="
+                    newTask.title.trim() === '' ||
+                    ((newTask.assignees ?? '') ===
+                      (tasks?.assignees ?? '') &&
+                      (newTask.description ?? '') ===
+                        (tasks?.description ?? '') &&
+                      (newTask.status ?? '') === (tasks?.status ?? '') &&
+                      (newTask.title ?? '') === (tasks?.title ?? ''))
+                  "
+                >
+                  Save
+                </button>
+              </div>
             </div>
             <div>
               <div
                 @click="
                   [$emit('setDetail', false), $router.replace({ name: 'task' })]
                 "
-                class="itbkk-button btn btn-error text-white"
+                class="itbkk-button-cancel btn btn-error text-white"
               >
-                close
+                Cancel
               </div>
             </div>
           </div>
