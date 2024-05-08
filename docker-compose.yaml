@@ -13,7 +13,7 @@ services:
     depends_on:
       - backend
 
-    frontendV2:
+  frontendV2:
     container_name: frontEndContainerV2
     build:
       context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
