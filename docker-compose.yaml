@@ -57,16 +57,16 @@ services:
     #   internal:
     #     driver: bridge
 
-  reverse_proxy:
-    image: nginx:latest
-    container_name: reverse_proxy
-    ports:
-      - 80:80
-    volumes: 
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - dbserver
-      - backend
+  # reverse_proxy:
+  #   image: nginx:latest
+  #   container_name: reverse_proxy
+  #   ports:
+  #     - 80:80
+  #   volumes: 
+  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf
+  #   depends_on:
+  #     - dbserver
+  #     - backend
 
 volumes:
   mysqldb:
