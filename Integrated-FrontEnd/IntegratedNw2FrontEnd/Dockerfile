@@ -25,7 +25,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 EXPOSE 3000
-CMD [ ”npm“, "run" ,”preview“ ]
+CMD [ "npm", "run", "preview"]
 
 # Use nginx as base image for serving the static files
 # FROM nginx:alpine
