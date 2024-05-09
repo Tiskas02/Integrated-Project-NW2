@@ -1,4 +1,8 @@
 //BackEnd
+const url = import.meta.env.VITE_HTTP_URL
+
+
+
 async function getTaskData(url) {
   try {
     const res = await fetch(`${url}/v1/tasks`);
@@ -10,11 +14,12 @@ async function getTaskData(url) {
     return null;
   }
 }
+
 async function getTaskById(url, id) {
   try {
     const res = await fetch(`${url}/v1/tasks/${id}`);
     if(!res.ok){
-      window.location.href = "/task";
+      history.back()
       return null;
     }
     const data = await res.json();
