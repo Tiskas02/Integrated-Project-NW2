@@ -57,7 +57,7 @@ const isDisabled = computed(() => {
 <template>
   <div>
     <div
-      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50"
+      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-[100px]"
       style="translate: transform(-50%, -50%)"
     >
       <div class="w-[60%] m-[auto] max-h-screen">
