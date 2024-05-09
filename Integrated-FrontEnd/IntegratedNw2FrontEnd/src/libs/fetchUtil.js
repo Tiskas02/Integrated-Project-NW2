@@ -1,8 +1,3 @@
-//BackEnd
-const url = import.meta.env.VITE_HTTP_URL
-
-
-
 async function getTaskData(url) {
   try {
     const res = await fetch(`${url}/v1/tasks`);
