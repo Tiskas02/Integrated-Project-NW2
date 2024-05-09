@@ -4,12 +4,12 @@ import NotFound from "../views/NotFound.vue";
 import Modal from "@/components/Modal.vue";
 import AddEditModal from "@/components/AddEditModal.vue";
 
-const history = createWebHistory();
+const history = createWebHistory(import.meta.env.VITE_BASE_URL);
 const routes = [
-  // {
-  //   path: "/",
-  //   redirect: "/task", // Redirect root path to /task
-  // },
+  {
+    path: "/",
+    redirect: "/task", // Redirect root path to /task
+  },
   {
     path: "/task",
     name: "task",
