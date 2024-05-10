@@ -11,9 +11,14 @@ const showDetail = ref(false);
 const storeMode = ref('');
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
-
   storeMode.value = mode;
-  if (id !== null) {
+  if (storeMode.value === 'add') {
+    router.push({ name: 'addTask'});
+  }else if (storeMode.value === 'edit') {
+    router.push({ name: 'editTask', params: { id: id } });
+    
+  }
+  if (id !== null && storeMode.value !== 'edit') {
     router.push({ name: 'taskDetail', params: { id: id } });
   } else {
     console.log(storeMode.value);
@@ -80,10 +85,10 @@ const getStatusStyle = (status) => {
 
     <div class="w-full flex justify-center">
       <div
-        class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40"
+        class=" shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40"
       >
         <div class="min-w-full divide-y divide-gray-200">
-          <div class="#4793AF bg-slate-600 flex sticky">
+          <div class="#4793AF bg-slate-600 flex ">
             <div
               class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             ></div>
@@ -114,7 +119,7 @@ const getStatusStyle = (status) => {
             </div>
           </div>
           <!-- Edit Task -->
-          <div class="w-full h-[350px]">
+          <div class="w-full h-[350px] overflow-auto">
             <div v-for="(task, index) in tasks" :key="task.taskId">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div class="">
@@ -163,6 +168,7 @@ const getStatusStyle = (status) => {
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
+                          @click="setDetail(true, null, 'delete')"
                         >
                           Delete
                         </div>

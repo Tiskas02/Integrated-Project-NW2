@@ -1,6 +1,7 @@
 <script setup>
 import TaskView from '../views/TaskView.vue';
 import TaskAddEdit from './TaskAddEdit.vue';
+import TaskDelete from '@/views/TaskDelete.vue';
 import { defineProps, defineEmits, ref,watch } from 'vue';
 const emit = defineEmits(['close']);
 const props = defineProps({
@@ -19,6 +20,9 @@ const sentMode = ref(props.mode);
     </div>
     <div v-else-if="mode === 'add' || mode === 'edit'">
       <TaskAddEdit @close="sentclose" :mode="sentMode" />
+    </div>
+    <div v-else>
+        <TaskDelete @close="sentclose" />
     </div>
   </div>
 </template>

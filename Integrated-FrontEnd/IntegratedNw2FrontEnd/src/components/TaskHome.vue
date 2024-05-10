@@ -24,12 +24,14 @@ onMounted(async () => {
   
 });
 watch(() => route.path, () => {
-    if (route.path === '/status') {
+    if (route.path.startsWith('/status')) {
       showPath.value = true;
-    } else {
+    }else {
       showPath.value = false;
     }
-  });
+  }, { immediate: true }
+  );
+
 </script>
 
 <template>

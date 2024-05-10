@@ -1,9 +1,24 @@
 <script setup>
 import { ref } from 'vue';
-import StatusAddEdit from './StatusAddEdit.vue';
+import StatusModal from './StatusModal.vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const showModal = ref(false);
-const openModal = () => {
-  showModal.value = true;
+const storeMode = ref('');
+const setModal = (value,mode,id) => {
+  showModal.value = value;
+  storeMode.value = mode;
+  if (storeMode.value === 'add')  {
+    console.log(storeMode.value);
+    router.push({ name: 'addStatus'});
+  }else if (storeMode.value === 'edit' && id !== null) {
+    router.push({ name: 'editStatus', params: { id: id } });
+    
+  }
+};
+const setClose = (value) => {
+    showModal.value = value;
+  router.push({ name: 'status' });
 };
 </script>
 
@@ -17,7 +32,7 @@ const openModal = () => {
       </div>
       <div class="">
         <!-- Add Task-->
-        <div class="itbkk-button-add btn btn-outline btn-primary mr-10" @click="openModal()">
+        <div class="itbkk-button-add btn btn-outline btn-primary mr-10" @click="setModal(true,'add',null)">
           <svg
             width="20"
             height="20"
@@ -96,11 +111,13 @@ const openModal = () => {
                     <div class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
                       <div
                         class="btn btn-outline btn-warning"
+                        @click="setModal(true,'edit',1)"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
+                        @click="setModal(true,'delete',null)"
                       >
                         Delete
                       </div>
@@ -114,7 +131,7 @@ const openModal = () => {
       </div>
     </div>
     <teleport to="#body">
-        <StatusAddEdit v-if="showModal"/>
+        <StatusModal v-if="showModal" @close="setClose" :statusMode="storeMode" />
       </teleport>
   </div>
 </template>

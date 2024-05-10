@@ -28,7 +28,7 @@ console.log(storeModeSent.value);
         >
           <div>
             <div class="text-xl font-bold my-3">
-              
+              {{mode === 'add' ? 'Add Task' : 'Edit Task'}}
             </div>
             <div class="border-b my-2"></div>
             <div class="text-lg z-0">Title</div>
@@ -86,7 +86,7 @@ console.log(storeModeSent.value);
               </div>
             </div>
           </div>
-          <div>
+          <div v-if="mode === 'edit'">
             <div class="flex itbkk-timezone my-1">
               <div class="2xl:w-[13%] sm:w-[17%]">TimeZone</div>
               <div>{{ Intl.DateTimeFormat().resolvedOptions().timeZone }}</div>
