@@ -6,12 +6,12 @@ import AddEditModal from "@/components/AddEditModal.vue";
 
 const history = createWebHistory();
 const routes = [
-  // {
-  //   path: "/",
-  //   redirect: "/task", // Redirect root path to /task
-  // },
   {
-    path: "/nw2/task",
+    path: "/",
+    redirect: "/task", // Redirect root path to /task
+  },
+  {
+    path: "/task",
     name: "task",
     component: Task,
     children: [
@@ -22,12 +22,11 @@ const routes = [
       },
     ],
   },
-  // {
-  //   path: "/:notfoundpath(.*)",
-  //   name: "NotFound",
-  //   component: Task,
-  //   redirect: "/",
-  // },
+  {
+    path: "/:notfoundpath(.*)",
+    name: "NotFound",
+    component: NotFound,
+  },
   {
     path: "/task/add",
     name: "addTask",
