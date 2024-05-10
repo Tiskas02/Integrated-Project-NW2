@@ -4,14 +4,14 @@ import NotFound from "../views/NotFound.vue";
 import Modal from "@/components/Modal.vue";
 import AddEditModal from "@/components/AddEditModal.vue";
 
-const history = createWebHistory(import.meta.env.VITE_BASE_URL);
+const history = createWebHistory();
 const routes = [
+  // {
+  //   path: "/",
+  //   redirect: "/task", // Redirect root path to /task
+  // },
   {
-    path: "/",
-    redirect: "/task", // Redirect root path to /task
-  },
-  {
-    path: "/task",
+    path: "/nw2/task",
     name: "task",
     component: Task,
     children: [
@@ -26,7 +26,7 @@ const routes = [
   //   path: "/:notfoundpath(.*)",
   //   name: "NotFound",
   //   component: Task,
-  //   redirect: "/task",
+  //   redirect: "/",
   // },
   {
     path: "/task/add",

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 80",
-    "build": "vite build --base=/nw2/",
+    "build": "vite build",
     "preview": "vite preview",
     "test:e2e": "start-server-and-test preview http://localhost 'cypress run --e2e'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 80' http://localhost 'cypress open --e2e'",
