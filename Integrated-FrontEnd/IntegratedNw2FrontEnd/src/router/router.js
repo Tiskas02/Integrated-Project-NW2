@@ -22,11 +22,11 @@ const routes = [
       },
     ],
   },
-  {
-    path: "/:notfoundpath(.*)",
-    name: "NotFound",
-    component: NotFound,
-  },
+  // {
+  //   path: "/:notfoundpath(.*)",
+  //   name: "NotFound",
+  //   component: NotFound,
+  // },
   {
     path: "/task/add",
     name: "addTask",
