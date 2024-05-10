@@ -1,10 +1,8 @@
 package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.TaskDTOV2;
-import com.example.integratedbackend.Entities.TasksV2;
 import com.example.integratedbackend.Entities.Taskv2Entity;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
-import com.example.integratedbackend.Repositories.StatusRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import org.modelmapper.ModelMapper;
 
@@ -27,6 +25,7 @@ public class TaskServiceV2 {
 
 
     public List<TaskDTOV2> getTasks() {
+//        return repositories.findAll();
         return  listMapper.mapList(repositories.findAll(), TaskDTOV2.class,modelMapper);
 //
     }
