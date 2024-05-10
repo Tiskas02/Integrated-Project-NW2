@@ -2,9 +2,11 @@ class TaskManagement {
   constructor() {
     this.tasks = [];
   }
+  
   getTask() {
     return this.tasks;
   }
+
   setTasks(tasks = []) {
     return new Promise((resolve) => {
       this.tasks.length = 0;

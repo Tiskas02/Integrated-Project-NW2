@@ -1,6 +1,7 @@
 async function getTaskData(url) {
   try {
-    const res = await fetch(`${url}/v1/tasks`);
+    const res = await fetch(`${url}/v2/tasks`);
+    console.log(res)
     const data = await res.json();
     return data;
   } catch (error) {
@@ -12,7 +13,7 @@ async function getTaskData(url) {
 
 async function getTaskById(url, id) {
   try {
-    const res = await fetch(`${url}/v1/tasks/${id}`);
+    const res = await fetch(`${url}/v2/tasks/${id}`);
     if(!res.ok){
       history.back()
       return null;
@@ -27,7 +28,7 @@ async function getTaskById(url, id) {
 
 async function addTask(url, newTask) {
   try {
-    const res = await fetch(`${url}/v1/tasks`, {
+    const res = await fetch(`${url}`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -44,7 +45,7 @@ async function addTask(url, newTask) {
 }
 async function deleteItemById(url, id) {
   try {
-    const res = await fetch(`${url}/v1/tasks/${id}`, {
+    const res = await fetch(`${url}/v2/tasks/${id}`, {
       method: "DELETE",
     });
     return res.status;
@@ -56,7 +57,7 @@ async function deleteItemById(url, id) {
 
 async function updateTask(url, id, editTask) {
   try {
-    const res = await fetch(`${url}/v1/tasks/${id}`, {
+    const res = await fetch(`${url}/v2/tasks/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
