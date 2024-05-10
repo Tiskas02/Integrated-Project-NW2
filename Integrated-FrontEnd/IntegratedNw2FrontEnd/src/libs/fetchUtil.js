@@ -1,6 +1,6 @@
 async function getTaskData(url) {
   try {
-    const res = await fetch(`${url}/v2/tasks`);
+    const res = await fetch(`http://intproj23.sit.kmutt.ac.th/nw2/api/v2/tasks`);
     console.log(res)
     const data = await res.json();
     return data;
