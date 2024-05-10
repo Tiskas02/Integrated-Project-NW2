@@ -12,7 +12,8 @@ public class Status {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "taskId")
+
+    @Column(name = "statusId")
     private Integer statusId;
     @Column(name = "statusName")
     private String statusName;

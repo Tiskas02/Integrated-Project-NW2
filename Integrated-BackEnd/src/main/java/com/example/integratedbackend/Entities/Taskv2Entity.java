@@ -1,36 +1,34 @@
 package com.example.integratedbackend.Entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
 @Entity
+@Data
 @Table(name = "taskv2", schema = "kradanitbangmod")
-@Getter
-@Setter
-public class TasksV2 {
-    @Id
+public class Taskv2Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "taskId")
+    @Id
+    @Column(name = "id", nullable = false)
     private Integer taskId;
 
-    @Column(name = "taskTitle")
+    @Column(name = "taskTitle", nullable = false, length = 100)
     private String taskTitle;
 
-    @Column(name = "taskDescription")
+    @Column(name = "taskDescription", nullable = true, length = 500)
     private String taskDescription;
 
-    @Column(name = "taskAssignees")
+    @Column(name = "taskAssignees", nullable = true, length = 30)
     private String taskAssignees;
 
-    @ManyToOne
-    @JoinColumn(name = "taskStatusId", referencedColumnName = "statusId")
-    private Status status;
+    @Column(name = "taskStatusId", nullable = false, insertable = false, updatable = false)
+    private Integer taskStatusId;
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
@@ -42,4 +40,8 @@ public class TasksV2 {
     @Column(name = "updatedOn", insertable = false, updatable = false)
     private ZonedDateTime updatedOn;
 
+    @ManyToOne
+    @JoinColumn(name = "taskStatusId", referencedColumnName = "statusId", nullable = false)
+    private StatusEntity statusByTaskStatusId;
 }
+

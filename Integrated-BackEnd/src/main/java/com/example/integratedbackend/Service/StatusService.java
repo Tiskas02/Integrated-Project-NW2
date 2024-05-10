@@ -1,9 +1,7 @@
 package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.Entities.Status;
-import com.example.integratedbackend.Entities.Tasks;
-import com.example.integratedbackend.Entities.TasksV2;
+import com.example.integratedbackend.Entities.StatusEntity;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Repositories.StatusRepositories;
@@ -26,39 +24,39 @@ public class StatusService {
         this.repositories = repositories;
     }
 
-    public List<Status> getStatus(){
+    public List<StatusEntity> getStatus(){
         return repositories.findAll();
     }
 
-    public Status findByID(Integer id) throws ItemNotFoundException {
+    public StatusEntity findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
                         "Status"+ " " + id + " " +"doesn't exist !!!"));
     }
     @Transactional
     public TaskIDDTOV2 createStatus(NewTaskDTOV2 addStatus) {
-        Status status = mapper.map(addStatus, Status.class);
+        StatusEntity status = mapper.map(addStatus, StatusEntity.class);
         return mapper.map(repositories.saveAndFlush(status), TaskIDDTOV2.class);
     }
     @Transactional
     public TaskDTOV2 deleteStatus(Integer id) throws ItemNotFoundException{
-        Status statusToDelete = repositories.findById(id)
+        StatusEntity statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("NOT FOUND"));
         repositories.delete(statusToDelete);
         return mapper.map(statusToDelete, TaskDTOV2.class);
     }
     @Transactional
     public TaskIDDTOV2 updateStatus(NewTaskDTOV2 editStatus, Integer id) {
-        Status existingStatus = repositories.findById(id)
+        StatusEntity existingStatus = repositories.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " doesn't exist!"));
 
-        existingStatus.setStatusName(editStatus.getStatus().getStatusName());
+        existingStatus.setStatusName(editStatus.getStatusName());
         existingStatus.setStatusDescription(editStatus.getDescription());
 
 
-        if (editStatus.getStatus().getStatusName() != null) {
-            Status findStatus = repositories.findById(editStatus.getStatus().getStatusId())
-                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getStatus().getStatusName() + " doesn't exist!"));
+        if (editStatus.getStatusName() != null) {
+            StatusEntity findStatus = repositories.findById(editStatus.getTaskId())
+                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getStatusName() + " doesn't exist!"));
             existingStatus.setStatusId(findStatus.getStatusId());
         }
         return mapper.map(existingStatus, TaskIDDTOV2.class);
