@@ -6,10 +6,10 @@ import AddEditModal from "@/components/AddEditModal.vue";
 
 const history = createWebHistory();
 const routes = [
-  {
-    path: "/",
-    redirect: "/task", // Redirect root path to /task
-  },
+  // {
+  //   path: "/",
+  //   redirect: "/task", // Redirect root path to /task
+  // },
   {
     path: "/task",
     name: "task",
