@@ -10,7 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "taskv2", schema = "kradanitbangmod")
+@Table(name = "task", schema = "kradanitbangmod")
 @Getter
 @Setter
 public class TasksV2 {
