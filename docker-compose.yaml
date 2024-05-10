@@ -75,3 +75,7 @@ services:
 volumes:
   mysqldb:
   mysqlconfig:
+
+networks:
+  DB-network:
+  FE-network:
