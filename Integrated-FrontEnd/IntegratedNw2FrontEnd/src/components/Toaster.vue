@@ -1,3 +1,21 @@
+<script setup lang="ts">
+import useToasterStore from "../stores/notificationStores";
+// import Icon from "./Icon.vue";
+
+const toastClassMap = {
+  warning: "warning",
+  error: "error",
+  success: "success",
+};
+
+const toastIconMap = {
+  error: "toast-error",
+  warning: "toast-warning",
+  success: "toast-success",
+};
+const toastStore = useToasterStore();
+</script>
+
 <template>
   <Teleport to="body">
     <Transition name="toast">
@@ -17,24 +35,6 @@
     </Transition>
   </Teleport>
 </template>
-
-<script setup lang="ts">
-import useToasterStore from "../stores/notificationStores";
-// import Icon from "./Icon.vue";
-
-const toastClassMap = {
-  warning: "warning",
-  error: "error",
-  success: "success",
-};
-
-const toastIconMap = {
-  error: "toast-error",
-  warning: "toast-warning",
-  success: "toast-success",
-};
-const toastStore = useToasterStore();
-</script>
 
 <style scoped>
 .toast-enter-from,
