@@ -387,7 +387,7 @@ const getStatusColor = (status) => {
               </div>
             </div>
           </div>
-          <teleport to="#body" v-if="showDetail">
+          <teleport to="body" v-if="showDetail">
             <Modal
               @setDetail="setDetail"
               :tasks="dataById"
@@ -395,7 +395,7 @@ const getStatusColor = (status) => {
               @saveTask="updateEdit"
             ></Modal>
           </teleport>
-          <Teleport to="#body" v-if="showDelete">
+          <Teleport to="body" v-if="showDelete">
             <Delete
               @setDelete="setDelete"
               :tasks="dataById"
