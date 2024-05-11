@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="body">
+  <Teleport to="#body">
     <Transition name="toast">
       <div v-if="toastStore.toasts.length" class="toaster__wrapper">
         <TransitionGroup name="toast" tag="ul">
