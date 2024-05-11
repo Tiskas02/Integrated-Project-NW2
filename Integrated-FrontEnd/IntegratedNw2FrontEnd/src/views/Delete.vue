@@ -1,5 +1,6 @@
 <script setup>
-import { defineProps, defineEmits, computed } from "vue";
+import { deleteItemById } from "../libs/fetchUtil.js";
+import { defineProps, defineEmits, ref, watch, computed } from "vue";
 const emit = defineEmits(["setDelete", "statusCode"]);
 const props = defineProps({
   tasks: Object,
@@ -7,6 +8,7 @@ const props = defineProps({
 });
 const oldTask = computed(() => props.tasks);
 
+console.log(props.tasks, oldTask.value);
 </script>
 
 <template>

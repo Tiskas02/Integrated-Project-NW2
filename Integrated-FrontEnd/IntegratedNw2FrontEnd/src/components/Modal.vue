@@ -1,10 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
-import Toaster from './Toaster.vue';
-import useToasterStore from "../stores/notificationStores";
-
-const toasterStore = useToasterStore();
-
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
 const emit = defineEmits(['setDetail', 'saveTask']);
 const props = defineProps({
@@ -57,8 +52,6 @@ const isDisabled = computed(() => {
     return newTask.value.title.length;
   }
 });
-
-
 </script>
 
 <template>
