@@ -64,9 +64,7 @@ services:
     networks: 
       - FE-network
     depends_on:
-      - dbserver
       - backend
-      - reverse_proxy
 
 volumes:
   mysqldb:

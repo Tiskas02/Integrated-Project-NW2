@@ -13,7 +13,6 @@ import router from "../router/router.js"
 import Modal from "../components/Modal.vue"
 import Delete from "../views/Delete.vue"
 
-
 const showDetail = ref(false)
 const showDelete = ref(false)
 const route = useRoute()
@@ -103,7 +102,7 @@ const setIndex = (index) => {
 }
 
 const removeTask = async (removeId) => {
-  console.log(removeId);
+  console.log(removeId)
   const removeTask = await deleteItemById(
     import.meta.env.VITE_BASE_URL,
     removeId
@@ -126,9 +125,8 @@ const setMode = (mode) => {
   storeMode.value = mode
 }
 const setDetail = (set) => {
-  
   showDetail.value = set
-  console.log(showDetail.value);
+  console.log(showDetail.value)
 }
 function routeToadd() {
   router.push({ name: "addTask" })
@@ -140,7 +138,7 @@ async function fetchById(id) {
     throw new Error('Missing required param "id"')
   }
   dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id)
-  console.log(dataById.value);
+  console.log(dataById.value)
   if (showDetail.value === true) {
     if (storeMode.value === "edit") {
       router.push({ name: "taskDetail", params: { id: id } }).then(() => {
@@ -155,11 +153,10 @@ async function fetchById(id) {
       router.replace({ name: "task" })
       return
     }
-    console.log(dataById.value);
+    console.log(dataById.value)
     setDetail(true)
   }
 }
-
 
 // Add Task
 
@@ -244,7 +241,7 @@ const getStatusColor = (status) => {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
-        
+
         <!-- No Task -->
         <div class="w-full flex justify-center">
           <div
@@ -376,7 +373,13 @@ const getStatusColor = (status) => {
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="[(showDelete = true), fetchById(task.taskId),setIndex(index+1)]"
+                          @click="
+                            ;[
+                              (showDelete = true),
+                              fetchById(task.taskId),
+                              setIndex(index + 1),
+                            ]
+                          "
                         >
                           Delete
                         </div>
