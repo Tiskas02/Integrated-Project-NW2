@@ -2,13 +2,12 @@ package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Entities.StatusEntity;
-import com.example.integratedbackend.Entities.Taskv2Entity;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Repositories.StatusRepositories;
-import com.example.integratedbackend.Repositories.TasksRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +27,9 @@ public class StatusService {
     public StatusService(StatusRepositories repositories) {
         this.repositories = repositories;
     }
-
     public List<StatusEntity> getStatus(){
         return repositories.findAll();
     }
-
     public StatusEntity findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
@@ -45,31 +42,46 @@ public class StatusService {
     }
     //delete and check tranfer status
 //    Old version delete status
-//    @Transactional
-//    public TaskDTOV2 deleteStatus(Integer id) throws ItemNotFoundException{
-//        StatusEntity statusToDelete = repositories.findById(id)
-//                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS NOT FOUND"));
-//        repositories.delete(statusToDelete);
-//        return mapper.map(statusToDelete, TaskDTOV2.class);
-//    }
     @Transactional
-    public StatusEntity transferAndDeleteStatus(Integer id, Integer newStatusId) throws ItemNotFoundException {
-        StatusEntity sourceStatus = repositories.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Source status not found."));
-
-        StatusEntity destinationStatus = repositories.findById(newStatusId)
-                .orElseThrow(() -> new ItemNotFoundException("Destination status not found."));
-
-        List<Taskv2Entity> tasksToTransfer = tasksRepositoriesV2.findByTaskStatusId(id);
-
-        for (Taskv2Entity task : tasksToTransfer) {
-            task.setStatusByTaskStatusId(destinationStatus);
+    public StatusEntity deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
+        StatusEntity statusToDelete = repositories.findById(id)
+                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
+        if (tasksRepositoriesV2.existsByStatus(statusToDelete.getStatusName())) {
+            throw new BadRequestException("Have Some Task On This Status");
+        }
+        if (statusToDelete.getStatusName().equals("No Status")) {
+            throw new BadRequestException("You can not delete 'No Status'!!");
+        }
+        try {
+            repositories.delete(statusToDelete);
+            return statusToDelete;
+        }catch (Exception e) {
+            throw new ItemNotFoundException(e.toString());
         }
 
-        tasksRepositoriesV2.saveAll(tasksToTransfer);
-        repositories.delete(sourceStatus);
+    }
+    @Transactional
+    public StatusEntity transferStatus(Integer oldId, Integer newId) throws BadRequestException {
+        if (oldId == newId) {
+            throw new BadRequestException("Old id equal to new Status Id !!!");
+        }
+        if (!repositories.existsById(oldId)) {
+            throw new ItemNotFoundException("Not Found Status Id:" + oldId);
+        }
+        if (!repositories.existsById(newId)) {
+            throw new ItemNotFoundException("Not Found Status Id:" + newId);
+        }
+        StatusEntity oldstatus = repositories.findById(oldId)
+                .orElseThrow();
+        String newName = repositories.findById(newId).orElseThrow().getStatusName();
+        try {
+            tasksRepositoriesV2.updateTaskStatus(oldstatus.getStatusName(), newName);
+            repositories.delete(oldstatus);
+            return oldstatus;
+        }catch (Exception msg) {
+            throw new ItemNotFoundException(msg.toString());
+        }
 
-        return sourceStatus;
     }
     @Transactional
     public TaskIDDTOV2 updateStatus(NewTaskDTOV2 editStatus, Integer id) {

@@ -3,19 +3,14 @@ package com.example.integratedbackend.Controller;
 import com.example.integratedbackend.DTO.NewTaskDTOV2;
 import com.example.integratedbackend.DTO.TaskDTOV2;
 import com.example.integratedbackend.DTO.TaskIDDTOV2;
-import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
+import com.example.integratedbackend.Entities.StatusEntity;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.StatusService;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import org.hibernate.annotations.ColumnDefault;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v2/status")
@@ -43,21 +38,21 @@ public class StatusController {
         return ResponseEntity.ok(modelMapper.map(statusService.createStatus(newStatus), TaskIDDTOV2.class));
     }
 
-//    @DeleteMapping("{id}")
-//    public TaskDTOV2 deleteStatus(@PathVariable Integer id) {
-//        return statusService.deleteStatus(id);
-//    }
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> tranferAndDeeleteStatus(@PathVariable Integer id, @PathVariable Integer newStatusId) {
-        try {
-            statusService.transferAndDeleteStatus(id, newStatusId);
-            return ResponseEntity.ok("The task(s) have been transferred and the status has been deleted.");
-        } catch (ItemNotFoundException ex){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("An error has occurred, the status does not exist.");
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while transferring tasks and deleting status.");
-        }
+    public StatusEntity deleteStatus(@PathVariable Integer id) throws BadRequestException {
+        return statusService.deleteStatus(id);
     }
+//    @DeleteMapping("{id}")
+//    public ResponseEntity<Object> tranferAndDeeleteStatus(@PathVariable Integer id, @PathVariable Integer newStatusId) {
+//        try {
+//            statusService.transferAndDeleteStatus(id, newStatusId);
+//            return ResponseEntity.ok("The task(s) have been transferred and the status has been deleted.");
+//        } catch (ItemNotFoundException ex){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("An error has occurred, the status does not exist.");
+//        }catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while transferring tasks and deleting status.");
+//        }
+//    }
 
     @PutMapping("{id}")
     public ResponseEntity<Object> updateStatus(@RequestBody NewTaskDTOV2 editStatus,@PathVariable Integer id){

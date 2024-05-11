@@ -10,4 +10,8 @@ import java.util.List;
 
 public interface TasksRepositoriesV2 extends JpaRepository<Taskv2Entity, Integer> {
     List<Taskv2Entity> findByTaskStatusId(Integer oldStatusId);
+
+    boolean existsByStatus(String statusName);
+
+    void updateTaskStatus(String statusName, String newName);
 }
