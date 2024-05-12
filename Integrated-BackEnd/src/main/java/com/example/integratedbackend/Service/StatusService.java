@@ -51,13 +51,13 @@ public class StatusService {
     public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
         Status statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
-        if (tasksRepositoriesV2.existsById(statusToDelete.getId())) {
+        if (tasksRepositoriesV2.existsById(statusToDelete.getStatusId())) {
             throw new BadRequestException("Have Some Task On This Status");
         }
-        if (statusToDelete.getId().equals("No Status")) {
+        if (statusToDelete.getStatusId().equals("No Status")) {
             throw new BadRequestException("You can not delete 'No Status'!!");
         }
-        if (tasksRepositoriesV2.existsById(statusToDelete.getId())) {
+        if (tasksRepositoriesV2.existsById(statusToDelete.getStatusId())) {
             throw new BadRequestException("Have Some Task On This Status");
         }
         try {
@@ -103,7 +103,7 @@ public class StatusService {
         if (editStatus.getName() != null) {
             Status findStatus = repositories.findById(id)
                     .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getName() + " doesn't exist!"));
-            existingStatus.setId(findStatus.getId());
+            existingStatus.setStatusId(findStatus.getStatusId());
         }
         return mapper.map(existingStatus, StatusDTO.class);
     }
