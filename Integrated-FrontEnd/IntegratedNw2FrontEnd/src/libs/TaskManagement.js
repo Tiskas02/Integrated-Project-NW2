@@ -56,13 +56,6 @@ class TaskManagement {
     });
   }
   
-  // editTask(taskId) {
-  //   this.tasks = this.tasks.map((task) => {
-  //     return task.taskId === taskId
-  //     ?{...task, taskId: taskId}
-  //     :task
-  //   })
-  // }
   updateTask({
     taskId,
     title,

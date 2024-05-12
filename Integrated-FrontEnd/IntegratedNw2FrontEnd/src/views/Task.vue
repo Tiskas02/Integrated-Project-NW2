@@ -5,55 +5,51 @@ import {
   addTask,
   deleteItemById,
   updateTask,
-} from "../libs/fetchUtil.js";
-import { onMounted, ref, computed, defineEmits } from "vue";
-import taskManagement from "../libs/TaskManagement.js";
-import { useRoute, useRouter } from "vue-router";
-import Modal from "../components/Modal.vue";
-import Delete from "../views/Delete.vue";
+} from "../libs/fetchUtil.js"
+import { onMounted, ref, computed } from "vue"
+import taskManagement from "../libs/TaskManagement.js"
+import { useRoute, useRouter } from "vue-router"
+import router from "../router/router.js"
+import Modal from "../components/Modal.vue"
+import Delete from "../views/Delete.vue"
 
-import useToasterStore from "../stores/notificationStores.js";
 
-const showDetail = ref(false);
-const showDelete = ref(false);
-const route = useRoute();
-const dataById = ref();
-const storeMode = ref(null);
-let historyStack = [];
-const showDeleteStatus = ref(false);
-const myTasks = ref(taskManagement);
-const removeId = ref();
-const storeIndex = ref(0);
-const emit = defineEmits(["statusDelete"]);
-const toastStore = useToasterStore();
-const router = useRouter();
+const showDetail = ref(false)
+const showDelete = ref(false)
+const route = useRoute()
+const dataById = ref()
+const storeMode = ref(null)
+let historyStack = []
+const myTasks = ref(taskManagement)
+const removeId = ref()
+const storeIndex = ref(0)
+
 const updateEdit = async (newEdit) => {
   if (newEdit.taskId === undefined) {
-    let convertedStatus = "";
+    let convertedStatus = ""
     //backend
     const addedTask = await addTask(import.meta.env.VITE_BASE_URL, {
-      assignees: newEdit?.assignees?.trim() ?? "",
+      assignees: newEdit.assignees,
       status: newEdit.status,
-      title: newEdit?.title?.trim() ?? "",
-      description: newEdit?.description?.trim() ?? "",
-    });
-    console.log(addedTask.taskId);
+      title: newEdit.title,
+      description: newEdit.description,
+    })
     switch (addedTask.status) {
       case "NO_STATUS":
-        convertedStatus = "No Status";
-        break;
+        convertedStatus = "No Status"
+        break
       case "TO_DO":
-        convertedStatus = "To Do";
-        break;
+        convertedStatus = "To Do"
+        break
       case "DOING":
-        convertedStatus = "Doing";
-        break;
+        convertedStatus = "Doing"
+        break
       case "DONE":
-        convertedStatus = "Done";
-        break;
+        convertedStatus = "Done"
+        break
       default:
-        convertedStatus = "No Status"; // Handle any other status
-        break;
+        convertedStatus = "No Status" // Handle any other status
+        break
     }
     //frontend
     myTasks.value.addTask({
@@ -64,36 +60,32 @@ const updateEdit = async (newEdit) => {
       description: addedTask.description,
       createdOn: addedTask.createdOn,
       updatedOn: addedTask.updatedOn,
-    });
+    })
   } else {
     const updatedTask = await updateTask(
       import.meta.env.VITE_BASE_URL,
       newEdit.taskId,
-      {
-        assignees: newEdit.assignees.trim(),
-        status: newEdit.status,
-        title: newEdit.title.trim(),
-        description: newEdit.description.trim(),
-      }
-    );
-    let convertedStatus = "";
+      newEdit
+    )
+    let convertedStatus = ""
     switch (updatedTask.status) {
       case "NO_STATUS":
-        convertedStatus = "No Status";
-        break;
+        convertedStatus = "No Status"
+        break
       case "TO_DO":
-        convertedStatus = "To Do";
-        break;
+        convertedStatus = "To Do"
+        break
       case "DOING":
-        convertedStatus = "Doing";
-        break;
+        convertedStatus = "Doing"
+        break
       case "DONE":
-        convertedStatus = "Done";
-        break;
+        convertedStatus = "Done"
+        break
       default:
-        convertedStatus = "No Status";
-        break;
+        convertedStatus = "No Status" // Handle any other status
+        break
     }
+    console.log(convertedStatus)
     myTasks.value.updateTask({
       taskId: updatedTask.taskId,
       assignees: updatedTask.assignees,
@@ -102,90 +94,90 @@ const updateEdit = async (newEdit) => {
       description: updatedTask.description,
       createdOn: updatedTask.createdOn,
       updatedOn: updatedTask.updatedOn,
-    });
+    })
   }
-};
+}
 
 const setIndex = (index) => {
-  storeIndex.value = index;
-};
-const setShowdelete = (status) => {
-  showDeleteStatus.value = status;
-};
+  storeIndex.value = index
+}
+
 const removeTask = async (removeId) => {
   console.log(removeId);
   const removeTask = await deleteItemById(
     import.meta.env.VITE_BASE_URL,
     removeId
-  );
+  )
   if (removeTask === 200) {
-    myTasks.value.removeTask(removeId);
-    toastStore.success({ text: "The task has been deleted" });
+    myTasks.value.removeTask(removeId)
   } else {
-    toastStore.error({
-      text: "An error has occurred, the task does not exist",
-    });
+    alert("Error deleting task ")
   }
-};
+}
 
 onMounted(async () => {
-  myTasks.value.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL));
-});
+  myTasks.value.setTasks(await getTaskData(import.meta.env.VITE_BASE_URL))
+})
 
 const setDelete = (del) => {
-  showDelete.value = del;
-};
+  showDelete.value = del
+}
 const setMode = (mode) => {
-  storeMode.value = mode;
-};
+  storeMode.value = mode
+}
 const setDetail = (set) => {
-  console.log("Hi");
-  showDetail.value = set;
-};
+  
+  showDetail.value = set
+  console.log(showDetail.value);
+}
 function routeToadd() {
-  router.push({ name: "addTask" });
+  router.push({ name: "addTask" })
 }
 
 // Fetch task by id
 async function fetchById(id) {
   if (!id) {
-    throw new Error('Missing required param "id"');
+    throw new Error('Missing required param "id"')
   }
-  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id);
+  dataById.value = await getTaskById(import.meta.env.VITE_BASE_URL, id)
+  console.log(dataById.value);
   if (showDetail.value === true) {
     if (storeMode.value === "edit") {
-      router.push({ name: "editTask", params: { id: id } });
+      router.push({ name: "taskDetail", params: { id: id } }).then(() => {
+        router.push({ name: "editTask", params: { id: id } })
+      })
     } else {
-      router.push({ name: "taskDetail", params: { id: id } });
+      router.push({ name: "taskDetail", params: { id: id } })
     }
 
     if (dataById.value.status == "404") {
-      alert("The requested task does not exist");
-      router.replace({ name: "task" });
-      return;
+      alert("The requested task does not exist")
+      router.replace({ name: "task" })
+      return
     }
-
-    setDetail(true);
+    console.log(dataById.value);
+    setDetail(true)
   }
 }
 
+
 // Add Task
 
-// window.onpopstate = function () {
-//   const previousState = historyStack.pop();
-//   if (previousState === true) {
-//     setDetail(true);
-//   } else {
-//     setDetail(false);
-//   }
-// };
+window.onpopstate = function () {
+  const previousState = historyStack.pop()
+  if (previousState === true) {
+    setDetail(true) // Forward navigation
+  } else {
+    setDetail(false) // Backward navigation or initial load
+  }
+}
 
 function navigateToDetail(showDetail) {
-  historyStack.push(showDetail);
+  historyStack.push(showDetail)
 }
 
 if (route.params.id) {
-  fetchById(route.params.id);
+  fetchById(route.params.id)
 }
 
 const task = ref({
@@ -193,22 +185,22 @@ const task = ref({
   todo: "To Do",
   doing: "Doing",
   done: "Done",
-});
+})
 
 const getStatusColor = (status) => {
   switch (status) {
     case "No Status":
-      return "SlateGray";
+      return "SlateGray"
     case "To Do":
-      return "Tomato";
+      return "Tomato"
     case "Doing":
-      return "Orange";
+      return "Orange"
     case "Done":
-      return "LimeGreen";
+      return "LimeGreen"
     default:
-      return "transparent";
+      return "transparent"
   }
-};
+}
 </script>
 
 <template>
@@ -226,7 +218,7 @@ const getStatusColor = (status) => {
             <!-- Add Task-->
             <div
               class="itbkk-button-add btn btn-outline btn-primary"
-              @click="[setMode('add'), (showDetail = true), routeToadd()]"
+              @click=";[setMode('add'), (showDetail = true), routeToadd()]"
             >
               <svg
                 width="20"
@@ -252,9 +244,7 @@ const getStatusColor = (status) => {
             <!-- Added ml-2 class for margin-left -->
           </div>
         </div>
-        <!-- <div  class="flex justify-center">
-          <AlertStatus @statusdelete=""></AlertStatus>
-        </div> -->
+        
         <!-- No Task -->
         <div class="w-full flex justify-center">
           <div
@@ -312,7 +302,7 @@ const getStatusColor = (status) => {
                       <div
                         class="w-[10%] px-6 py-4 whitespace-nowrap"
                         @click="
-                          [
+                          ;[
                             (showDetail = true),
                             fetchById(task.taskId),
                             setMode('view'),
@@ -324,7 +314,7 @@ const getStatusColor = (status) => {
                       <div
                         class="w-[22%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
                         @click="
-                          [
+                          ;[
                             (showDetail = true),
                             fetchById(task.taskId),
                             setMode('view'),
@@ -340,7 +330,7 @@ const getStatusColor = (status) => {
                           fontStyle: task.assignees ? 'normal' : 'italic',
                         }"
                         @click="
-                          [
+                          ;[
                             (showDetail = true),
                             fetchById(task.taskId),
                             setMode('view'),
@@ -353,9 +343,9 @@ const getStatusColor = (status) => {
                         class="w-[22%] itbkk-status px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
                       >
                         <div
-                          class="btn shadow text-white overflow-x-auto"
+                          class="itbkk-button-action btn shadow text-white overflow-x-auto"
                           @click="
-                            [
+                            ;[
                               (showDetail = true),
                               fetchById(task.taskId),
                               setMode('view'),
@@ -369,12 +359,12 @@ const getStatusColor = (status) => {
                         </div>
                       </div>
                       <div
-                        class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
+                        class="w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
                       >
                         <div
-                          class="itbkk-button-edit btn btn-outline btn-warning"
+                          class="btn btn-outline btn-warning"
                           @click="
-                            [
+                            ;[
                               setMode('edit'),
                               (showDetail = true),
                               fetchById(task.taskId),
@@ -386,13 +376,7 @@ const getStatusColor = (status) => {
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="
-                            [
-                              (showDelete = true),
-                              // fetchById(task.taskId),
-                              setIndex(index + 1),
-                            ]
-                          "
+                          @click="[(showDelete = true), fetchById(task.taskId),setIndex(index+1)]"
                         >
                           Delete
                         </div>
@@ -409,12 +393,12 @@ const getStatusColor = (status) => {
               :tasks="dataById"
               :mode="storeMode"
               @saveTask="updateEdit"
-            />
+            ></Modal>
           </teleport>
           <Teleport to="body" v-if="showDelete">
             <Delete
               @setDelete="setDelete"
-              :tasks="myTasks.getTask()[storeIndex - 1]"
+              :tasks="dataById"
               :index="storeIndex"
               @statusCode="removeTask"
             ></Delete>
