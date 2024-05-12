@@ -22,5 +22,5 @@ public class StatusEntity {
     private String statusDescription;
 
     @OneToMany(mappedBy = "statusByTaskStatusId")
-    private List<Taskv2Entity> taskv2sByStatusId;
+    private List<Taskv2> taskv2sByStatusId;
 }
