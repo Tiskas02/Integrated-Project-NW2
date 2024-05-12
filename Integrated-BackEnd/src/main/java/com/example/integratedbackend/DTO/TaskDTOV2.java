@@ -12,5 +12,5 @@ public class TaskDTOV2 {
     private Integer taskId;
     private String Title;
     private String Assignees;
-    private StatusEntity Status;
+    private Status status;
 }

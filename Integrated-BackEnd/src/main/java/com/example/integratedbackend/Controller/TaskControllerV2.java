@@ -1,7 +1,7 @@
 package com.example.integratedbackend.Controller;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.Entities.TasksV2;
+import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskServiceV2;
 import org.modelmapper.ModelMapper;
@@ -22,16 +22,15 @@ public class TaskControllerV2 {
         @Autowired
         private ListMapper listMapper;
 
-        @GetMapping("")
-        public ResponseEntity<Object> getTasks() {
-            List<TaskDTOV2> taskDTOs = listMapper.mapList(service.getTasks(), TaskDTOV2.class, modelMapper);
-            return ResponseEntity.ok(taskDTOs);
-        }
+    @GetMapping("")
+    public ResponseEntity<Object> getTasks() {
+        return ResponseEntity.ok(listMapper.mapList(service.getTasks(), TaskDTOV2.class, modelMapper));
+    }
 
-        @GetMapping("{id}")
-        public ResponseEntity<Object> findAllProducts(@PathVariable Integer id) {
-            return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTOV2.class));
-        }
+    @GetMapping("{id}")
+    public ResponseEntity<Object> findTaskById(@PathVariable Integer id) {
+        return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTOV2.class));
+    }
 //        @PostMapping("")
 //        public ResponseEntity<Object> createTask(@RequestBody NewTaskDTOV2 newTask) {
 //            return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTOV2.class));

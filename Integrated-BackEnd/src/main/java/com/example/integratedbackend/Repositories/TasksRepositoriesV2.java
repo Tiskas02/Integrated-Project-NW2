@@ -1,17 +1,21 @@
 package com.example.integratedbackend.Repositories;
 
-import com.example.integratedbackend.Entities.StatusEntity;
-import com.example.integratedbackend.Entities.TasksV2;
+
 import com.example.integratedbackend.Entities.Taskv2Entity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.scheduling.config.Task;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface TasksRepositoriesV2 extends JpaRepository<Taskv2Entity, Integer> {
-    List<Taskv2Entity> findByTaskStatusId(Integer oldStatusId);
+    List<Taskv2Entity> findByTaskStatusId(Integer oldId);
 
-    boolean existsByStatus(String statusName);
+    @Transactional
+    @Modifying
+    @Query("UPDATE Taskv2Entity t SET t.statusByTaskStatusId = :newStatus WHERE t.statusByTaskStatusId = :oldStatus")
+    void updateTaskStatus(String oldStatus, String newStatus);
 
-    void updateTaskStatus(String statusName, String newName);
+//    boolean existsByStatus(String status);
 }

@@ -1,6 +1,8 @@
 package com.example.integratedbackend.Service;
 
+import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.*;
+import com.example.integratedbackend.Entities.Status;
 import com.example.integratedbackend.Entities.StatusEntity;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 public class StatusService {
 
@@ -23,12 +26,15 @@ public class StatusService {
     TasksRepositoriesV2 tasksRepositoriesV2;
     @Autowired
     ModelMapper mapper;
+    @Autowired
+    private ListMapper listMapper;
 
     public StatusService(StatusRepositories repositories) {
         this.repositories = repositories;
     }
     public List<StatusEntity> getStatus(){
-        return repositories.findAll();
+//        return repositories.findAll();
+        return  listMapper.mapList(repositories.findAll(), StatusEntity.class,mapper);
     }
     public StatusEntity findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
@@ -36,20 +42,20 @@ public class StatusService {
                         "Status"+ " " + id + " " +"doesn't exist !!!"));
     }
     @Transactional
-    public TaskIDDTOV2 createStatus(NewTaskDTOV2 addStatus) {
+    public StatusDTO createStatus(NewStatusDTO addStatus) {
         StatusEntity status = mapper.map(addStatus, StatusEntity.class);
-        return mapper.map(repositories.saveAndFlush(status), TaskIDDTOV2.class);
+        StatusEntity updatedStatus = repositories.saveAndFlush(status);
+        return mapper.map(updatedStatus, StatusDTO.class);
     }
-    //delete and check tranfer status
-//    Old version delete status
+    
     @Transactional
     public StatusEntity deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
         StatusEntity statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
-        if (tasksRepositoriesV2.existsByStatus(statusToDelete.getStatusName())) {
+        if (tasksRepositoriesV2.existsById(statusToDelete.getStatusId())) {
             throw new BadRequestException("Have Some Task On This Status");
         }
-        if (statusToDelete.getStatusName().equals("No Status")) {
+        if (statusToDelete.getStatusId().equals("No Status")) {
             throw new BadRequestException("You can not delete 'No Status'!!");
         }
         try {
@@ -58,7 +64,6 @@ public class StatusService {
         }catch (Exception e) {
             throw new ItemNotFoundException(e.toString());
         }
-
     }
     @Transactional
     public StatusEntity transferStatus(Integer oldId, Integer newId) throws BadRequestException {
