@@ -30,12 +30,10 @@ public class StatusService {
     public StatusService(StatusRepositories repositories) {
         this.repositories = repositories;
     }
-
-    public List<Status> getStatus() {
-        // return repositories.findAll();
-        return listMapper.mapList(repositories.findAll(), Status.class, mapper);
+    public List<Status> getStatus(){
+//        return repositories.findAll();
+        return  listMapper.mapList(repositories.findAll(), Status.class,mapper);
     }
-
     public Status findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
@@ -52,8 +50,11 @@ public class StatusService {
     @Transactional
     public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
         Status statusToDelete = repositories.findById(id)
-                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id + "NOT FOUND"));
-        if (statusToDelete.getName().equals("No Status")) {
+                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
+        if (tasksRepositoriesV2.existsById(statusToDelete.getId())) {
+            throw new BadRequestException("Have Some Task On This Status");
+        }
+        if (statusToDelete.getId().equals("No Status")) {
             throw new BadRequestException("You can not delete 'No Status'!!");
         }
         if (tasksRepositoriesV2.existsById(statusToDelete.getId())) {
@@ -99,7 +100,6 @@ public class StatusService {
 
         existingStatus.setName(editStatus.getName());
         existingStatus.setDescription(editStatus.getDescription());
-        
         if (editStatus.getName() != null) {
             Status findStatus = repositories.findById(id)
                     .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getName() + " doesn't exist!"));

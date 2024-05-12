@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface TasksRepositoriesV2 extends JpaRepository<Taskv2, Integer> {
 //    List<Taskv2> findByTaskStatusId(Integer oldId);
-
     @Transactional
     @Modifying
     @Query("UPDATE Taskv2 t SET t.status = :newStatus WHERE t.status = :oldStatus")

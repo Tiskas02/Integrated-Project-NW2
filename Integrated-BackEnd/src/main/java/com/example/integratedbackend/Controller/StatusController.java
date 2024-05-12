@@ -29,7 +29,7 @@ public class StatusController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> findAllStatus(@PathVariable Integer id) {
-        return ResponseEntity.ok(modelMapper.map(statusService.findByID(id), TaskIDDTOV2.class));
+        return ResponseEntity.ok(modelMapper.map(statusService.findByID(id), StatusDTO.class));
     }
 
     @PostMapping("")
