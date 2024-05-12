@@ -15,8 +15,8 @@ public class Status {
     private Integer statusId;
 
     @Column(name = "statusName", nullable = false, length = 50)
-    private String statusName;
+    private String Name;
 
     @Column(name = "statusDescription", nullable = true, length = 200)
-    private String statusDescription;
+    private String Description;
 }
