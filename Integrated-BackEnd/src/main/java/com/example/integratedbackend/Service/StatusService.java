@@ -51,14 +51,8 @@ public class StatusService {
     public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
         Status statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
-        if (tasksRepositoriesV2.existsById(statusToDelete.getStatusId())) {
-            throw new BadRequestException("Have Some Task On This Status");
-        }
         if (statusToDelete.getStatusId().equals("No Status")) {
             throw new BadRequestException("You can not delete 'No Status'!!");
-        }
-        if (tasksRepositoriesV2.existsById(statusToDelete.getStatusId())) {
-            throw new BadRequestException("Have Some Task On This Status");
         }
         try {
             repositories.delete(statusToDelete);

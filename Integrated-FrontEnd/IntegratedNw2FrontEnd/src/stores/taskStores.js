@@ -23,12 +23,39 @@ async function fetchTasks() {
     }
   }
 
-
+  async function fetchTasksById(id) {
+    try {
+      tasks.value = [];
+      const taskData = await 
+    } catch (error) {
+      
+    }
+  }
   
+  async function addTask(task) {
+    try {
+      const addedTask = await addTask(task);
+      tasks.value.push(addedTask);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async function deleteTask(taskId) {
+    try {
+      await removeTask(taskId);
+      tasks.value = tasks.value.filter(task => task.id !== taskId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
   
   return {
     tasks,
     fetchTasks,
+    addTask,
+    deleteTask,
+
     isLoading
   };
 });
