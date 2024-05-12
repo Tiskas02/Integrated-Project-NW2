@@ -32,7 +32,7 @@ watch(() => route.path, () => {
 </script>
 <template>
   <div>
-    <LoadingScreen v-if="!isLoading" />
+    <!-- <LoadingScreen v-if="!isLoading" /> -->
     <div v-show="isLoading" class="w-full h-screen flex justify-center items-center">
       <div class="w-[95%] h-[90%]">
         <div class="w-full bg-slate-100 h-full rounded-2xl shadow-inner">

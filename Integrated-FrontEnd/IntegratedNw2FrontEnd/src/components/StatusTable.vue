@@ -1,15 +1,22 @@
 <script setup>
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 import StatusModal from './StatusModal.vue';
+import { useStoreStatus } from '@/stores/statusStores'
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 const router = useRouter();
 const showModal = ref(false);
 const storeMode = ref('');
+const statusStore = useStoreStatus()
+const { statuses } = storeToRefs(statusStore);
+const data
+onMounted(async () => {
+ const = await statusStore.fetchStatus();
+});
 const setModal = (value,mode,id) => {
   showModal.value = value;
   storeMode.value = mode;
   if (storeMode.value === 'add')  {
-    console.log(storeMode.value);
     router.push({ name: 'addStatus'});
   }else if (storeMode.value === 'edit' && id !== null) {
     router.push({ name: 'editStatus', params: { id: id } });
@@ -90,23 +97,23 @@ const setClose = (value) => {
             </div>
           </div> -->
           <!-- Edit Task -->
-          <div>
+          <div v-for="(status, index) in statuses" :key="status.statusId">
             <div class="bg-white divide-y divide-gray-200 overflow-auto">
               <div class="w-full max-h-[550px]">
                 <div
                   class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
                 >
                   <div class="flex">
-                    <div class="w-[10%] px-6 py-4 whitespace-nowrap">1</div>
+                    <div class="w-[10%] px-6 py-4 whitespace-nowrap">{{index + 1}}</div>
                     <div
                       class="w-[20%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
                     >
-                      No Status
+                      {{ status.name }}
                     </div>
                     <div
                       class="w-[50%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
                     >
-                    The default status
+                    {{ status.description }}
                     </div>
                     <div class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
                       <div
