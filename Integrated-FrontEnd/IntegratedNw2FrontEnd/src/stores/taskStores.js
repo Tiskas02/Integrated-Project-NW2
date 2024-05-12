@@ -5,25 +5,13 @@ export const useStoreTasks = defineStore('tasks', () => {
   const tasks = ref([]);
   const isLoading = ref(false);
 
-  function convertStatus(status) {
-    switch (status) {
-      case "NO_STATUS":
-        return "No Status";
-      case "TO_DO":
-        return "To Do";
-      case "DOING":
-        return "Doing";
-      case "DONE":
-        return "Done";
-    }
-}
+
 
 async function fetchTasks() {
     try {
       tasks.value = [];
       const taskData = await getTaskData();
       taskData.forEach((task) => {
-        task.status = convertStatus(task.status);
         tasks.value.push(task);
       });
       if (tasks.value.length > 0) {
@@ -34,6 +22,8 @@ async function fetchTasks() {
       console.log(error);
     }
   }
+
+
   
   
   return {

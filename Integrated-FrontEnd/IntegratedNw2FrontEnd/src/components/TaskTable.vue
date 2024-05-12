@@ -1,7 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useStoreTasks } from '../stores/taskStores.js';
-import { ref } from 'vue';
+import { ref,onMounted} from 'vue';
 import TaskModal from '../components/TaskModal.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
@@ -9,6 +9,9 @@ const tasksStore = useStoreTasks();
 const { isLoading, tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const storeMode = ref('');
+onMounted(async () => {
+  await tasksStore.fetchTasks();
+});
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;
@@ -48,7 +51,7 @@ const getStatusStyle = (status) => {
   <div>
     <div class="flex justify-between">
       <div class="my-2">
-        <div class="ml-10 btn btn-outline btn-accent" @click="">
+        <div class="ml-10 btn btn-outline btn-accent" >
           <router-link :to="{ name: 'status' }">Manage Status</router-link>
         </div>
       </div>
@@ -151,10 +154,10 @@ const getStatusStyle = (status) => {
                       >
                         <div
                           class="itbkk-button-action btn shadow text-white overflow-x-auto"
-                          :class="getStatusStyle(task.status)"
+                          :class="getStatusStyle(task.status.name)"
                           @click="setDetail(true, task.taskId, 'view')"
                         >
-                          {{ task?.status }}
+                          {{ task?.status.name }}
                         </div>
                       </div>
                       <div
