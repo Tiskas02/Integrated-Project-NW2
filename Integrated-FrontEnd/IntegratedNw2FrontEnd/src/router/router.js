@@ -4,7 +4,7 @@ import NotFound from "../views/NotFound.vue";
 import Modal from "@/components/Modal.vue";
 import AddEditModal from "@/components/AddEditModal.vue";
 
-const history = createWebHistory('/nw2');
+const history = createWebHistory();
 const routes = [
   {
     path: "/",
@@ -25,7 +25,8 @@ const routes = [
   {
     path: "/:notfoundpath(.*)",
     name: "NotFound",
-    component: NotFound,
+    component: Task,
+    redirect: "/task",
   },
   {
     path: "/task/add",

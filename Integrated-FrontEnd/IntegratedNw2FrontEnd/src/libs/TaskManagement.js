@@ -1,12 +1,13 @@
+
+import { pushScopeId, reactive, ref } from "vue";
+//frontEnd
 class TaskManagement {
   constructor() {
     this.tasks = [];
   }
-  
   getTask() {
     return this.tasks;
   }
-
   setTasks(tasks = []) {
     return new Promise((resolve) => {
       this.tasks.length = 0;
@@ -56,6 +57,13 @@ class TaskManagement {
     });
   }
   
+  // editTask(taskId) {
+  //   this.tasks = this.tasks.map((task) => {
+  //     return task.taskId === taskId
+  //     ?{...task, taskId: taskId}
+  //     :task
+  //   })
+  // }
   updateTask({
     taskId,
     title,

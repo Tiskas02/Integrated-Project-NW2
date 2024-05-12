@@ -1,7 +1,7 @@
+//BackEnd
 async function getTaskData(url) {
   try {
-    const res = await fetch(`${url}/v2/tasks`);
-    console.log(res)
+    const res = await fetch(`${url}/v1/tasks`);
     const data = await res.json();
     return data;
   } catch (error) {
@@ -10,12 +10,10 @@ async function getTaskData(url) {
     return null;
   }
 }
-
 async function getTaskById(url, id) {
   try {
-    const res = await fetch(`${url}/v2/tasks/${id}`);
-    if(!res.ok){
-      history.back()
+    const res = await fetch(`${url}/v1/tasks/${id}`);
+    if (!res.ok) {
       return null;
     }
     const data = await res.json();
@@ -26,9 +24,30 @@ async function getTaskById(url, id) {
   }
 }
 
+// async function addTask(url, taskData) {
+//   try {
+//     const res = await fetch(`${url}/v1/tasks`, {
+//       method: 'POST',
+//       headers: {
+//         'content-type': 'application/json'
+//       },
+//       body: JSON.stringify({
+//         title: taskData.title.trim(),
+//         assignees: taskData.assignees.trim(),
+//         description: taskData.description.trim(),
+//         status: taskData.status.trim()
+//       })
+//     });
+//     const addedItem = await res.json();
+//     return addedItem;
+//   } catch (error) {
+//     console.error('Error adding task:', error);
+//     return null;
+//   }
+// }
 async function addTask(url, newTask) {
   try {
-    const res = await fetch(`${url}`, {
+    const res = await fetch(`${url}/v1/tasks`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -45,7 +64,7 @@ async function addTask(url, newTask) {
 }
 async function deleteItemById(url, id) {
   try {
-    const res = await fetch(`${url}/v2/tasks/${id}`, {
+    const res = await fetch(`${url}/v1/tasks/${id}`, {
       method: "DELETE",
     });
     return res.status;
@@ -57,7 +76,7 @@ async function deleteItemById(url, id) {
 
 async function updateTask(url, id, editTask) {
   try {
-    const res = await fetch(`${url}/v2/tasks/${id}`, {
+    const res = await fetch(`${url}/v1/tasks/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
