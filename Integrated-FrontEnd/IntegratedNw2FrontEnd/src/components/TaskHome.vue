@@ -19,10 +19,7 @@ const tasksStore = useStoreTasks();
 const { isLoading } = storeToRefs(tasksStore);
 const route = useRoute();
 const showPath = ref(false);
-onMounted(async () => {
-  await tasksStore.fetchTasks();
-  
-});
+
 watch(() => route.path, () => {
     if (route.path.startsWith('/status')) {
       showPath.value = true;
@@ -33,11 +30,10 @@ watch(() => route.path, () => {
   );
 
 </script>
-
 <template>
-  <LoadingScreen v-if="!isLoading" />
-  <div v-show="isLoading">
-    <div class="w-full h-screen flex justify-center items-center">
+  <div>
+    <LoadingScreen v-if="!isLoading" />
+    <div v-show="isLoading" class="w-full h-screen flex justify-center items-center">
       <div class="w-[95%] h-[90%]">
         <div class="w-full bg-slate-100 h-full rounded-2xl shadow-inner">
           <div class="w-[100%] py-3 flex-col flex items-start">
@@ -57,7 +53,7 @@ watch(() => route.path, () => {
               </ul>
             </div>
             <div v-if="showPath" class="w-full h-screen">
-                <StatusTable />
+              <StatusTable />
             </div>
             <div v-else class="w-full">
               <TaskTable />
@@ -68,5 +64,6 @@ watch(() => route.path, () => {
     </div>
   </div>
 </template>
+
 
 <style scoped></style>

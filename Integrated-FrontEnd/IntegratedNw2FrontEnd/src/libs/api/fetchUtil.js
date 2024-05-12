@@ -1,6 +1,6 @@
 async function getTaskData() {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`);
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`);
       const data = await res.json();
       console.log(data);
       return data;
