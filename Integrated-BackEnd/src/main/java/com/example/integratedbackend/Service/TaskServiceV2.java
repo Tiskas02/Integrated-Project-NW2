@@ -3,9 +3,11 @@ package com.example.integratedbackend.Service;
 import com.example.integratedbackend.DTO.NewTaskDTOV2;
 import com.example.integratedbackend.DTO.TaskDTOV2;
 import com.example.integratedbackend.DTO.TaskIDDTOV2;
+import com.example.integratedbackend.Entities.Status;
 import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
+import com.example.integratedbackend.Repositories.StatusRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import org.modelmapper.ModelMapper;
 
@@ -20,6 +22,8 @@ import java.util.List;
 public class TaskServiceV2 {
     @Autowired
     TasksRepositoriesV2 repositories;
+    @Autowired
+    StatusRepositories statusRepositories;
     @Autowired
     ModelMapper modelMapper;
     @Autowired
@@ -56,16 +60,15 @@ public class TaskServiceV2 {
     public TaskIDDTOV2 updateTask(NewTaskDTOV2 editTask, Integer id) {
         Taskv2 existingTask = repositories.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
-
         existingTask.setTaskTitle(editTask.getTitle());
         existingTask.setTaskDescription(editTask.getDescription());
         existingTask.setTaskAssignees(editTask.getAssignees());
-
         if (editTask.getTitle() != null) {
-            Taskv2 findStatus = repositories.findById(editTask.getTaskId())
+            Status findStatus = statusRepositories.findById(editTask.getStatus().getStatusId())
                     .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editTask.getTaskId() + " doesn't exist!"));
-            existingTask.setStatus(findStatus.getStatus());
+            existingTask.setStatus(findStatus);
         }
-        return modelMapper.map(existingTask, TaskIDDTOV2.class);
+        Taskv2 updatedTask = repositories.save(existingTask);
+        return modelMapper.map(updatedTask, TaskIDDTOV2.class);
     }
 }
