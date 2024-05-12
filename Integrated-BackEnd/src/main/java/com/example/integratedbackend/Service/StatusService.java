@@ -89,18 +89,18 @@ public class StatusService {
 
     }
     @Transactional
-    public TaskIDDTOV2 updateStatus(NewTaskDTOV2 editStatus, Integer id) {
+    public StatusDTO updateStatus(NewStatusDTO editStatus, Integer id) {
         StatusEntity existingStatus = repositories.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Status " + id + " doesn't exist!"));
 
-        existingStatus.setStatusName(editStatus.getStatusName());
+        existingStatus.setStatusName(editStatus.getName());
         existingStatus.setStatusDescription(editStatus.getDescription());
 
-        if (editStatus.getStatusName() != null) {
-            StatusEntity findStatus = repositories.findById(editStatus.getTaskId())
-                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getStatusName() + " doesn't exist!"));
+        if (editStatus.getName() != null) {
+            StatusEntity findStatus = repositories.findById(id)
+                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getName() + " doesn't exist!"));
             existingStatus.setStatusId(findStatus.getStatusId());
         }
-        return mapper.map(existingStatus, TaskIDDTOV2.class);
+        return mapper.map(existingStatus, StatusDTO.class);
     }
 }

@@ -47,7 +47,7 @@ public class StatusController {
         return new ResponseEntity<>(statusService.transferStatus(id, newId), HttpStatus.OK);
     }
     @PutMapping("{id}")
-    public ResponseEntity<Object> updateStatus(@RequestBody NewTaskDTOV2 editStatus,@PathVariable Integer id){
-        return ResponseEntity.ok(modelMapper.map(statusService.updateStatus(editStatus,id),TaskIDDTOV2.class));
+    public ResponseEntity<Object> updateStatus(@RequestBody NewStatusDTO editStatus,@PathVariable Integer id){
+        return ResponseEntity.ok(modelMapper.map(statusService.updateStatus(editStatus,id),StatusDTO.class));
     }
 }
