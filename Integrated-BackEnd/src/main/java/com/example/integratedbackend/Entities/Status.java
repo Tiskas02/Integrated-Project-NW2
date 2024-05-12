@@ -12,11 +12,11 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "statusId", nullable = false)
-    private Integer statusId;
+    private Integer id;
 
     @Column(name = "statusName", nullable = false, length = 50)
-    private String statusName;
+    private String name;
 
     @Column(name = "statusDescription", nullable = true, length = 200)
-    private String statusDescription;
+    private String description;
 }

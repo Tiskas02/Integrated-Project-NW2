@@ -1,14 +1,13 @@
 package com.example.integratedbackend.Controller;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.Entities.StatusEntity;
+import com.example.integratedbackend.Entities.Status;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.StatusService;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +38,7 @@ public class StatusController {
     }
 
     @DeleteMapping("{id}")
-    public StatusEntity deleteStatus(@PathVariable Integer id) throws BadRequestException {
+    public Status deleteStatus(@PathVariable Integer id) throws BadRequestException {
         return statusService.deleteStatus(id);
     }
     @DeleteMapping("/{id}/{newId}")

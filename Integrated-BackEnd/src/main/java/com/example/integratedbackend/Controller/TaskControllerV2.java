@@ -40,8 +40,8 @@ public class TaskControllerV2 {
 //        public TaskDTOV2 deleteTask(@PathVariable Integer id) {
 //            return service.deleteTask(id);
 //        }
-//        @PutMapping("{id}")
-//        public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
-//            return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTOV2.class));
-//        }
+        @PutMapping("{id}")
+        public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
+            return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTOV2.class));
+        }
     }

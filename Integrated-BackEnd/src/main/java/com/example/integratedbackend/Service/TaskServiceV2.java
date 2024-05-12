@@ -1,9 +1,12 @@
 package com.example.integratedbackend.Service;
 
+import com.example.integratedbackend.DTO.NewTaskDTOV2;
 import com.example.integratedbackend.DTO.TaskDTOV2;
+import com.example.integratedbackend.DTO.TaskIDDTOV2;
 import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,20 +58,20 @@ public class TaskServiceV2 {
 //        tasksRepositories.delete(taskToDelete);
 //        return mapper.map(taskToDelete, TaskDTOV2.class);
 //    }
-//    @Transactional
-//    public TaskIDDTOV2 updateTask(NewTaskDTOV2 editTask, Integer id) {
-//        TasksV2 existingTask = repositories.findById(id)
-//                .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
-//
-//        existingTask.setTaskTitle(editTask.getTitle());
-//        existingTask.setTaskDescription(editTask.getDescription());
-//        existingTask.setTaskAssignees(editTask.getAssignees());
-//
-//        if (editTask.getStatusName() != null) {
-//            TasksV2 findStatus = repositories.findById(editTask.getTaskId())
-//                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editTask.getTaskId() + " doesn't exist!"));
-//            existingTask.setStatus(findStatus.getStatus());
-//        }
-//        return mapper.map(existingTask, TaskIDDTOV2.class);
-//    }
+    @Transactional
+    public TaskIDDTOV2 updateTask(NewTaskDTOV2 editTask, Integer id) {
+        Taskv2 existingTask = repositories.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
+
+        existingTask.setTaskTitle(editTask.getTitle());
+        existingTask.setTaskDescription(editTask.getDescription());
+        existingTask.setTaskAssignees(editTask.getAssignees());
+
+        if (editTask.getTitle() != null) {
+            Taskv2 findStatus = repositories.findById(editTask.getTaskId())
+                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editTask.getTaskId() + " doesn't exist!"));
+            existingTask.setStatus(findStatus.getStatus());
+        }
+        return modelMapper.map(existingTask, TaskIDDTOV2.class);
+    }
 }
