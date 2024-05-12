@@ -58,11 +58,9 @@ public class TaskServiceV2 {
     public TaskIDDTOV2 updateTask(NewTaskDTOV2 editTask, Integer id) {
         Taskv2 existingTask = repositories.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
-
         existingTask.setTaskTitle(editTask.getTitle());
         existingTask.setTaskDescription(editTask.getDescription());
         existingTask.setTaskAssignees(editTask.getAssignees());
-
         if (editTask.getTitle() != null) {
             Status findStatus = statusRepositories.findById(editTask.getStatus().getStatusId())
                     .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editTask.getTaskId() + " doesn't exist!"));

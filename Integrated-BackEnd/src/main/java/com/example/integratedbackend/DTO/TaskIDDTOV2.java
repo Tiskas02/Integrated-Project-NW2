@@ -16,5 +16,6 @@ public class TaskIDDTOV2 {
     private String Assignees;
     private String Description;
     private Status Status;
-
+    private ZonedDateTime createdOn;
+    private ZonedDateTime updatedOn;
 }
