@@ -1,7 +1,7 @@
 package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.TaskDTOV2;
-import com.example.integratedbackend.Entities.Taskv2Entity;
+import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import org.modelmapper.ModelMapper;
@@ -29,11 +29,12 @@ public class TaskServiceV2 {
         return  listMapper.mapList(repositories.findAll(), TaskDTOV2.class,modelMapper);
 //
     }
-    public Taskv2Entity findByID(Integer id) throws ItemNotFoundException {
+    public Taskv2 findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
                         "Task"+ " " + id + " " +"doesn't exist !!!"));
     }
+
 //    public TaskIDDTOV2 createTask(NewTaskDTOV2 addTask) {
 //        TasksV2 tasksV2 = ModelMapper.(addTask, TasksV2.class);
 //        if (tasksV2.getStatus() != null) {
