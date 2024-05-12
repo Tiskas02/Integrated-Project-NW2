@@ -15,7 +15,7 @@ public interface TasksRepositoriesV2 extends JpaRepository<Taskv2Entity, Integer
     @Transactional
     @Modifying
     @Query("UPDATE Taskv2Entity t SET t.statusByTaskStatusId = :newStatus WHERE t.statusByTaskStatusId = :oldStatus")
-    void updateTaskStatus(String oldStatus, String newStatus);
+    void updateTaskStatus(Integer oldStatus, String newStatus);
 
 //    boolean existsByStatus(String status);
 }
