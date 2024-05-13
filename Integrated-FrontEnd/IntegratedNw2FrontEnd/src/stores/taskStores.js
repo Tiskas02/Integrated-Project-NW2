@@ -1,13 +1,16 @@
-import { defineStore } from 'pinia';
-import {  getTaskData , getTaskById , addTask , deleteItemById , editTask } from '../libs/api/task/fetchUtilTask.js';
-import { ref } from 'vue';
-export const useStoreTasks = defineStore('tasks', () => {
+import { defineStore } from "pinia";
+import {
+  getTaskData,
+  addTask,
+  deleteItemById,
+  editTask,
+} from "../libs/api/task/fetchUtilTask.js";
+import { ref } from "vue";
+export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
   const isLoading = ref(false);
 
-
-
-async function fetchTasks() {
+  async function fetchTasks() {
     try {
       tasks.value = [];
       const taskData = await getTaskData();
@@ -18,11 +21,11 @@ async function fetchTasks() {
         isLoading.value = true;
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       console.log(error);
     }
   }
-  
+
   async function createTask(task) {
     try {
       const addedTask = await addTask(task);
@@ -42,28 +45,31 @@ async function fetchTasks() {
         tasks.value.findIndex((task) => task.taskId === taskId),
         1
       );
-      
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  async function updateTask(taskId, task ){
+  async function updateTask(taskId, task) {
     try {
-      const updatedTask = await editTask(taskId, task)
+      const updatedTask = await editTask(taskId, task);
       console.log(updatedTask);
-      const taskIndex = tasks.value.findIndex((task) => task.taskId === taskId)
+      const taskIndex = tasks.value.findIndex((task) => task.taskId === taskId);
       console.log(taskIndex);
-      tasks.value[taskIndex] = updatedTask
+      tasks.value[taskIndex] = updatedTask;
     } catch (error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
   }
-  
+
+  async function findTaskByStatusId(statusId) {
+    return tasks.value.filter((task) => task.status === statusId);
+  }
+
   return {
     tasks,
     fetchTasks,
     createTask,
     deleteTask,
-    updateTask
+    updateTask,
   };
 });

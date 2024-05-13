@@ -5,15 +5,19 @@ import { useStoreStatus } from "@/stores/statusStores";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
+import { useStoreTasks } from "@/stores/taskStores";
+
 const router = useRouter();
 const showModal = ref(false);
 const storeMode = ref("");
 const statusStore = useStoreStatus();
+const taskStore = useStoreTasks();
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
 onMounted(async () => {
   await statusStore.fetchStatus();
 });
+
 const addOrEditStatus = async (newStatus) => {
   try {
     if (newStatus.statusId === undefined) {
@@ -22,23 +26,37 @@ const addOrEditStatus = async (newStatus) => {
       await statusStore.updateStatus(newStatus.statusId, newStatus);
     }
   } catch (error) {
-    console.error('Error adding/editing status:', error);
+    console.error("Error adding/editing status:", error);
     // Handle error appropriately, e.g., show error message to user
   }
 };
+//delete status
+const deleteOne = async (id) => {
+  await statusStore.deleteStatus(id);
+};
+//tranfer status
+const deleteTranfer = async (value) => {
+  // console.log(value);
+ await statusStore.tranferStatus(value.oldId, value.newId);
+};
 
-const setModal = (value, mode, id) => {
+const setModal = async (value, mode, id) => {
   showModal.value = value;
   storeMode.value = mode;
   if (storeMode.value === "add") {
     router.push({ name: "addStatus" });
   } else if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
+  } else {
+    dataById.value = statusStore.statuses.find((status) => status.statusId === id);
   }
 };
 //fuction to sent id and mode to StatusModal
 const fetchById = async (id, mode) => {
-  if (!id) return console.log("error have no id");
+  if (!id) {
+    return console.log("error have no id");
+  }
+
   dataById.value = await getStatusDataById(id);
   console.log(dataById.value);
   storeMode.value = mode;
@@ -153,7 +171,7 @@ const setClose = (value) => {
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
-                        @click="setModal(true, 'delete', null)"
+                        @click="setModal(true, 'delete', status.statusId)"
                       >
                         Delete
                       </div>
@@ -173,6 +191,8 @@ const setClose = (value) => {
         :statusMode="storeMode"
         :status="dataById"
         @newStatus="addOrEditStatus"
+        @deleteId="deleteOne"
+        @sentTranferId="deleteTranfer"
       />
     </teleport>
   </div>
