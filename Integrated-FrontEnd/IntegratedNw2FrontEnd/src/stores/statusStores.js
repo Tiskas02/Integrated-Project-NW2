@@ -4,6 +4,8 @@ import {
   getStatusData,
   addStatus,
   editStatus,
+  deleteOneStatus,
+  deleteTranferStatus
 } from "@/libs/api/status/fetchUtilStatus";
 
 export const useStoreStatus = defineStore("status", () => {
@@ -39,11 +41,37 @@ export const useStoreStatus = defineStore("status", () => {
       throw new Error(error.message);
     }
   }
+  async function deleteStatus(statusId) {
+    try {
+      await deleteOneStatus(statusId);
+      // statuss.value.map((status) => {console.log(status);})
+      const deleted = statuses.value.splice(
+        statuses.value.findIndex((status) => status.statusId === statusId),
+        1
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  async function tranferStatus(oldStatusId, newStatusId) {
+    try {
+      await deleteTranferStatus(oldStatusId, newStatusId);
+      // statuss.value.map((status) => {console.log(status);})
+      const deleted = statuses.value.splice(
+        statuses.value.findIndex((status) => status.statusId === oldStatusId),
+        1
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 
   return {
     statuses,
     fetchStatus,
     createStatus,
     updateStatus,
+    deleteStatus,
+    tranferStatus
   };
 });
