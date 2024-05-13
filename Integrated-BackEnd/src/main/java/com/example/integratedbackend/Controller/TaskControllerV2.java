@@ -1,20 +1,16 @@
 package com.example.integratedbackend.Controller;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskServiceV2;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/v2/tasks")
-@CrossOrigin(origins = {"http://localhost, http://ip23nw2.sit.kmutt.ac.th,*"})
+@RequestMapping("/api/v2/tasks")
+@CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th","*"})
 public class TaskControllerV2 {
         @Autowired
         TaskServiceV2 service;

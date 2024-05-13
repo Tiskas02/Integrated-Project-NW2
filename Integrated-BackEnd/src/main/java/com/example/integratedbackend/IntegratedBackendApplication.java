@@ -22,6 +22,7 @@ public class IntegratedBackendApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/v1/**").allowedOrigins("http://localhost", "http://ip23nw2.sit.kmutt.ac.th");
+                registry.addMapping("/v2/**").allowedOrigins("http://localhost", "http://ip23nw2.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th");
             }
         };
     }

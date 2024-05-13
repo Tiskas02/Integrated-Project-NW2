@@ -40,6 +40,25 @@ const newTask = ref({ ...props.task, status: props.task.status.statusId });
 const logFuction = () => {
   console.log(newTask.value);
 };
+
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
+
+const saveTaskNoti = () => {
+  try {
+    if (props.mode === 'add') {
+      // Add task logic here
+      toasterStore.success({ text: "Task added successfully!" });
+    } else if (props.mode === 'edit' && newTask.value.id === props.task.id) {
+      // Edit task logic here
+      toasterStore.success({ text: "Task updated successfully!" });
+    }
+  } catch (error) {
+    console.error('Error saving task:', error);
+    toasterStore.error({ text: "An error occurred while saving the task." });
+  }
+};
+
 </script>
 
 <template>
@@ -159,6 +178,7 @@ const logFuction = () => {
                     class="itbkk-button-confirm disabled btn btn-info text-white"
                     @click="
                       () => {
+                        saveTaskNoti()
                         emit('sentData', newTask);
                         emit('close', false);
                       }

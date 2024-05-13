@@ -10,40 +10,6 @@ import TaskAddEdit from '@/components/TaskAddEdit.vue';
 import StatusAddEdit from '@/components/StatusAddEdit.vue';
 import StatusDelete from '@/views/StatusDelete.vue';
 const history = createWebHistory();
-// const routes = [
-//   {
-//     path: "/",
-//     redirect: "/task", // Redirect root path to /task
-//   },
-//   {
-//     path: "/task",
-//     name: "task",
-//     component: Task,
-//     children: [
-//       {
-//         path: ":id",
-//         name: "taskDetail",
-//         component: Modal,
-//       },
-//     ],
-//   },
-//   {
-//     path: "/:notfoundpath(.*)",
-//     name: "NotFound",
-//     component: Task,
-//     redirect: "/task",
-//   },
-//   {
-//     path: "/task/add",
-//     name: "addTask",
-//     component: AddEditModal,
-//   },
-//   {
-//     path: "/task/:id/edit",
-//     name: "editTask",
-//     component: AddEditModal,
-//   },
-// ];
 const routes = [
   {
     path: '/',

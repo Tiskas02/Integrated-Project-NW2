@@ -1,8 +1,6 @@
 package com.example.integratedbackend.DTO;
 
-import com.example.integratedbackend.Entities.ResourceType;
 import com.example.integratedbackend.Entities.Status;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.Setter;
 

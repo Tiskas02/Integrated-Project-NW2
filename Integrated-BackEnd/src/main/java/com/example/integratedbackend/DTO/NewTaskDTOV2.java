@@ -1,10 +1,8 @@
 package com.example.integratedbackend.DTO;
 
-import com.example.integratedbackend.Entities.ResourceType;
-import com.example.integratedbackend.Entities.Status;
 import lombok.Data;
 
-import java.net.Inet4Address;
+
 
 @Data
 public class NewTaskDTOV2 {

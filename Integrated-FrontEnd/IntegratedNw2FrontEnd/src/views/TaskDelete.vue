@@ -6,6 +6,24 @@ const props = defineProps({
   task: Object,
   index: Number
 });
+
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
+
+const deleteTaskNoti = () => {
+  console.log(newTask.value, props.task)
+  try {
+    // Delete task logic here
+    if (props.mode === 'delete' && newTask.value.id === props.task.id) {
+      // Delete task logic here
+      toasterStore.success({ text: "Task deleted successfully!" });
+    }
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    toasterStore.error({ text: "An error occurred while deleting the task." });
+  }
+};
+
 </script>
 
 <template>
@@ -33,6 +51,7 @@ const props = defineProps({
             </div>
             <div
               @click="
+                deleteTaskNoti(),
                 [$emit('close', false), $emit('saveDelete', task?.taskId)]
               "
               class="itbkk-button-confirm btn btn-success text-white"

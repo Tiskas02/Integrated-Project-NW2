@@ -1,5 +1,4 @@
 <script setup>
-import { deleteItemById } from "../libs/fetchUtil.js";
 import { defineProps, defineEmits, ref, watch, computed } from "vue";
 const emit = defineEmits(["setDelete", "statusCode"]);
 const props = defineProps({
@@ -37,7 +36,8 @@ console.log(props.tasks, oldTask.value);
             </div>
             <div
               @click="
-                [
+                [ 
+                  deleteTaskNoti(),
                   $emit('setDelete', false),
                   $router.replace({ name: 'task' }),
                   $emit('statusCode', oldTask?.taskId),
