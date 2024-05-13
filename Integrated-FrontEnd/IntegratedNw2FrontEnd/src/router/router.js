@@ -3,7 +3,7 @@ import Task from '../views/Task.vue';
 import NotFound from '../views/NotFound.vue';
 import Modal from '@/components/Modal.vue';
 import AddEditModal from '@/components/AddEditModal.vue';
-import TaskHome from '@/components/TaskHome.vue';
+import TaskHome from '@/views/TaskHome.vue';
 import TaskModal from '@/components/TaskModal.vue';
 import StatusTable from '@/components/StatusTable.vue';
 import TaskAddEdit from '@/components/TaskAddEdit.vue';

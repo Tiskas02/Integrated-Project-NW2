@@ -4,14 +4,37 @@ import { useStoreTasks } from '../stores/taskStores.js';
 import { ref,onMounted} from 'vue';
 import TaskModal from '../components/TaskModal.vue';
 import { useRouter } from 'vue-router';
+import { getTaskById } from '@/libs/api/task/fetchUtilTask.js';
+
 const router = useRouter();
 const tasksStore = useStoreTasks();
 const { isLoading, tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const storeMode = ref('');
+const storeTask = ref({});
+//fetch data
 onMounted(async () => {
   await tasksStore.fetchTasks();
 });
+const fetchDataById = async (id,mode) => {
+  storeMode.value = mode;
+  storeTask.value = await getTaskById(id);
+  if (storeMode.value === 'add') {
+    showDetail.value = true;
+    router.push({ name: 'addTask'});
+  }else if (Object.keys(storeTask.value).length > 0 && storeMode.value === 'edit') {
+    showDetail.value = true;
+    router.push({ name: 'editTask', params: { id: id } });
+  }
+  else if(Object.keys(storeTask.value).length > 0 && storeMode.value === 'view') {
+    showDetail.value = true;
+    router.push({ name: 'taskDetail', params: { id: id } });
+  } else {
+    console.log(storeMode.value);
+  }
+  
+};
+
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;
@@ -19,7 +42,6 @@ const setDetail = (value, id, mode) => {
     router.push({ name: 'addTask'});
   }else if (storeMode.value === 'edit') {
     router.push({ name: 'editTask', params: { id: id } });
-    
   }
   if (id !== null && storeMode.value !== 'edit') {
     router.push({ name: 'taskDetail', params: { id: id } });
@@ -31,6 +53,7 @@ const setClose = (value) => {
   showDetail.value = value;
   router.push({ name: 'task' });
 };
+//style for botton
 const getStatusStyle = (status) => {
   switch (status) {
     case 'No Status':
@@ -86,9 +109,9 @@ const getStatusStyle = (status) => {
       </div>
     </div>
 
-    <div class="w-full flex justify-center">
+    <div class="w-full flex justify-center ">
       <div
-        class=" shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40"
+        class=" shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 "
       >
         <div class="min-w-full divide-y divide-gray-200">
           <div class="#4793AF bg-slate-600 flex ">
@@ -132,30 +155,29 @@ const getStatusStyle = (status) => {
                     <div class="flex">
                       <div
                         class="w-[10%] px-6 py-4 whitespace-nowrap"
-                        @click="setDetail(true, task.taskId, 'view')"
+                        @click="fetchDataById(task.taskId, 'view')"
                       >
                         {{ index + 1 }}
                       </div>
                       <div
                         class="w-[22%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
-                        @click="setDetail(true, task.taskId, 'view')"
+                        @click="fetchDataById(task.taskId, 'view')"
                       >
                         {{ task.title }}
                       </div>
                       <div
                         class="w-[22%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
-                        @click="setDetail(true, task.taskId, 'view')"
+                        @click="fetchDataById(task.taskId, 'view')"
                       >
                         {{ task.assignees ? task.assignees : 'Unassigned' }}
                       </div>
                       <div
                         class="w-[22%] itbkk-status px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
-                        @click="setDetail(true, task.taskId, 'view')"
+                        @click="fetchDataById(task.taskId, 'view')"
                       >
                         <div
-                          class="itbkk-button-action btn shadow text-white overflow-x-auto"
-                          :class="getStatusStyle(task.status.name)"
-                          @click="setDetail(true, task.taskId, 'view')"
+                          class="itbkk-button-action btn btn-outline shadow overflow-x-auto"
+                           
                         >
                           {{ task?.status.name }}
                         </div>
@@ -165,13 +187,13 @@ const getStatusStyle = (status) => {
                       >
                         <div
                           class="btn btn-outline btn-warning"
-                          @click="setDetail(true, task.taskId, 'edit')"
+                          @click="fetchDataById(task.taskId, 'edit')"
                         >
                           Edit
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="setDetail(true, null, 'delete')"
+                          @click="fetchDataById(task.taskId, 'delete')"
                         >
                           Delete
                         </div>
@@ -185,7 +207,7 @@ const getStatusStyle = (status) => {
         </div>
       </div>
       <teleport to="#body">
-        <TaskModal v-if="showDetail" @close="setClose" :mode="storeMode" />
+        <TaskModal v-if="showDetail" @close="setClose" :mode="storeMode" :task="storeTask" />
       </teleport>
       <!-- <teleport to="body" v-if="showDetail">
             <Modal

@@ -12,7 +12,7 @@ public class NewTaskDTOV2 {
     private String Title;
     private String Assignees;
     private String Description;
-    private Status status;
+    private Integer statusId;
     public void setDescription(String description) {
         if(description != null) {
             this.Description = description.trim();

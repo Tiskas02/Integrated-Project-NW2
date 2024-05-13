@@ -13,12 +13,13 @@ async function getTaskData() {
 
   async function getTaskById(id) {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`);
       if(!res.ok){
         history.back()
         return null;
       }
       const data = await res.json();
+      console.log(data);
       return data;
     } catch (error) {
       console.error("Error fetching data:", error);

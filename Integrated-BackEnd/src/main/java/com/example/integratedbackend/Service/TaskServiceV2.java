@@ -21,6 +21,8 @@ public class TaskServiceV2 {
     @Autowired
     TasksRepositoriesV2 repositories;
     @Autowired
+    StatusRepositories StatusRepositories;
+    @Autowired
     StatusRepositories statusRepositories;
     @Autowired
     ModelMapper modelMapper;
@@ -64,7 +66,7 @@ public class TaskServiceV2 {
         existingTask.setTaskDescription(editTask.getDescription());
         existingTask.setTaskAssignees(editTask.getAssignees());
         if (editTask.getTitle() != null) {
-            Status findStatus = statusRepositories.findById(editTask.getStatus().getStatusId())
+            Status findStatus = statusRepositories.findById(editTask.getStatusId())
                     .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editTask.getTaskId() + " doesn't exist!"));
             existingTask.setStatus(findStatus);
         }

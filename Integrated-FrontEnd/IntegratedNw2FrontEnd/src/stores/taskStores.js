@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {  getTaskData , getTaskById , addTask , deleteItemById , updateTask } from '../libs/api/fetchUtil.js';
+import {  getTaskData , getTaskById , addTask , deleteItemById , updateTask } from '../libs/api/task/fetchUtilTask.js';
 import { ref } from 'vue';
 export const useStoreTasks = defineStore('tasks', () => {
   const tasks = ref([]);
@@ -22,20 +22,15 @@ async function fetchTasks() {
       console.log(error);
     }
   }
-<<<<<<< HEAD
-  
 
-=======
-
-  async function fetchTasksById(id) {
-    try {
-      tasks.value = [];
-      const taskData = await 
-    } catch (error) {
-      
-    }
-  }
->>>>>>> win
+  // async function fetchTasksById(id) {
+  //   try {
+  //     tasks.value = [];
+  //     const taskData = await 
+  //   } catch (error) {
+  //     throw new Error(error.message);
+  //   }
+  // }
   
   async function addTask(task) {
     try {
