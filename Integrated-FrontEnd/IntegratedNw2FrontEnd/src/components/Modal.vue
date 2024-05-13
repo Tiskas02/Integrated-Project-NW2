@@ -1,47 +1,77 @@
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
-const emit = defineEmits(["setDetail", "saveTask"]);
+
+const emit = defineEmits(['setDetail', 'saveTask']);
 const props = defineProps({
   tasks: {
     type: Object,
     default: {
       id: undefined,
       assignees: null,
-      status: "NO_STATUS",
-      title: "",
+      assignees: null,
+      status: 'NO_STATUS',
+      title: '',
       description: null,
       createdOn: null,
-      updatedOn: null,
-    },
+      updatedOn: null
+    }
   },
-  mode: String,
+  mode: String
 });
 
 const newTask = ref({
   id: undefined,
   assignees: null,
-  status: "NO_STATUS",
-  title: "",
-  description: null,
-  createdOn: null,
-  updatedOn: null,
+  status: 'NO_STATUS',
+  title: '',
+  description: '',
+  createdOn: '',
+  updatedOn: ''
 });
 
 watch(
   () => props.tasks,
   () => {
-    if (props.mode === "edit") {
-      newTask.value = props.tasks;
+    if (props.mode === 'edit') {
+      newTask.value = { ...props.tasks };
     }
   },
   { deep: true }
 );
 
+console.log(props.tasks);
 const isDisabled = computed(() => {
-  console.log(newTask.value, newTask.value.title.trim() === "");
-  return newTask.value.title.trim() === "";
+  if (props.mode === 'add') {
+    return newTask.value.title.trim() === '';
+  }
+  if (props.mode === 'edit') {
+    console.log(newTask.value.title.length);
+    if (newTask.value.title.length !== 0) {
+      return false;
+    }
+    return newTask.value.title.length;
+  }
 });
+
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
+
+const saveTaskNoti = () => {
+  try {
+    if (props.mode === 'add') {
+      // Add task logic here
+      toasterStore.success({ text: "Task added successfully!" });
+    } else if (props.mode === 'edit' && newTask.value.id === props.tasks.id) {
+      // Edit task logic here
+      toasterStore.success({ text: "Task updated successfully!" });
+    }
+  } catch (error) {
+    console.error('Error saving task:', error);
+    toasterStore.error({ text: "An error occurred while saving the task." });
+  }
+};
+
 </script>
 
 <template>
@@ -63,7 +93,7 @@ const isDisabled = computed(() => {
           </div>
           <div v-else>
             <div class="text-xl font-bold my-3">
-              {{ mode === "add" ? "Add New Task" : "Edit Task" }}
+              {{ mode === 'add' ? 'Add New Task' : 'Edit Task' }}
             </div>
             <div class="border-b my-2"></div>
             <div class="text-lg z-0">Title</div>
@@ -73,7 +103,7 @@ const isDisabled = computed(() => {
                 placeholder="Enter your title here..."
                 v-model="newTask.title"
                 required
-                >{{ mode === "add" ? "" : tasks?.title }}</textarea
+                >{{ mode === 'add' ? '' : tasks?.title }}</textarea
               >
             </div>
           </div>
@@ -138,13 +168,13 @@ const isDisabled = computed(() => {
             <div class="flex itbkk-created-on my-1">
               <div class="2xl:w-[13%] sm:w-[17%]">Created On</div>
               <div>
-                {{ new Date(tasks?.createdOn).toLocaleString("en-GB") }}
+                {{ new Date(tasks?.createdOn).toLocaleString('en-GB') }}
               </div>
             </div>
             <div class="flex itbkk-updated-on my-1">
               <div class="2xl:w-[13%] sm:w-[17%]">Updated On</div>
               <div>
-                {{ new Date(tasks?.updatedOn).toLocaleString("en-GB") }}
+                {{ new Date(tasks?.updatedOn).toLocaleString('en-GB') }}
               </div>
             </div>
           </div>
@@ -164,8 +194,8 @@ const isDisabled = computed(() => {
                   placeholder="No Description Provided"
                 >
                   {{
-                    tasks?.description == "" || tasks?.description === null
-                      ? "No Description Provided"
+                    tasks?.description == '' || tasks?.description === null
+                      ? 'No Description Provided'
                       : tasks?.description
                   }}
                 </div>
@@ -186,13 +216,22 @@ const isDisabled = computed(() => {
                 <button
                   @click="
                     () => {
+                      saveTaskNoti()
                       $emit('setDetail', false);
                       $emit('saveTask', newTask);
                     }
                   "
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   :class="isDisabled ? 'bg-gray-300' : 'bg-info'"
-                  :disabled="isDisabled"
+                  :disabled="
+                    newTask.title.trim() === '' ||
+                    ((newTask.assignees ?? '') ===
+                      (tasks?.assignees ?? '') &&
+                      (newTask.description ?? '') ===
+                        (tasks?.description ?? '') &&
+                      (newTask.status ?? '') === (tasks?.status ?? '') &&
+                      (newTask.title ?? '') === (tasks?.title ?? ''))
+                  "
                 >
                   Save
                 </button>

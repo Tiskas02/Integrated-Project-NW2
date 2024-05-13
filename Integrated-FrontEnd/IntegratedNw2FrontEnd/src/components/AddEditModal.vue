@@ -1,21 +1,14 @@
 <script setup>
 import {
   getTaskById,
-  getTaskData,
   addTask,
-  deleteItemById,
   updateTask,
 } from "../libs/fetchUtil.js";
 import { onMounted, ref, computed, defineEmits } from "vue";
 import taskManagement from "../libs/TaskManagement.js";
 import { useRoute, useRouter } from "vue-router";
 import Modal from "../components/Modal.vue";
-import Delete from "../views/Delete.vue";
 
-import useToasterStore from "../stores/notificationStores.js";
-
-const showDetail = ref(false);
-const showDelete = ref(false);
 const dataById = ref();
 const route = useRoute();
 const storeMode = ref(route.params.id ? "edit" : "add");
@@ -25,7 +18,6 @@ const myTasks = ref(taskManagement);
 const removeId = ref();
 const storeIndex = ref(0);
 const emit = defineEmits(["statusDelete"]);
-const toastStore = useToasterStore();
 const router = useRouter();
 
 onMounted(async () => {
