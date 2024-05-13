@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v2/statuses")
+@RequestMapping("/v2/statuses")
 @CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th" ,"http://intproj23.sit.kmutt.ac.th","*"})
 public class StatusController {
     @Autowired
@@ -48,5 +48,10 @@ public class StatusController {
     @PutMapping("{id}")
     public ResponseEntity<Object> updateStatus(@RequestBody NewStatusDTO editStatus,@PathVariable Integer id){
         return ResponseEntity.ok(modelMapper.map(statusService.updateStatus(editStatus,id),StatusDTO.class));
+    }
+
+    @GetMapping("{id}/indicator")
+    public ResponseEntity<Boolean> checkDeleteOrTransfer(@PathVariable Integer id) {
+        return ResponseEntity.ok(statusService.deleteOrTransfer(id));
     }
 }
