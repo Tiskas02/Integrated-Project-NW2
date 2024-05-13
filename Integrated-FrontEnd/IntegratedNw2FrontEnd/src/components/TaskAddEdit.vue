@@ -2,7 +2,7 @@
 import { defineProps, defineEmits, ref, watch, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { storeToRefs } from "pinia";
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
 onMounted(async () => {
@@ -29,14 +29,17 @@ const props = defineProps({
 });
 const newTask = ref({ ...props.task, status: props.task.status.statusId });
 
-watch(
-  newTask.value,
-  () => {
-    console.log(newTask.value);
-  },
-  { deep: true }
-);
+// watch(
+//   newTask.value,
+//   () => {
+//     console.log(newTask.value);
+//   },
+//   { deep: true }
 // );
+// );
+const logFuction = () => {
+  console.log(newTask.value);
+};
 </script>
 
 <template>
@@ -156,6 +159,7 @@ watch(
                     class="itbkk-button-confirm disabled btn btn-info text-white"
                     @click="
                       () => {
+                        emit('sentData', newTask);
                         emit('close', false);
                       }
                     "

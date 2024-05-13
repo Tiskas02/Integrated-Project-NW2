@@ -14,6 +14,7 @@ async function getTaskData() {
   async function getTaskById(id) {
     try {
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`);
+      
       if(!res.ok){
         history.back()
         return null;
@@ -27,8 +28,9 @@ async function getTaskData() {
     }
   }
   async function addTask(newTask) {
+    console.log(newTask);
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`, {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -37,7 +39,7 @@ async function getTaskData() {
           ...newTask,
         }),
       });
-      const addedTask = await res.json();
+      const addedTask = await res.json()
       return addedTask;
     } catch (error) {
       console.log(`error: ${error}`);
@@ -46,7 +48,7 @@ async function getTaskData() {
 
   async function deleteItemById(id) {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`, {
         method: "DELETE",
       });
       return res.status;
@@ -56,9 +58,9 @@ async function getTaskData() {
     }
   }
 
-  async function updateTask(id, editTask) {
+  async function editTask(id, editTask) {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`, {
         method: "PUT",
         headers: {
           "content-type": "application/json",
@@ -73,4 +75,4 @@ async function getTaskData() {
       console.log(`error: ${error}`);
     }
   }
-  export { getTaskData , getTaskById , addTask , deleteItemById , updateTask};   
+  export { getTaskData , getTaskById , addTask , deleteItemById , editTask};   

@@ -45,7 +45,9 @@ public class TaskServiceV2 {
     }
 
     public TaskIDDTOV2 createTask(NewTaskDTOV2 addTask) {
+        Status statusObj = statusRepositories.findById(addTask.getStatusId()).orElseThrow();
         Taskv2 taskV2 = modelMapper.map(addTask, Taskv2.class);
+        taskV2.setStatus(statusObj);
         Taskv2 updatedTask = repositories.saveAndFlush(taskV2);
         return modelMapper.map(updatedTask, TaskIDDTOV2.class);
     }

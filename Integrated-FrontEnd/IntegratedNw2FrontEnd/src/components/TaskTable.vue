@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useStoreTasks } from '../stores/taskStores.js';
+import { useStoreStatus } from '../stores/statusStores.js';
 import { ref,onMounted} from 'vue';
 import TaskModal from '../components/TaskModal.vue';
 import { useRouter } from 'vue-router';
@@ -8,14 +9,18 @@ import { getTaskById } from '@/libs/api/task/fetchUtilTask.js';
 
 const router = useRouter();
 const tasksStore = useStoreTasks();
+const statusStore = useStoreStatus();
+const { statuses } = storeToRefs(statusStore);
 const { isLoading, tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const storeMode = ref('');
 const storeTask = ref({});
+const storeIndex = ref(0);
 //fetch data
 onMounted(async () => {
   await tasksStore.fetchTasks();
 });
+//fetch data by id
 const fetchDataById = async (id,mode) => {
   storeMode.value = mode;
   storeTask.value = await getTaskById(id);
@@ -30,11 +35,33 @@ const fetchDataById = async (id,mode) => {
     showDetail.value = true;
     router.push({ name: 'taskDetail', params: { id: id } });
   } else {
-    console.log(storeMode.value);
+    showDetail.value = true;
   }
-  
 };
-
+const removeTask = async (id) => {
+  await tasksStore.deleteTask(id);
+}
+const setIndex =(indexes) => {
+  storeIndex.value = indexes;
+}
+const addEditTask = async (newTask) => {
+  if(newTask.taskId === undefined){
+     await tasksStore.createTask( {
+      assignees: newTask.assignees,
+      statusId: newTask.status,
+      title: newTask.title,
+      description: newTask.description,
+    });
+  }else {
+    await tasksStore.updateTask(newTask.taskId,{
+      taskId: newTask.taskId,
+      assignees: newTask.assignees,
+      statusId: newTask.status,
+      title: newTask.title,
+      description: newTask.description,
+    });
+  }
+}
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;
@@ -45,36 +72,34 @@ const setDetail = (value, id, mode) => {
   }
   if (id !== null && storeMode.value !== 'edit') {
     router.push({ name: 'taskDetail', params: { id: id } });
-  } else {
-    console.log(storeMode.value);
-  }
+  } 
 };
 const setClose = (value) => {
   showDetail.value = value;
   router.push({ name: 'task' });
 };
 //style for botton
-const getStatusStyle = (status) => {
-  switch (status) {
-    case 'No Status':
-      return 'btn btn-active btn-primary';
-    case 'To Do':
-      return 'btn-info';
-    case 'Doing':
-      return 'btn-warning';
-    case 'Done':
-      return 'btn-success';
-    default:
-      return 'transparent';
-  }
-};
+// const getStatusStyle = (status) => {
+//   switch (status) {
+//     case 'No Status':
+//       return 'btn btn-active btn-primary';
+//     case 'To Do':
+//       return 'btn-info';
+//     case 'Doing':
+//       return 'btn-warning';
+//     case 'Done':
+//       return 'btn-success';
+//     default:
+//       return 'transparent';
+//   }
+// };
 </script>
 
 <template>
   <div>
     <div class="flex justify-between">
       <div class="my-2">
-        <div class="ml-10 btn btn-outline btn-accent" >
+        <div class="ml-10 btn btn-outline btn-accent">
           <router-link :to="{ name: 'status' }">Manage Status</router-link>
         </div>
       </div>
@@ -109,12 +134,10 @@ const getStatusStyle = (status) => {
       </div>
     </div>
 
-    <div class="w-full flex justify-center ">
-      <div
-        class=" shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 "
-      >
+    <div class="w-full flex justify-center">
+      <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40">
         <div class="min-w-full divide-y divide-gray-200">
-          <div class="#4793AF bg-slate-600 flex ">
+          <div class="#4793AF bg-slate-600 flex">
             <div
               class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             ></div>
@@ -169,7 +192,7 @@ const getStatusStyle = (status) => {
                         class="w-[22%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
                         @click="fetchDataById(task.taskId, 'view')"
                       >
-                        {{ task.assignees ? task.assignees : 'Unassigned' }}
+                        {{ task.assignees ? task.assignees : "Unassigned" }}
                       </div>
                       <div
                         class="w-[22%] itbkk-status px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
@@ -177,7 +200,6 @@ const getStatusStyle = (status) => {
                       >
                         <div
                           class="itbkk-button-action btn btn-outline shadow overflow-x-auto"
-                           
                         >
                           {{ task?.status.name }}
                         </div>
@@ -193,7 +215,8 @@ const getStatusStyle = (status) => {
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="fetchDataById(task.taskId, 'delete')"
+                          @click="fetchDataById(task.taskId, 'delete'),
+                          setIndex(index)"
                         >
                           Delete
                         </div>
@@ -207,24 +230,16 @@ const getStatusStyle = (status) => {
         </div>
       </div>
       <teleport to="#body">
-        <TaskModal v-if="showDetail" @close="setClose" :mode="storeMode" :task="storeTask" />
+        <TaskModal
+          v-if="showDetail"
+          @close="setClose"
+          :mode="storeMode"
+          :task="storeTask"
+          @newTask="addEditTask"
+          :index="storeIndex"
+          @saveDelete="removeTask"
+        />
       </teleport>
-      <!-- <teleport to="body" v-if="showDetail">
-            <Modal
-              @setDetail="setDetail"
-              :tasks="dataById"
-              :mode="storeMode"
-              @saveTask="updateEdit"
-            ></Modal>
-          </teleport>
-          <Teleport to="body" v-if="showDelete">
-            <Delete
-              @setDelete="setDelete"
-              :tasks="dataById"
-              :index="storeIndex"
-              @statusCode="removeTask"
-            ></Delete>
-          </Teleport> -->
     </div>
   </div>
 </template>

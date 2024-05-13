@@ -1,9 +1,7 @@
 async function getStatusData() {
     try {
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`);
-      console.log(res ?'fetched':'cannot fetch');
       const data = await res.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Error fetching data:", error);

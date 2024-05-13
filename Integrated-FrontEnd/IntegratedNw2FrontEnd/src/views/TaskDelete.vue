@@ -1,8 +1,11 @@
 <script setup>
 // import { deleteItemById } from "../libs/fetchUtil.js";
 import { defineProps, defineEmits, ref, watch, computed } from "vue";
-const emit = defineEmits(["close"]);
-
+const emit = defineEmits(["close", "saveDelete"]);
+const props = defineProps({
+  task: Object,
+  index: Number
+});
 </script>
 
 <template>
@@ -17,7 +20,7 @@ const emit = defineEmits(["close"]);
           <div class="text-xl font-semibold text-red-400">Delete Task</div>
           <div class="border-b my-3"></div>
           <div class="break-all itbkk-message">
-            Do you want to delete the task number " Name " ?
+            Do you want to delete the task number {{ index+1 }} " {{ task?.title }} " ?
           </div>
           <div class="flex justify-end my-4">
             <div
@@ -30,7 +33,7 @@ const emit = defineEmits(["close"]);
             </div>
             <div
               @click="
-                [$emit('close', false)]
+                [$emit('close', false), $emit('saveDelete', task?.taskId)]
               "
               class="itbkk-button-confirm btn btn-success text-white"
             >
