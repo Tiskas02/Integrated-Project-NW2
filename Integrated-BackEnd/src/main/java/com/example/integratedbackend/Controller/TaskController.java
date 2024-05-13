@@ -31,6 +31,7 @@ public class TaskController {
     public ResponseEntity<Object> findAllProducts(@PathVariable Integer id) {
         return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTO.class));
     }
+
     @PostMapping("")
     public ResponseEntity<Object> createTask(@RequestBody NewTaskDTO newTask) {
         return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTO.class));
@@ -40,6 +41,7 @@ public class TaskController {
     public TaskDTO deleteTask(@PathVariable Integer id) {
         return service.deleteTask(id);
     }
+
     @PutMapping("{id}")
     public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTO editTask,@PathVariable Integer id){
         return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTO.class));

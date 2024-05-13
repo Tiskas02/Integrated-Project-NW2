@@ -41,11 +41,6 @@ public class TaskControllerV2 {
         public TaskDTOV2 deleteTask(@PathVariable Integer id) {
             return service.deleteTask(id);
         }
-        @GetMapping("status/{id}/indicator")
-        public ResponseEntity<Boolean> checkDeleteOrTransfer(@PathVariable Integer id) {
-        return ResponseEntity.ok(service.deleteOrTransfer(id));
-        }
-
 
         @PutMapping("{id}")
         public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){

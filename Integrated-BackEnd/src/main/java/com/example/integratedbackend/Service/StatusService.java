@@ -3,6 +3,7 @@ package com.example.integratedbackend.Service;
 import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Entities.Status;
+import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Repositories.StatusRepositories;
@@ -102,4 +103,11 @@ public class StatusService {
         return mapper.map(existingStatus, StatusDTO.class);
     }
 
+    @Transactional
+    public Boolean deleteOrTransfer(Integer id) {
+        Status status = repositories.findById(id)
+                .orElseThrow(()-> new ItemNotFoundException("Not Found"));
+        List<Taskv2> tasks = tasksRepositoriesV2.findAllByStatus(status);
+        return !tasks.isEmpty();
+    }
 }

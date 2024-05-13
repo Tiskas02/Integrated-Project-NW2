@@ -75,14 +75,4 @@ public class TaskServiceV2 {
         Taskv2 updatedTask = repositories.save(existingTask);
         return modelMapper.map(updatedTask, TaskIDDTOV2.class);
     }
-
-
-    @Transactional
-    public Boolean deleteOrTransfer(Integer id) {
-        Status status = statusRepositories.findById(id)
-                .orElseThrow(()-> new ItemNotFoundException("Not Found"));
-        List<Taskv2> tasks = repositories.findAllByStatus(status);
-        return tasks.size()>0;
-    }
-
 }

@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v2/statuses")
-@CrossOrigin(origins = {"http://localhost, http://ip23nw2.sit.kmutt.ac.th ,http://intproj23.sit.kmutt.ac.th,*"})
+
+@CrossOrigin(origins = {"http://localhost:5173", "http://ip23nw2.sit.kmutt.ac.th" ,"http://intproj23.sit.kmutt.ac.th","*"})
 public class StatusController {
     @Autowired
     StatusService statusService;
@@ -48,5 +49,10 @@ public class StatusController {
     @PutMapping("{id}")
     public ResponseEntity<Object> updateStatus(@RequestBody NewStatusDTO editStatus,@PathVariable Integer id){
         return ResponseEntity.ok(modelMapper.map(statusService.updateStatus(editStatus,id),StatusDTO.class));
+    }
+
+    @GetMapping("{id}/indicator")
+    public ResponseEntity<Boolean> checkDeleteOrTransfer(@PathVariable Integer id) {
+        return ResponseEntity.ok(statusService.deleteOrTransfer(id));
     }
 }
