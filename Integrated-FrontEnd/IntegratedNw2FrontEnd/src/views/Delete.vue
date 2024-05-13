@@ -37,7 +37,6 @@ console.log(props.tasks, oldTask.value);
             <div
               @click="
                 [ 
-                  deleteTaskNoti(),
                   $emit('setDelete', false),
                   $router.replace({ name: 'task' }),
                   $emit('statusCode', oldTask?.taskId),

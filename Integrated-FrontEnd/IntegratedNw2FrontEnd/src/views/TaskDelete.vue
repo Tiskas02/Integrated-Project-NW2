@@ -7,22 +7,21 @@ const props = defineProps({
   index: Number
 });
 
-// import useToasterStore from '../stores/notificationStores';
-// const toasterStore = useToasterStore();
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
 
-// const deleteTaskNoti = () => {
-//   console.log(newTask.value, props.task)
-//   try {
-//     // Delete task logic here
-//     if (props.mode === 'delete' && newTask.value.id === props.task.id) {
-//       // Delete task logic here
-//       toasterStore.success({ text: "Task deleted successfully!" });
-//     }
-//   } catch (error) {
-//     console.error('Error deleting task:', error);
-//     toasterStore.error({ text: "An error occurred while deleting the task." });
-//   }
-// };
+const deleteTaskNoti = () => {
+  try {
+    if (props.task) {
+      toasterStore.success({ text: "Task deleted successfully!" });
+    } else {
+      throw new Error("Failed to delete task.");
+    }
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    toasterStore.error({ text: "An error occurred while deleting the task." });
+  }
+};
 
 </script>
 
@@ -50,9 +49,12 @@ const props = defineProps({
               Cancel
             </div>
             <div
-              @click="
-                
-                [$emit('close', false), $emit('saveDelete', task?.taskId)]
+            @click="
+                () => {
+                  deleteTaskNoti(),
+                  $emit('close', false),
+                  $emit('saveDelete', task?.taskId)
+                }
               "
               class="itbkk-button-confirm btn btn-success text-white"
             >

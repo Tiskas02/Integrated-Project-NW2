@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v2/statuses")
+@RequestMapping("/api/v2/statuses")
 @CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th" ,"http://intproj23.sit.kmutt.ac.th","*"})
 public class StatusController {
     @Autowired

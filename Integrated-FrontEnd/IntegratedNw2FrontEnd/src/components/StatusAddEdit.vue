@@ -46,7 +46,7 @@ const saveStatusNoti = () => {
     if (props.mode === 'add') {
       // Add task logic here
       toasterStore.success({ text: "Status added successfully!" });
-    } else if (props.mode === 'edit' && newTask.value.id === props.task.id) {
+    } else if (props.mode === 'edit' && storeData.value.id === props.status.id) {
       // Edit task logic here
       toasterStore.success({ text: "Status updated successfully!" });
     }
@@ -55,6 +55,8 @@ const saveStatusNoti = () => {
     toasterStore.error({ text: "An error occurred while saving the task." });
   }
 };
+
+
 </script>
  
 <template>
@@ -109,6 +111,7 @@ const saveStatusNoti = () => {
                 <button
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   @click="() =>{
+                    saveStatusNoti(),
                     emit('close',false);
                     emit('newStatus',storeData);
                 }"

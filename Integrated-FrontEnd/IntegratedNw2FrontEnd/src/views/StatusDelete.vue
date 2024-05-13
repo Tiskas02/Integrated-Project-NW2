@@ -35,6 +35,41 @@ onMounted(async () => {
     props.status.statusId
   );
 });
+
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
+
+const deleteStatusNoti = () => {
+  try {
+    // Simulate deletion logic here
+    if (props.status) {
+      // Assuming task deletion is successful
+      toasterStore.success({ text: "Status deleted successfully!" });
+    } else {
+      // Assuming task deletion failed
+      throw new Error("Failed to delete task.");
+    }
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    toasterStore.error({ text: "An error occurred while deleting the task." });
+  }
+};
+
+const transferStatusNoti = () => {
+  try {
+    // Simulate transfer logic here
+    if (props.status) {
+      // Assuming status transfer is successful
+      toasterStore.success({ text: "Status transferred successfully!" });
+    } else {
+      // Assuming status transfer failed
+      throw new Error("Failed to transfer status.");
+    }
+  } catch (error) {
+    console.error('Error transferring status:', error);
+    toasterStore.error({ text: "An error occurred while transferring the status." });
+  }
+};
 </script>
 
 <template>
@@ -80,13 +115,21 @@ onMounted(async () => {
               Cancel
             </div>
             <div v-if="shouldDeleteOrTransfer"
-              @click="[$emit('close', false),$emit('sentTranfer',{oldId, newId})]"
+              @click="() => { 
+                transferStatusNoti(),
+                $emit('close', false),
+                $emit('sentTranfer',{oldId, newId})
+                }"
               class="itbkk-button-confirm btn btn-success text-white"
             >
               Transfer
             </div>
             <div v-else
-              @click="[$emit('close', false),$emit('sentDelete', oldId)]"
+              @click="() => {
+              deleteStatusNoti(),  
+              $emit('close', false),
+              $emit('sentDelete', oldId)
+              }"
               class="itbkk-button-confirm btn btn-success text-white"
             >
               Confirm
