@@ -38,14 +38,23 @@ watch(
   { deep: true, immediate: true }
 );
 
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
 
-
-
-//add new status
-// const addNewStatus = async (newStatus) =>{
-//     await statusStore.createStatus(newStatus);
-// }
-//edit status
+const saveStatusNoti = () => {
+  try {
+    if (props.mode === 'add') {
+      // Add task logic here
+      toasterStore.success({ text: "Status added successfully!" });
+    } else if (props.mode === 'edit' && newTask.value.id === props.task.id) {
+      // Edit task logic here
+      toasterStore.success({ text: "Status updated successfully!" });
+    }
+  } catch (error) {
+    console.error('Error saving task:', error);
+    toasterStore.error({ text: "An error occurred while saving the task." });
+  }
+};
 </script>
  
 <template>
