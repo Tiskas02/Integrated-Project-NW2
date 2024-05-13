@@ -9,12 +9,10 @@ import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Repositories.StatusRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.List;
 
@@ -56,6 +54,8 @@ public class TaskServiceV2 {
         repositories.delete(taskToDelete);
         return modelMapper.map(taskToDelete, TaskDTOV2.class);
     }
+
+
     @Transactional
     public TaskIDDTOV2 updateTask(NewTaskDTOV2 editTask, Integer id) {
         Taskv2 existingTask = repositories.findById(id)
@@ -70,6 +70,15 @@ public class TaskServiceV2 {
         }
         Taskv2 updatedTask = repositories.save(existingTask);
         return modelMapper.map(updatedTask, TaskIDDTOV2.class);
+    }
+
+
+    @Transactional
+    public Boolean deleteOrTransfer(Integer id) {
+        Status status = statusRepositories.findById(id)
+                .orElseThrow(()-> new ItemNotFoundException("Not Found"));
+        List<Taskv2> tasks = repositories.findAllByStatus(status);
+        return tasks.size()>0;
     }
 
 }

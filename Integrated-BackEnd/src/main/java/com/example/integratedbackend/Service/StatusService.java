@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 public class StatusService {
 
@@ -38,32 +37,31 @@ public class StatusService {
     public Status findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Status"+ " " + id + " " +"doesn't exist !!!"));
+                        "Status" + " " + id + " " + "doesn't exist !!!"));
     }
+
     @Transactional
     public StatusDTO createStatus(NewStatusDTO addStatus) {
         Status status = mapper.map(addStatus, Status.class);
         Status updatedStatus = repositories.saveAndFlush(status);
         return mapper.map(updatedStatus, StatusDTO.class);
     }
-    
+
     @Transactional
     public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
         Status statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
-        if (tasksRepositoriesV2.existsById(statusToDelete.getStatusId())) {
-            throw new BadRequestException("Have Some Task On This Status");
-        }
         if (statusToDelete.getStatusId().equals("No Status")) {
             throw new BadRequestException("You can not delete 'No Status'!!");
         }
         try {
             repositories.delete(statusToDelete);
             return statusToDelete;
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ItemNotFoundException(e.toString());
         }
     }
+
     @Transactional
     public Status transferStatus(Integer oldId, Integer newId) throws BadRequestException {
         if (oldId == newId) {
@@ -88,6 +86,7 @@ public class StatusService {
             throw new ItemNotFoundException("Error transferring status: " + e.getMessage());
         }
     }
+
     @Transactional
     public StatusDTO updateStatus(NewStatusDTO editStatus, Integer id) {
         Status existingStatus = repositories.findById(id)
@@ -95,7 +94,6 @@ public class StatusService {
 
         existingStatus.setName(editStatus.getName());
         existingStatus.setDescription(editStatus.getDescription());
-
         if (editStatus.getName() != null) {
             Status findStatus = repositories.findById(id)
                     .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getName() + " doesn't exist!"));

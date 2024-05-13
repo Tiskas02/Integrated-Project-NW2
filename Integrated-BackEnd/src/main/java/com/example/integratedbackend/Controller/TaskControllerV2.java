@@ -4,6 +4,7 @@ import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskServiceV2;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,12 @@ public class TaskControllerV2 {
         public TaskDTOV2 deleteTask(@PathVariable Integer id) {
             return service.deleteTask(id);
         }
+        @GetMapping("status/{id}/indicator")
+        public ResponseEntity<Boolean> checkDeleteOrTransfer(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.deleteOrTransfer(id));
+        }
+
+
         @PutMapping("{id}")
         public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
             return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTOV2.class));
