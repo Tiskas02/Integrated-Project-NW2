@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { getStatusData , addStatus } from '@/libs/api/status/fetchUtilStatus';
+import { getStatusData , addStatus, editStatus} from '@/libs/api/status/fetchUtilStatus';
 export const useStoreStatus = defineStore('status', () => {
     const statuses = ref([]);
     async function fetchStatus() {
@@ -18,15 +18,27 @@ export const useStoreStatus = defineStore('status', () => {
       async function createStatus(newStatus) {
         try {
           const addedStatus = await addStatus(newStatus)
-          console.log(addedStatus);
           statuses.value.push(addedStatus)
         } catch (error) {
           throw new Error(error.message)
         }
       }
+
+async function updateStatus(statusId, status) {
+  try {
+    const updatedStatus = await editStatus(statusId, status); // Call editStatus function
+    const statusIndex = statuses.value.findIndex((status) => status.statusId === statusId);
+    statuses.value.splice(statusIndex, 1, updatedStatus);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+      
       return {
         statuses,
         fetchStatus,
-        createStatus
+        createStatus,
+        updateStatus
       }
 })

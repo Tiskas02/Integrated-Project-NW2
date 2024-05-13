@@ -1,31 +1,55 @@
 <script setup>
-import { ref,onMounted } from 'vue';
-import StatusModal from './StatusModal.vue';
-import { useStoreStatus } from '@/stores/statusStores'
-import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
+import { ref, onMounted } from "vue";
+import StatusModal from "./StatusModal.vue";
+import { useStoreStatus } from "@/stores/statusStores";
+import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 const router = useRouter();
 const showModal = ref(false);
-const storeMode = ref('');
-const statusStore = useStoreStatus()
+const storeMode = ref("");
+const statusStore = useStoreStatus();
 const { statuses } = storeToRefs(statusStore);
-const data
+const dataById = ref();
 onMounted(async () => {
- const = await statusStore.fetchStatus();
+  await statusStore.fetchStatus();
 });
-const setModal = (value,mode,id) => {
-  showModal.value = value;
-  storeMode.value = mode;
-  if (storeMode.value === 'add')  {
-    router.push({ name: 'addStatus'});
-  }else if (storeMode.value === 'edit' && id !== null) {
-    router.push({ name: 'editStatus', params: { id: id } });
-    
+const addOrEditStatus = async (newStatus) => {
+  try {
+    if (newStatus.statusId === undefined) {
+      await statusStore.createStatus(newStatus);
+    } else {
+      await statusStore.updateStatus(newStatus.statusId, newStatus);
+    }
+  } catch (error) {
+    console.error('Error adding/editing status:', error);
+    // Handle error appropriately, e.g., show error message to user
   }
 };
+
+const setModal = (value, mode, id) => {
+  showModal.value = value;
+  storeMode.value = mode;
+  if (storeMode.value === "add") {
+    router.push({ name: "addStatus" });
+  } else if (storeMode.value === "edit" && id !== null) {
+    router.push({ name: "editStatus", params: { id: id } });
+  }
+};
+//fuction to sent id and mode to StatusModal
+const fetchById = async (id, mode) => {
+  if (!id) return console.log("error have no id");
+  dataById.value = await getStatusDataById(id);
+  console.log(dataById.value);
+  storeMode.value = mode;
+  if (storeMode.value === "edit" && id !== null) {
+    router.push({ name: "editStatus", params: { id: id } });
+  }
+  showModal.value = true;
+};
 const setClose = (value) => {
-    showModal.value = value;
-  router.push({ name: 'status' });
+  showModal.value = value;
+  router.push({ name: "status" });
 };
 </script>
 
@@ -34,12 +58,15 @@ const setClose = (value) => {
     <div class="flex justify-between">
       <div class="">
         <div class="ml-10 btn btn-outline btn-accent">
-            <router-link :to="{ name: 'task' }">Home</router-link>    
+          <router-link :to="{ name: 'task' }">Home</router-link>
         </div>
       </div>
       <div class="">
         <!-- Add Task-->
-        <div class="itbkk-button-add btn btn-outline btn-primary mr-10" @click="setModal(true,'add',null)">
+        <div
+          class="itbkk-button-add btn btn-outline btn-primary mr-10"
+          @click="setModal(true, 'add', null)"
+        >
           <svg
             width="20"
             height="20"
@@ -67,7 +94,7 @@ const setClose = (value) => {
 
     <div class="w-full flex justify-center">
       <div
-        class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 overflow-y-auto  mt-4"
+        class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 overflow-y-auto mt-4"
       >
         <div class="min-w-full divide-y divide-gray-200">
           <div class="#4793AF bg-slate-600 flex">
@@ -104,7 +131,9 @@ const setClose = (value) => {
                   class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
                 >
                   <div class="flex">
-                    <div class="w-[10%] px-6 py-4 whitespace-nowrap">{{index + 1}}</div>
+                    <div class="w-[10%] px-6 py-4 whitespace-nowrap">
+                      {{ index + 1 }}
+                    </div>
                     <div
                       class="w-[20%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
                     >
@@ -113,18 +142,18 @@ const setClose = (value) => {
                     <div
                       class="w-[50%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
                     >
-                    {{ status.description }}
+                      {{ status.description }}
                     </div>
                     <div class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
                       <div
                         class="btn btn-outline btn-warning"
-                        @click="setModal(true,'edit',1)"
+                        @click="fetchById(status.statusId, 'edit')"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
-                        @click="setModal(true,'delete',null)"
+                        @click="setModal(true, 'delete', null)"
                       >
                         Delete
                       </div>
@@ -138,8 +167,14 @@ const setClose = (value) => {
       </div>
     </div>
     <teleport to="#body">
-        <StatusModal v-if="showModal" @close="setClose" :statusMode="storeMode" />
-      </teleport>
+      <StatusModal
+        v-if="showModal"
+        @close="setClose"
+        :statusMode="storeMode"
+        :status="dataById"
+        @newStatus="addOrEditStatus"
+      />
+    </teleport>
   </div>
 </template>
 

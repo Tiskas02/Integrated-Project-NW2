@@ -3,31 +3,48 @@ import { defineProps, defineEmits ,ref,watch} from 'vue';
 import { useStoreStatus } from '../stores/statusStores.js';
 import { storeToRefs } from 'pinia';
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close','newStatus']);
 const props = defineProps({
-    mode: String,
-    id: Number
-});
-watch(
-  () => props.mode,
-  () => {
-    storeModeSent.value = props.mode;
+  status: {
+    type: Object,
+    default: {
+      statusId: undefined,
+      name: '',
+      description: ''
+    }
   },
-  {deep: true}
-);
+  mode: String
+    
+});
+console.log(props.mode);
 const statusStore = useStoreStatus()
 const { statuses } = storeToRefs(statusStore);
 const storeModeSent = ref(props.mode);
 
 //store data
 const storeData = ref({
+    statusId: undefined,
     name: '',
-    status: ''
+    description: ''
 });
+watch(
+  () => props.status,
+  () => {
+    if (props.mode === 'edit') {
+      storeData.value = { ...props.status };
+      console.log(storeData.value);
+    }
+  },
+  { deep: true, immediate: true }
+);
+
+
+
+
 //add new status
-const addNewStatus = async (newStatus) =>{
-    await statusStore.createStatus(newStatus);
-}
+// const addNewStatus = async (newStatus) =>{
+//     await statusStore.createStatus(newStatus);
+// }
 //edit status
 </script>
  
@@ -54,7 +71,7 @@ const addNewStatus = async (newStatus) =>{
                 placeholder="Enter your title here..."
                 required
                 v-model="storeData.name"
-                ></textarea
+                >{{ status?.name }}</textarea
               >
             </div>
           </div>
@@ -72,7 +89,7 @@ const addNewStatus = async (newStatus) =>{
                   class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
                   placeholder="Enter your description here..."
                   v-model="storeData.description"
-                  ></textarea
+                  >{{ status?.description }}</textarea
                 >
               </div>
             </div>
@@ -84,7 +101,7 @@ const addNewStatus = async (newStatus) =>{
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   @click="() =>{
                     emit('close',false);
-                    addNewStatus(storeData);
+                    emit('newStatus',storeData);
                 }"
                 >
                   Save

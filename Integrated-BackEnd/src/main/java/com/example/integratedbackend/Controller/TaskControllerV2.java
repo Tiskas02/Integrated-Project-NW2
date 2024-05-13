@@ -44,4 +44,5 @@ public class TaskControllerV2 {
         public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
             return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTOV2.class));
         }
+
     }
