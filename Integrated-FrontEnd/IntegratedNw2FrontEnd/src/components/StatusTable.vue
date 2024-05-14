@@ -40,7 +40,10 @@ const addOrEditStatus = async (newStatus) => {
 };
 //delete status
 const deleteOne = async (id) => {
-  await statusStore.deleteStatus(id);
+  const res = await statusStore.deleteStatus(id);
+  if (res.status === 404) {
+    alert("Error deleting status");
+  }
 };
 //tranfer status
 const deleteTranfer = async (value) => {
@@ -65,15 +68,11 @@ const fetchById = async (id, mode) => {
   if (!id) {
     return console.log("error have no id");
   }
-
   dataById.value = await getStatusDataById(id);
-
   storeMode.value = mode;
   if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
   } 
-
-  console.log(dataById.value)
   if (dataById.value.status == "404") {
       alert("The requested status does not exist");
       router.replace({ name: "status" });

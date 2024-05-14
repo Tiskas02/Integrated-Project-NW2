@@ -43,12 +43,13 @@ export const useStoreStatus = defineStore("status", () => {
   }
   async function deleteStatus(statusId) {
     try {
-      await deleteOneStatus(statusId);
+      const res = await deleteOneStatus(statusId);
       // statuss.value.map((status) => {console.log(status);})
       const deleted = statuses.value.splice(
         statuses.value.findIndex((status) => status.statusId === statusId),
         1
       );
+      return res.status
     } catch (error) {
       throw new Error(error.message);
     }

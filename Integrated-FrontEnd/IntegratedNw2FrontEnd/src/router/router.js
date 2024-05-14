@@ -50,6 +50,11 @@ const routes = [
     component: TaskHome,
     children: [
       {
+        path: ":id",
+        name: "taskDetail",
+        component: TaskHome
+      },
+      {
         path: "add",
         name: "addStatus",
         component: StatusAddEdit,
