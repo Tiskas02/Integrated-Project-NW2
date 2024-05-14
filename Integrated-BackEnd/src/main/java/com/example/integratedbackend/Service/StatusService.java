@@ -12,7 +12,9 @@ import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -43,6 +45,10 @@ public class StatusService {
 
     @Transactional
     public StatusDTO createStatus(NewStatusDTO addStatus) {
+            List<Status> statusList= repositories.findAllByNameIgnoreCase(addStatus.getName());
+            if (!statusList.isEmpty()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST    , "It's Duplicated");
+            }
         Status status = mapper.map(addStatus, Status.class);
         Status updatedStatus = repositories.saveAndFlush(status);
         return mapper.map(updatedStatus, StatusDTO.class);
