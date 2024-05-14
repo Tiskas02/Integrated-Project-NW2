@@ -1,8 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Task from "../views/Task.vue";
 import NotFound from "../views/NotFound.vue";
-import Modal from "@/components/Modal.vue";
-import AddEditModal from "@/components/AddEditModal.vue";
 import TaskHome from "@/views/TaskHome.vue";
 import TaskModal from "@/components/TaskModal.vue";
 import StatusTable from "@/components/StatusTable.vue";

@@ -1,0 +1,4 @@
+v1.0 -- initial only pbi 6 and pbi 7
+v1.1 -- correct the description TC-PBI7-EDIT-STATUS-3 to TC-PBI7-EDIT-STATUS-4
+     -- add pbi 8-1,8-2 but 8-3 and 8-4 run manually with your advisor
+     -- add cy.viewport to beforeEach for all test cases

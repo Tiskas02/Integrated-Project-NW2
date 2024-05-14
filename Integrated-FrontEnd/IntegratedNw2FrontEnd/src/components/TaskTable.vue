@@ -46,22 +46,44 @@ const setIndex =(indexes) => {
 }
 const addEditTask = async (newTask) => {
   if(newTask.taskId === undefined){
+    if(newTask.assignees === null){
+      await tasksStore.createTask( {
+      assignees: newTask.assignees,
+      statusId: newTask.status,
+      title: newTask.title.trim(),
+      description: newTask.description.trim()
+    } )
+    } else {
      await tasksStore.createTask( {
       assignees: newTask.assignees.trim(),
       statusId: newTask.status,
       title: newTask.title.trim(),
-      description: newTask.description.trim(),
-    });
-  }else {
-    await tasksStore.updateTask(newTask.taskId,{
+      description: newTask.description.trim()
+     })
+    }
+    }
+    else {
+      if(newTask.assignees === null){
+      await tasksStore.updateTask(newTask.taskId,{
+      taskId: newTask.taskId,
+      assignees: newTask.assignees,
+      statusId: newTask.status,
+      title: newTask.title.trim(),
+      description: newTask.description.trim()
+      })
+    }
+      else {
+        await tasksStore.updateTask(newTask.taskId,{
       taskId: newTask.taskId,
       assignees: newTask.assignees.trim(),
       statusId: newTask.status,
       title: newTask.title.trim(),
-      description: newTask.description.trim(),
-    });
+      description: newTask.description.trim()
+      })
+      }
+    }
   }
-}
+
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;

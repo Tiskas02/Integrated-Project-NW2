@@ -8,7 +8,6 @@ import {
 import { ref } from "vue";
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
-  const isLoading = ref(false);
 
   async function fetchTasks() {
     try {
@@ -17,9 +16,6 @@ export const useStoreTasks = defineStore("tasks", () => {
       taskData.forEach((task) => {
         tasks.value.push(task);
       });
-      if (tasks.value.length > 0) {
-        isLoading.value = true;
-      }
     } catch (error) {
       console.error("Error fetching data:", error);
       console.log(error);

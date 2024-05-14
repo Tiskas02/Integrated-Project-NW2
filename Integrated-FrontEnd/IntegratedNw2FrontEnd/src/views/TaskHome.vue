@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted ,watch} from 'vue';
-import LoadingScreen from '../sharedComponents/LoadingScreen.vue';
 import TaskTable from '../components/TaskTable.vue';
 import StatusTable from '../components/StatusTable.vue';
 // import {
