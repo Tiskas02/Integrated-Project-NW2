@@ -30,8 +30,8 @@ jobs:
           
       - name: Clear storage
         run: |
-          docker-compose rm -vf frontEndContainer dataContainer backEndContainer || true
-      # Runs a set of commands using the runners shell
+          docker-compose rm -vf frontEndContainer frontEndContainerv2 dataContainer backEndContainer reverse_proxy || true
+      # Runs a set of commands using the runners shell 
       - name: Build deploy
         run: |
           docker-compose up -d --build

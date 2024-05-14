@@ -1,12 +1,19 @@
 <script setup>
+<<<<<<< HEAD:Integrated-FrontEnd/IntegratedNw2FrontEnd/src/views/Delete.vue
+import { defineProps, defineEmits, computed } from "vue";
+const emit = defineEmits(["setDelete", "statusCode"]);
+=======
 // import { deleteItemById } from "../libs/fetchUtil.js";
 import { defineProps, defineEmits, ref, watch, computed } from "vue";
 const emit = defineEmits(["close", "saveDelete"]);
+>>>>>>> notification:Integrated-FrontEnd/IntegratedNw2FrontEnd/src/views/TaskDelete.vue
 const props = defineProps({
   task: Object,
   index: Number,
 });
 
+<<<<<<< HEAD:Integrated-FrontEnd/IntegratedNw2FrontEnd/src/views/Delete.vue
+=======
 import useToasterStore from "../stores/notificationStores";
 const toasterStore = useToasterStore();
 
@@ -22,6 +29,7 @@ const deleteTaskNoti = () => {
     toasterStore.error({ text: "An error occurred while deleting the task." });
   }
 };
+>>>>>>> notification:Integrated-FrontEnd/IntegratedNw2FrontEnd/src/views/TaskDelete.vue
 </script>
 
 <template>
