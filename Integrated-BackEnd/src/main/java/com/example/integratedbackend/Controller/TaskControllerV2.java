@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v2/tasks")
-@CrossOrigin(origins = "*" , allowedHeaders = "*")
+@CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th","*"})
 public class TaskControllerV2 {
-    @Autowired
-    TaskServiceV2 service;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private ListMapper listMapper;
+        @Autowired
+        TaskServiceV2 service;
+        @Autowired
+        private ModelMapper modelMapper;
+        @Autowired
+        private ListMapper listMapper;
 
     @GetMapping("")
     public ResponseEntity<Object> getTasks() {
@@ -25,21 +25,22 @@ public class TaskControllerV2 {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Object> findAllProducts(@PathVariable Integer id) {
+    public ResponseEntity<Object> findTaskById(@PathVariable Integer id) {
         return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTOV2.class));
     }
-    @PostMapping("")
-    public ResponseEntity<Object> createTask(@RequestBody NewTaskDTOV2 newTask) {
-        return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTOV2.class));
-    }
+        @PostMapping("")
+        public ResponseEntity<Object> createTask(@RequestBody NewTaskDTOV2 newTask) {
+            return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTOV2.class));
+        }
 
-    @DeleteMapping("{id}")
-    public TaskDTOV2 deleteTask(@PathVariable Integer id) {
-        return service.deleteTask(id);
-    }
-    @PutMapping("{id}")
-    public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
-        return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTOV2.class));
-    }
+        @DeleteMapping("{id}")
+        public TaskDTOV2 deleteTask(@PathVariable Integer id) {
+            return service.deleteTask(id);
+        }
 
-}
+        @PutMapping("{id}")
+        public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
+            return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTOV2.class));
+        }
+
+    }

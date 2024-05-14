@@ -21,9 +21,5 @@ public class NewTaskDTO {
     public void setTitle(String title) {
         this.Title = (title != null) ? title.trim() : null;
     }
-
-    public void setStatus(ResourceType status) {
-        this.Status = (status != null) ? status : ResourceType.NO_STATUS;
-    }
-
 }
+

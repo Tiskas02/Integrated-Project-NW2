@@ -7,13 +7,12 @@ import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
-@CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th" ,"*"})
+@CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th","*"})
 public class TaskController {
     @Autowired
     TaskService service;
@@ -31,6 +30,7 @@ public class TaskController {
     public ResponseEntity<Object> findAllProducts(@PathVariable Integer id) {
         return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTO.class));
     }
+
     @PostMapping("")
     public ResponseEntity<Object> createTask(@RequestBody NewTaskDTO newTask) {
         return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTO.class));
@@ -40,6 +40,7 @@ public class TaskController {
     public TaskDTO deleteTask(@PathVariable Integer id) {
         return service.deleteTask(id);
     }
+
     @PutMapping("{id}")
     public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTO editTask,@PathVariable Integer id){
         return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTO.class));

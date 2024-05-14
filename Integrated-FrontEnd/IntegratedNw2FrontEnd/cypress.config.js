@@ -5,7 +5,7 @@ export default defineConfig({
     specPattern: 'cypress/e2e/**/*.{cy,spec}.{js,jsx,ts,tsx}',
     baseUrl: 
       
-      "http://ip23nw2.sit.kmutt.ac.th"
+      "http://localhost:5173/"
     
   },
   component: {

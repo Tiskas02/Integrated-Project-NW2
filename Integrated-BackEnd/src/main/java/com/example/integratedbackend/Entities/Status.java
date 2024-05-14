@@ -1,23 +1,20 @@
 package com.example.integratedbackend.Entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "status", schema = "kradanitbangmod")
-@Getter
-@Setter
 public class Status {
-
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "taskId")
-    private Integer taskId;
-    @Column(name = "statusName")
-    private String statusName;
-    @Column(name = "statusDescription")
-    private String statusDescription;
+    @Id
+    @Column(name = "statusId", nullable = false)
+    private Integer statusId;
 
+    @Column(name = "statusName", nullable = false, length = 50)
+    private String name;
 
+    @Column(name = "statusDescription", nullable = true, length = 200)
+    private String description;
 }
