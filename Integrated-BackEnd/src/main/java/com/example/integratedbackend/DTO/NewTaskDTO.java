@@ -22,4 +22,3 @@ public class NewTaskDTO {
         this.Title = (title != null) ? title.trim() : null;
     }
 }
-

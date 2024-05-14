@@ -41,4 +41,5 @@ public class Tasks {
     @Column(name = "updatedOn", insertable = false, updatable = false)
     private ZonedDateTime updatedOn;
 
+
 }
