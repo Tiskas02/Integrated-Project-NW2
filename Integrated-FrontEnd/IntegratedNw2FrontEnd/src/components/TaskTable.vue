@@ -171,9 +171,9 @@ const setClose = (value) => {
               Action
             </div>
           </div>
-          <div v-if="tasks.length <= 0" class="w-full border bg-white">
-            <div class="w-full m-auto">
-              <p>No task</p>
+          <div v-if="tasks.length <= 0" class="w-full border bg-white h-24">
+            <div class="flex justify-center items-center h-full">
+              <p class="text-xl font-bold animate-bounce text-slate-500">No task</p>
             </div>
           </div>
           <!-- Edit Task -->
@@ -192,13 +192,13 @@ const setClose = (value) => {
                         {{ index + 1 }}
                       </div>
                       <div
-                        class="w-[22%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
+                        class="itbkk-title w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
                         @click="fetchDataById(task.taskId, 'view')"
                       >
                         {{ task.title }}
                       </div>
                       <div
-                        class="w-[22%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
+                        class="itbkk-assignees w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
                         @click="fetchDataById(task.taskId, 'view')"
                         :style="{
                           fontStyle: task.assignees ? 'normal' : 'italic',
@@ -207,20 +207,20 @@ const setClose = (value) => {
                         {{ task.assignees ? task.assignees : "Unassigned" }}
                       </div>
                       <div
-                        class="w-[22%] itbkk-status px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
+                        class=" w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
                         @click="fetchDataById(task.taskId, 'view')"
                       >
                         <div
-                          class="itbkk-button-action btn btn-outline shadow overflow-x-auto"
+                          class="itbkk-status btn btn-outline shadow overflow-x-auto"
                         >
                           {{ task?.status.name }}
                         </div>
                       </div>
                       <div
-                        class="w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
+                        class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
                       >
                         <div
-                          class="btn btn-outline btn-warning"
+                          class="itbkk-button-edit btn btn-outline btn-warning"
                           @click="fetchDataById(task.taskId, 'edit')"
                         >
                           Edit

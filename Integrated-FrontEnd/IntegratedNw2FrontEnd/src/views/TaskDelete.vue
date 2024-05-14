@@ -4,10 +4,10 @@ import { defineProps, defineEmits, ref, watch, computed } from "vue";
 const emit = defineEmits(["close", "saveDelete"]);
 const props = defineProps({
   task: Object,
-  index: Number
+  index: Number,
 });
 
-import useToasterStore from '../stores/notificationStores';
+import useToasterStore from "../stores/notificationStores";
 const toasterStore = useToasterStore();
 
 const deleteTaskNoti = () => {
@@ -18,11 +18,10 @@ const deleteTaskNoti = () => {
       throw new Error("Failed to delete task.");
     }
   } catch (error) {
-    console.error('Error deleting task:', error);
+    console.error("Error deleting task:", error);
     toasterStore.error({ text: "An error occurred while deleting the task." });
   }
 };
-
 </script>
 
 <template>
@@ -37,23 +36,22 @@ const deleteTaskNoti = () => {
           <div class="text-xl font-semibold text-red-400">Delete Task</div>
           <div class="border-b my-3"></div>
           <div class="break-all itbkk-message">
-            Do you want to delete the task number {{ index+1 }} " {{ task?.title }} " ?
+            Do you want to delete the task number {{ index + 1 }} "
+            {{ task?.title }} " ?
           </div>
           <div class="flex justify-end my-4">
             <div
-              @click="
-                [$emit('close', false)]
-              "
+              @click="[$emit('close', false)]"
               class="itbkk-button-cancel btn btn-error text-white mx-2"
             >
               Cancel
             </div>
             <div
-            @click="
+              @click="
                 () => {
                   deleteTaskNoti(),
-                  $emit('close', false),
-                  $emit('saveDelete', task?.taskId)
+                    $emit('close', false),
+                    $emit('saveDelete', task?.taskId);
                 }
               "
               class="itbkk-button-confirm btn btn-success text-white"

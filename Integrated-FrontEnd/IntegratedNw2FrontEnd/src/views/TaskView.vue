@@ -9,7 +9,10 @@ const props = defineProps({
 
 
 
-
+const getRandomColor =() => {
+      // Generate random hexadecimal color code
+      return '#' + Math.floor(Math.random()*16777215).toString(16);
+    }
 
 </script>
 
@@ -32,17 +35,20 @@ const props = defineProps({
               </div>
             </div>
             <div class="flex my-1">
-              <div class="max-w-fit my-auto mx-6">Status</div>
+              <div class="max-w-fit my-auto mr-14">Status</div>
               <div>
-                <div class="text-lg text-red-500">
+                <div class="itbkk-status text-lg "
+                :style="{ color: getRandomColor() }">
                   {{ task?.status.name }}
                 </div>
               </div>
             </div>
             <div class="flex">
-              <div class="my-auto mx-2">Assignees</div>
+              <div class="my-auto mr-6">Assignees</div>
               <div>
-                <div :style="{
+                <div
+                  
+                 :style="{
                           fontStyle: task.assignees ? 'normal' : 'italic',
                         }">
                   {{task?.assignees == '' || task?.assignees === null
@@ -52,20 +58,20 @@ const props = defineProps({
               </div>
             </div>
             <div>
-              <div class="flex itbkk-timezone my-1">
-                <div class="2xl:w-[13%] sm:w-[17%]">TimeZone</div>
+              <div class="flex itbkk-timezone my-2">
+                <div class="2xl:w-[13%] sm:w-[17%] mr-4">TimeZone</div>
                 <div>
                   {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
                 </div>
               </div>
               <div class="flex itbkk-created-on my-1">
-                <div class="2xl:w-[13%] sm:w-[17%]">Created On</div>
+                <div class="2xl:w-[13%] sm:w-[20%]">Created On</div>
                 <div>
                   {{ new Date(task?.createdOn).toLocaleString('en-GB') }}
                 </div>
               </div>
               <div class="flex itbkk-updated-on my-1">
-                <div class="2xl:w-[13%] sm:w-[17%]">Updated On</div>
+                <div class="2xl:w-[13%] sm:w-[20%]">Updated On</div>
                 <div>
                   {{ new Date(task?.updatedOn).toLocaleString('en-GB') }}
                 </div>
