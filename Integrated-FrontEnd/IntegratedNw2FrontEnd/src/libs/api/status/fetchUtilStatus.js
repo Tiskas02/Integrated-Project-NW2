@@ -13,12 +13,8 @@ async function getStatusData() {
 }
 async function getStatusDataById(id) {
   try {
-    const res = await fetch(
-      `${url}/v2/statuses/${id}`
-    );
-    console.log(res ? "fetched" : "cannot fetch");
+    const res = await fetch(`${url}/v2/statuses/${id}`);
     const data = await res.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);

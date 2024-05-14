@@ -3,18 +3,7 @@ const url = import.meta.env.VITE_BASE_URL;
 async function getTaskData() {
     try {
       const res = await fetch(`${url}/v2/tasks`);
-      console.log(res)
       const data = await res.json();
-      console.log(data);
-
-          // Ensure data is an array
-    if (Array.isArray(data)) {
-      return data;
-    } else {
-      console.error('Expected an array but got:', data);
-      return [];
-    }
-    
       return data;
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -27,12 +16,13 @@ async function getTaskData() {
     try {
       const res = await fetch(`${url}/v2/tasks/${id}`);
       
-      if(!res.ok){
-        history.back()
-        return null;
-      }
+      // if the response is not ok, go back to the previous page
+      // if(!res.ok){
+      //   history.back()
+      //   return null;
+      // }
+
       const data = await res.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Error fetching data:", error);

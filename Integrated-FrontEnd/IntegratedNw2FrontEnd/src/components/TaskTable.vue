@@ -4,9 +4,10 @@ import { useStoreTasks } from '../stores/taskStores.js';
 import { useStoreStatus } from '../stores/statusStores.js';
 import { ref,onMounted} from 'vue';
 import TaskModal from '../components/TaskModal.vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { getTaskById } from '@/libs/api/task/fetchUtilTask.js';
 
+const route = useRoute();
 const router = useRouter();
 const tasksStore = useStoreTasks();
 const statusStore = useStoreStatus();
@@ -24,6 +25,7 @@ onMounted(async () => {
 const fetchDataById = async (id,mode) => {
   storeMode.value = mode;
   storeTask.value = await getTaskById(id);
+  
   if (storeMode.value === 'add') {
     showDetail.value = true;
     router.push({ name: 'addTask'});
@@ -34,10 +36,26 @@ const fetchDataById = async (id,mode) => {
   else if(Object.keys(storeTask.value).length > 0 && storeMode.value === 'view') {
     showDetail.value = true;
     router.push({ name: 'taskDetail', params: { id: id } });
-  } else {
+  } else if (storeMode.value === 'delete') {
     showDetail.value = true;
+  } else {
+    showDetail.value = false;
   }
+
+  if (storeTask.value.status == "404") {
+      alert("The requested task does not exist");
+      router.replace({ name: "task" });
+      showDetail.value = false;
+      return;
+    }
+
 };
+
+if (route.params.id) {
+  fetchDataById(route.params.id , 'view');
+}
+
+
 const removeTask = async (id) => {
   await tasksStore.deleteTask(id);
 }

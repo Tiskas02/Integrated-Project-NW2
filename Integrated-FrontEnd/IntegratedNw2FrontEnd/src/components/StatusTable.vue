@@ -1,12 +1,13 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import StatusModal from "./StatusModal.vue";
 import { useStoreStatus } from "@/stores/statusStores";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useStoreTasks } from "@/stores/taskStores";
 
+const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
 const storeMode = ref("");
@@ -14,6 +15,7 @@ const statusStore = useStoreStatus();
 const taskStore = useStoreTasks();
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
+
 onMounted(async () => {
   await statusStore.fetchStatus();
 });
@@ -58,19 +60,35 @@ const setModal = async (value, mode, id) => {
   }
 };
 //fuction to sent id and mode to StatusModal
+
 const fetchById = async (id, mode) => {
   if (!id) {
     return console.log("error have no id");
   }
 
   dataById.value = await getStatusDataById(id);
-  console.log(dataById.value);
+
   storeMode.value = mode;
   if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
-  }
+  } 
+
+  console.log(dataById.value)
+  if (dataById.value.status == "404") {
+      alert("The requested status does not exist");
+      router.replace({ name: "status" });
+      showModal.value = false;
+      return;
+    }
+  
   showModal.value = true;
 };
+
+if (route.params.id) {
+  console.log('dsad')
+  fetchById(route.params.id , 'view');
+}
+
 const setClose = (value) => {
   showModal.value = value;
   router.push({ name: "status" });
@@ -135,7 +153,7 @@ const setClose = (value) => {
             >
               Description
             </div>
-
+            
             <div
               class="w-[20%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             >
@@ -164,15 +182,14 @@ const setClose = (value) => {
                       {{ status.name }}
                     </div>
                     <div
-                      class="w-[50%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
+                      class="w-[50%] itbkk-description px-6 py-4 whitespace-nowrap overflow-x-auto break-all italic"
                     >
-                      {{ status.description }}
+                      {{ status?.description == '' || status?.description === null ? 'No Description Provided' : status?.description }}
                     </div>
                     <div v-if="status.statusId !== 1" class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
                       <div
                         class="btn btn-outline btn-warning"
                         @click="fetchById(status.statusId, 'edit')"
-                        
                       >
                         Edit
                       </div>
