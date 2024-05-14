@@ -1,6 +1,8 @@
+const url = import.meta.env.VITE_BASE_URL;
+
 async function getStatusData() {
   try {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`);
+    const res = await fetch(`${url}/v2/statuses`);
     const data = await res.json();
     return data;
   } catch (error) {
@@ -12,7 +14,7 @@ async function getStatusData() {
 async function getStatusDataById(id) {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${id}`
+      `${url}/v2/statuses/${id}`
     );
     console.log(res ? "fetched" : "cannot fetch");
     const data = await res.json();
@@ -26,7 +28,7 @@ async function getStatusDataById(id) {
 }
 async function addStatus(newStatus) {
   try {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`, {
+    const res = await fetch(`${url}/v2/statuses`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -44,7 +46,7 @@ async function addStatus(newStatus) {
 async function editStatus(id, editStatus) {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${id}`,
+      `${url}/v2/statuses/${id}`,
       {
         method: "PUT",
         headers: {
@@ -65,7 +67,7 @@ async function editStatus(id, editStatus) {
 async function shouldDeleteOrTransferStatus(id) {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${id}/indicator`
+      `${url}/v2/statuses/${id}/indicator`
     );
     const data = await res.json();
     return data;
@@ -78,7 +80,7 @@ async function shouldDeleteOrTransferStatus(id) {
 async function deleteOneStatus(id) {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${id}`,
+      `${url}/v2/statuses/${id}`,
       {
         method: "DELETE",
       }
@@ -93,7 +95,7 @@ async function deleteOneStatus(id) {
 async function deleteTranferStatus(oldStatusId, newStatusId) {
   try {
     const res = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${oldStatusId}/${newStatusId}`,
+      `${url}/v2/statuses/${oldStatusId}/${newStatusId}`,
       {
         method: "DELETE",
       }
