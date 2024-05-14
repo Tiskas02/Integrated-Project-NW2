@@ -6,7 +6,7 @@ import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
 import StatusDelete from "@/views/StatusDelete.vue";
-const history = createWebHistory();
+const history = createWebHistory('/nw2');
 const routes = [
   {
     path: "/",
