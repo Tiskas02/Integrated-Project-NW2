@@ -27,6 +27,7 @@ const props = defineProps({
     },
   },
 });
+console.log(props.task);
 const newTask = ref({ ...props.task, status: props.task.status.statusId });
 
 // watch(
@@ -183,6 +184,15 @@ const saveTaskNoti = () => {
                         emit('close', false);
                       }
                     "
+                    :disabled="
+                    newTask.title.trim() === '' ||
+                    ((newTask.assignees ?? '') ===
+                      (task?.assignees ?? '') &&
+                      (newTask.description ?? '') ===
+                        (task?.description ?? '') &&
+                      (newTask.status ?? '') === (task?.status.statusId ?? '') &&
+                      (newTask.title ?? '') === (task?.title ?? ''))
+                  "
                   >
                     Save
                   </button>

@@ -25,6 +25,7 @@ const sentSaveDelete = (value) => {
   emit("saveDelete", value);
 };
 const sentNewTask = (value) => {
+  console.log(value);
   emit("newTask", value);
 };
 </script>

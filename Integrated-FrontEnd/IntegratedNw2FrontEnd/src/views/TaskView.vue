@@ -34,7 +34,7 @@ const props = defineProps({
             <div class="flex my-1">
               <div class="max-w-fit my-auto mx-6">Status</div>
               <div>
-                <div>
+                <div class="text-lg text-red-500">
                   {{ task?.status.name }}
                 </div>
               </div>
@@ -42,7 +42,9 @@ const props = defineProps({
             <div class="flex">
               <div class="my-auto mx-2">Assignees</div>
               <div>
-                <div>
+                <div :style="{
+                          fontStyle: task.assignees ? 'normal' : 'italic',
+                        }">
                   {{task?.assignees == '' || task?.assignees === null
                       ? 'Unassigned'
                       : task?.assignees }}

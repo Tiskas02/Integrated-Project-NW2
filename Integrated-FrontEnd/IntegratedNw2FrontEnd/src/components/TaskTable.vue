@@ -47,18 +47,18 @@ const setIndex =(indexes) => {
 const addEditTask = async (newTask) => {
   if(newTask.taskId === undefined){
      await tasksStore.createTask( {
-      assignees: newTask.assignees,
+      assignees: newTask.assignees.trim(),
       statusId: newTask.status,
-      title: newTask.title,
-      description: newTask.description,
+      title: newTask.title.trim(),
+      description: newTask.description.trim(),
     });
   }else {
     await tasksStore.updateTask(newTask.taskId,{
       taskId: newTask.taskId,
-      assignees: newTask.assignees,
+      assignees: newTask.assignees.trim(),
       statusId: newTask.status,
-      title: newTask.title,
-      description: newTask.description,
+      title: newTask.title.trim(),
+      description: newTask.description.trim(),
     });
   }
 }
@@ -78,21 +78,8 @@ const setClose = (value) => {
   showDetail.value = value;
   router.push({ name: 'task' });
 };
-//style for botton
-// const getStatusStyle = (status) => {
-//   switch (status) {
-//     case 'No Status':
-//       return 'btn btn-active btn-primary';
-//     case 'To Do':
-//       return 'btn-info';
-//     case 'Doing':
-//       return 'btn-warning';
-//     case 'Done':
-//       return 'btn-success';
-//     default:
-//       return 'transparent';
-//   }
-// };
+
+
 </script>
 
 <template>
@@ -163,7 +150,7 @@ const setClose = (value) => {
             </div>
           </div>
           <div v-if="tasks.length <= 0" class="w-full border bg-white">
-            <div class="w-full">
+            <div class="w-full m-auto">
               <p>No task</p>
             </div>
           </div>
@@ -191,6 +178,9 @@ const setClose = (value) => {
                       <div
                         class="w-[22%] itbkk-assignees px-6 py-4 whitespace-nowrap overflow-x-auto"
                         @click="fetchDataById(task.taskId, 'view')"
+                        :style="{
+                          fontStyle: task.assignees ? 'normal' : 'italic',
+                        }"
                       >
                         {{ task.assignees ? task.assignees : "Unassigned" }}
                       </div>

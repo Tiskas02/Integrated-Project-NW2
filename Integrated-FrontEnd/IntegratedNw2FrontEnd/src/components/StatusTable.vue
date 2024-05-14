@@ -21,9 +21,15 @@ onMounted(async () => {
 const addOrEditStatus = async (newStatus) => {
   try {
     if (newStatus.statusId === undefined) {
-      await statusStore.createStatus(newStatus);
+      await statusStore.createStatus({
+      name: newStatus.name.trim(),
+      description: newStatus.description.trim(),
+    });
     } else {
-      await statusStore.updateStatus(newStatus.statusId, newStatus);
+      await statusStore.updateStatus(newStatus.statusId, {
+      name: newStatus.name.trim(),
+      description: newStatus.description.trim(),
+    });
     }
   } catch (error) {
     console.error("Error adding/editing status:", error);
@@ -162,16 +168,18 @@ const setClose = (value) => {
                     >
                       {{ status.description }}
                     </div>
-                    <div class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
+                    <div v-if="status.statusId !== 1" class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
                       <div
                         class="btn btn-outline btn-warning"
                         @click="fetchById(status.statusId, 'edit')"
+                        
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
                         @click="setModal(true, 'delete', status.statusId)"
+                        
                       >
                         Delete
                       </div>
