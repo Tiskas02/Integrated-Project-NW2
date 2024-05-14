@@ -29,11 +29,22 @@ watch(
 
 // true = should transfer, false = should delete
 const shouldDeleteOrTransfer = ref(false);
+const checkerror = ref(false);
 
 onMounted(async () => {
-  shouldDeleteOrTransfer.value = await shouldDeleteOrTransferStatus(
+  const deleted = await shouldDeleteOrTransferStatus(
     props.status.statusId
   );
+  if (deleted === '404') {
+    checkerror.value = true;
+    shouldDeleteOrTransfer.value = false;
+    console.log(checkerror.value);
+  }else if (deleted === true){
+    shouldDeleteOrTransfer.value = true;
+  }else{
+    checkerror.value = true;
+    shouldDeleteOrTransfer.value = false;
+  }
 });
 
 import useToasterStore from '../stores/notificationStores';
@@ -42,8 +53,9 @@ const toasterStore = useToasterStore();
 const deleteStatusNoti = () => {
   try {
     // Simulate deletion logic here
-    if (props.status) {
+     if (props.status ) {
       // Assuming task deletion is successful
+      
       toasterStore.success({ text: "Status deleted successfully!" });
     } else {
       // Assuming task deletion failed

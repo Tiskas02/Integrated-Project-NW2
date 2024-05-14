@@ -41,7 +41,7 @@ const addOrEditStatus = async (newStatus) => {
 //delete status
 const deleteOne = async (id) => {
   const res = await statusStore.deleteStatus(id);
-  if (res.status === 404) {
+  if (res === 404) {
     alert("Error deleting status");
   }
 };
