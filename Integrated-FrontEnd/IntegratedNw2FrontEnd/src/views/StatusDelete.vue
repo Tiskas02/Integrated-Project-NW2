@@ -29,12 +29,14 @@ watch(
 
 // true = should transfer, false = should delete
 const shouldDeleteOrTransfer = ref(false);
+const any = ref(null);
 const checkerror = ref(false);
 
 onMounted(async () => {
   const deleted = await shouldDeleteOrTransferStatus(
     props.status.statusId
   );
+  console.log(deleted);
   if (deleted === '404') {
     checkerror.value = true;
     shouldDeleteOrTransfer.value = false;
@@ -42,30 +44,23 @@ onMounted(async () => {
   }else if (deleted === true){
     shouldDeleteOrTransfer.value = true;
   }else{
-    checkerror.value = true;
-    shouldDeleteOrTransfer.value = false;
+    console.log('asf');
+    any.value = deleted;
   }
 });
+watch(
+  any,
+  () => {
+    if(any.value === false){
+      checkerror.value = true;
+  }},
+  { deep: true }
+)
+console.log(any.value);
 
 import useToasterStore from '../stores/notificationStores';
 const toasterStore = useToasterStore();
 
-const deleteStatusNoti = () => {
-  try {
-    // Simulate deletion logic here
-     if (props.status ) {
-      // Assuming task deletion is successful
-      
-      toasterStore.success({ text: "Status deleted successfully!" });
-    } else {
-      // Assuming task deletion failed
-      throw new Error("Failed to delete task.");
-    }
-  } catch (error) {
-    console.error('Error deleting task:', error);
-    toasterStore.error({ text: "An error occurred while deleting the task." });
-  }
-};
 
 const transferStatusNoti = () => {
   try {
@@ -138,7 +133,6 @@ const transferStatusNoti = () => {
             </div>
             <div v-else
               @click="() => {
-              deleteStatusNoti(),  
               $emit('close', false),
               $emit('sentDelete', oldId)
               }"

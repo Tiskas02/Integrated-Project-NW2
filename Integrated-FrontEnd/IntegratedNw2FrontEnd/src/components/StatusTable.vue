@@ -38,9 +38,31 @@ const addOrEditStatus = async (newStatus) => {
     // Handle error appropriately, e.g., show error message to user
   }
 };
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
+
+const deleteStatusNoti = (res) => {
+  try {
+    // Simulate deletion logic here
+     if (res === 200) {
+      // Assuming task deletion is successful
+      toasterStore.success({ text: "Status deleted successfully!" });
+    } else {
+      console.log(res);
+      // Assuming task deletion failed
+      throw new Error("Failed to delete task.");
+    }
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    toasterStore.error({ text: "An error occurred while deleting the task." });
+  }
+};
 //delete status
 const deleteOne = async (id) => {
   const res = await statusStore.deleteStatus(id);
+  if (res !== 404) {
+    deleteStatusNoti(res)
+  } else
   if (res === 404) {
     alert("Error deleting status");
   }
