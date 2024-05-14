@@ -6,13 +6,14 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "task", schema = "kradanitbangmod")
 @Getter
 @Setter
-public class Tasks {
+public class TasksV2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
