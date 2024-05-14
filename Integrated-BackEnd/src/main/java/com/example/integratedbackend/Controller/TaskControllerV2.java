@@ -7,6 +7,7 @@ import com.example.integratedbackend.Service.TaskServiceV2;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ import java.util.List;
 @CrossOrigin(origins = {"http://localhost, http://ip23nw2.sit.kmutt.ac.th,*"})
 public class TaskControllerV2 {
         @Autowired
-        TaskServiceV2 service;
+        private TaskServiceV2 service;
         @Autowired
         private ModelMapper modelMapper;
         @Autowired
@@ -34,7 +35,7 @@ public class TaskControllerV2 {
     }
         @PostMapping("")
         public ResponseEntity<Object> createTask(@RequestBody NewTaskDTOV2 newTask) {
-            return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTOV2.class));
+            return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(service.createTask(newTask), NewTaskDTOV2.class));
         }
 
         @DeleteMapping("{id}")

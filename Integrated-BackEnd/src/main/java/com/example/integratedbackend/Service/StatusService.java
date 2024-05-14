@@ -50,6 +50,8 @@ public class StatusService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST    , "It's Duplicated");
             }
         Status status = mapper.map(addStatus, Status.class);
+        System.out.println(status.getName());
+        System.out.println(status.getDescription());
         Status updatedStatus = repositories.saveAndFlush(status);
         return mapper.map(updatedStatus, StatusDTO.class);
     }
@@ -58,7 +60,7 @@ public class StatusService {
     public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
         Status statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
-        if (statusToDelete.getStatusId().equals("No Status")) {
+        if (statusToDelete.getId().equals("No Status")) {
             throw new BadRequestException("You can not delete 'No Status'!!");
         }
         try {
@@ -95,18 +97,16 @@ public class StatusService {
     }
 
     @Transactional
-    public StatusDTO updateStatus(NewStatusDTO editStatus, Integer id) {
-        Status existingStatus = repositories.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Status " + id + " doesn't exist!"));
-
-        existingStatus.setName(editStatus.getName());
-        existingStatus.setDescription(editStatus.getDescription());
-        if (editStatus.getName() != null) {
-            Status findStatus = repositories.findById(id)
-                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editStatus.getName() + " doesn't exist!"));
-            existingStatus.setStatusId(findStatus.getStatusId());
+    public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {
+        if (id.equals(1)) {
+            throw new RuntimeException("DEFAULT STATUS CANNOT BE EDITED");
         }
-        return mapper.map(existingStatus, StatusDTO.class);
+        repositories.findById(id).orElseThrow(
+                () -> new ItemNotFoundException("NOT FOUND")
+        );
+        Status updatedStatus = mapper.map(inputStatus, Status.class);
+        updatedStatus.setId(id);
+        return mapper.map(repositories.save(updatedStatus), StatusDTO.class);
     }
 
     @Transactional

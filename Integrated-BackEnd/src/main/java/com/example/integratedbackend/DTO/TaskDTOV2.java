@@ -5,7 +5,7 @@ import lombok.*;
 
 @Data
 public class TaskDTOV2 {
-    private Integer taskId;
+    private Integer id;
     private String Title;
     private String Assignees;
     private Status status;
