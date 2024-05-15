@@ -20,17 +20,17 @@ const routes = [
       {
         path: ":id",
         name: "taskDetail",
-        component: TaskModal,
+        component: TaskModal
       },
       {
         path: "add",
         name: "addTask",
-        component: TaskAddEdit,
+        component: TaskAddEdit
       },
       {
         path: ":id/edit",
         name: "editTask",
-        component: TaskAddEdit,
+        component: TaskAddEdit
       },
     ],
   },
@@ -40,31 +40,31 @@ const routes = [
   //   component: TaskAddEdit
   // },
   {
-    path: "/:notfoundpath(.*)",
-    name: "NotFound",
-    component: NotFound,
-  },
-  {
     path: "/status",
     name: "status",
     component: TaskHome,
     children: [
       {
         path: ":id",
-        name: "taskDetail",
-        component: TaskHome
+        name: "statusDetail",
+        component: StatusTable
       },
       {
         path: "add",
         name: "addStatus",
-        component: StatusAddEdit,
+        component: StatusAddEdit
       },
       {
         path: ":id/edit",
         name: "editStatus",
-        component: StatusAddEdit,
+        component: StatusAddEdit
       },
     ],
+  },
+  {
+    path: "/:notfoundpath(.*)",
+    name: "NotFound",
+    component: NotFound,
   },
 ];
 

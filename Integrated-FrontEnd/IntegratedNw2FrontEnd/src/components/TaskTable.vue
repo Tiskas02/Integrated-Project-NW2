@@ -1,7 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useStoreTasks } from '../stores/taskStores.js';
-import { useStoreStatus } from '../stores/statusStores.js';
 import { ref,onMounted} from 'vue';
 import TaskModal from '../components/TaskModal.vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -10,17 +9,18 @@ import { getTaskById } from '@/libs/api/task/fetchUtilTask.js';
 const route = useRoute();
 const router = useRouter();
 const tasksStore = useStoreTasks();
-const statusStore = useStoreStatus();
-const { statuses } = storeToRefs(statusStore);
-const { isLoading, tasks } = storeToRefs(tasksStore);
+const { tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const storeMode = ref('');
 const storeTask = ref({});
 const storeIndex = ref(0);
+
 //fetch data
 onMounted(async () => {
   await tasksStore.fetchTasks();
 });
+
+
 //fetch data by id
 const fetchDataById = async (id,mode) => {
   storeMode.value = mode;
@@ -42,18 +42,22 @@ const fetchDataById = async (id,mode) => {
     showDetail.value = false;
   }
 
-  if (storeTask.value.status == "404") {
-      alert("The requested task does not exist");
-      router.replace({ name: "task" });
-      showDetail.value = false;
-      return;
-    }
+  // if (storeTask.value.status == "404") {
+      
+      
+  //     showDetail.value = false;
+  //     router.replace({ name: "task" });
+  //     return;
+  //   }
 
+    showDetail.value = true;
 };
 
-if (route.params.id) {
-  fetchDataById(route.params.id , 'view');
-}
+if (route.name === 'taskDetail' && route.params.id) {
+    fetchDataById(route.params.id, 'view');
+    console.log('dsadas');
+    showDetail.value = true;
+  }
 
 
 const removeTask = async (id) => {

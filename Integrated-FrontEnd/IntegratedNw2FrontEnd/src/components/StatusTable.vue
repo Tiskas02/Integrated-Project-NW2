@@ -1,24 +1,25 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import StatusModal from "./StatusModal.vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
-import { useStoreTasks } from "@/stores/taskStores";
 
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
 const storeMode = ref("");
 const statusStore = useStoreStatus();
-const taskStore = useStoreTasks();
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
 
 onMounted(async () => {
   await statusStore.fetchStatus();
 });
+
+
+
 
 const addOrEditStatus = async (newStatus) => {
   try {
@@ -95,6 +96,7 @@ const fetchById = async (id, mode) => {
   if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
   } 
+  
   if (dataById.value.status == "404") {
       alert("The requested status does not exist");
       router.replace({ name: "status" });
@@ -105,10 +107,10 @@ const fetchById = async (id, mode) => {
   showModal.value = true;
 };
 
-if (route.params.id) {
-  console.log('dsad')
-  fetchById(route.params.id , 'view');
-}
+if (route.name === 'statusDetail' && route.params.id) {
+    fetchById(route.params.id, 'view');
+  }
+
 
 const setClose = (value) => {
   showModal.value = value;
