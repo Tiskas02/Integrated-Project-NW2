@@ -51,9 +51,9 @@ services:
     networks: 
       - FE-network
     depends_on:
-      - dbserver
+      # - dbserver
       - backend
-      - reverse_proxy
+      # - reverse_proxy
 
   frontendv2:
     container_name: frontEndContainerV2
