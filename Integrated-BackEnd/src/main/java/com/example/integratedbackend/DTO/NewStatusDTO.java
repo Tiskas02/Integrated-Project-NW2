@@ -6,6 +6,7 @@ import lombok.Data;
 public class NewStatusDTO {
     private String name;
     private String description;
+
     public void setName(String name) {
         if (name == null){
             return;

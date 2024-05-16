@@ -34,7 +34,7 @@ public class StatusController {
 
     @PostMapping("")
     public ResponseEntity<Object> createStatus(@RequestBody NewStatusDTO newStatus) {
-        return ResponseEntity.ok(modelMapper.map(statusService.createStatus(newStatus), StatusDTO.class));
+        return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(statusService.createStatus(newStatus), StatusDTO.class));
     }
 
     @DeleteMapping("{id}")
