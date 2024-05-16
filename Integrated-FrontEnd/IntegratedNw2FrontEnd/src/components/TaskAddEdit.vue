@@ -179,7 +179,7 @@ const saveTaskNoti = () => {
                       (task?.assignees ?? '') &&
                       (newTask.description ?? '') ===
                         (task?.description ?? '') &&
-                      (newTask.status ?? '') === (task?.status.statusId ?? '') &&
+                      (newTask.status ?? '') === (task?.status.id ?? '') &&
                       (newTask.title ?? '') === (task?.title ?? ''))
                   "
                   >

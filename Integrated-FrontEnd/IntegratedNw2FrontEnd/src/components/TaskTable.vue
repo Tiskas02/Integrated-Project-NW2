@@ -1,17 +1,20 @@
 <script setup>
-import { storeToRefs } from 'pinia';
-import { useStoreTasks } from '../stores/taskStores.js';
-import { ref,onMounted} from 'vue';
-import TaskModal from '../components/TaskModal.vue';
-import { useRoute, useRouter } from 'vue-router';
-import { getTaskById } from '@/libs/api/task/fetchUtilTask.js';
+import { storeToRefs } from "pinia";
+import { useStoreTasks } from "../stores/taskStores.js";
+import { useStoreStatus } from "../stores/statusStores.js";
+import { ref, onMounted } from "vue";
+import TaskModal from "../components/TaskModal.vue";
+import { useRoute, useRouter } from "vue-router";
+import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
+import LimitTaskStatus from "./LimitTaskStatus.vue";
 
 const route = useRoute();
 const router = useRouter();
 const tasksStore = useStoreTasks();
 const { tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
-const storeMode = ref('');
+const showLimit = ref(false);
+const storeMode = ref("");
 const storeTask = ref({});
 const storeIndex = ref(0);
 
@@ -23,21 +26,26 @@ onMounted(async () => {
 
 
 //fetch data by id
-const fetchDataById = async (id,mode) => {
+const fetchDataById = async (id, mode) => {
   storeMode.value = mode;
   storeTask.value = await getTaskById(id);
-  
-  if (storeMode.value === 'add') {
+
+  if (storeMode.value === "add") {
     showDetail.value = true;
-    router.push({ name: 'addTask'});
-  }else if (Object.keys(storeTask.value).length > 0 && storeMode.value === 'edit') {
+    router.push({ name: "addTask" });
+  } else if (
+    Object.keys(storeTask.value).length > 0 &&
+    storeMode.value === "edit"
+  ) {
     showDetail.value = true;
-    router.push({ name: 'editTask', params: { id: id } });
-  }
-  else if(Object.keys(storeTask.value).length > 0 && storeMode.value === 'view') {
+    router.push({ name: "editTask", params: { id: id } });
+  } else if (
+    Object.keys(storeTask.value).length > 0 &&
+    storeMode.value === "view"
+  ) {
     showDetail.value = true;
-    router.push({ name: 'taskDetail', params: { id: id } });
-  } else if (storeMode.value === 'delete') {
+    router.push({ name: "taskDetail", params: { id: id } });
+  } else if (storeMode.value === "delete") {
     showDetail.value = true;
   } else {
     showDetail.value = false;
@@ -60,72 +68,76 @@ if (route.name === 'taskDetail' && route.params.id) {
     showDetail.value = true;
   }
 
-
 const removeTask = async (id) => {
   await tasksStore.deleteTask(id);
-}
-const setIndex =(indexes) => {
+};
+const setIndex = (indexes) => {
   storeIndex.value = indexes;
-}
+};
 const addEditTask = async (newTask) => {
   console.log(newTask.id);
-  if(newTask.id === undefined){
-    if(newTask.assignees === null){
-      await tasksStore.createTask( {
-      assignees: newTask.assignees,
-      statusId: newTask.status,
-      title: newTask.title.trim(),
-      description: newTask.description.trim()
-    } )
+  if (newTask.id === undefined) {
+    if (newTask.assignees === null) {
+      await tasksStore.createTask({
+        assignees: newTask.assignees,
+        statusId: newTask.status,
+        title: newTask.title.trim(),
+        description: newTask.description.trim(),
+      });
     } else {
-     await tasksStore.createTask( {
-      assignees: newTask.assignees.trim(),
-      statusId: newTask.status,
-      title: newTask.title.trim(),
-      description: newTask.description.trim()
-     })
+      await tasksStore.createTask({
+        assignees: newTask.assignees.trim(),
+        statusId: newTask.status,
+        title: newTask.title.trim(),
+        description: newTask.description.trim(),
+      });
     }
-    }
-    else {
-      if(newTask.assignees === null){
-      await tasksStore.updateTask(newTask.id,{
-      id: newTask.id,
-      assignees: newTask.assignees,
-      statusId: newTask.status,
-      title: newTask.title.trim(),
-      description: newTask.description
-      })
-    }
-      else {
-        await tasksStore.updateTask(newTask.id,{
-      id: newTask.id,
-      assignees: newTask.assignees.trim(),
-      statusId: newTask.status,
-      title: newTask.title.trim(),
-      description: newTask.description.trim()
-      })
-      }
+  } else {
+    if (newTask.assignees === null) {
+      await tasksStore.updateTask(newTask.id, {
+        id: newTask.id,
+        assignees: newTask.assignees,
+        statusId: newTask.status,
+        title: newTask.title.trim(),
+        description: newTask.description,
+      });
+    } else {
+      await tasksStore.updateTask(newTask.id, {
+        id: newTask.id,
+        assignees: newTask.assignees.trim(),
+        statusId: newTask.status,
+        title: newTask.title.trim(),
+        description: newTask.description.trim(),
+      });
     }
   }
+};
 
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;
-  if (storeMode.value === 'add') {
-    router.push({ name: 'addTask'});
-  }else if (storeMode.value === 'edit') {
-    router.push({ name: 'editTask', params: { id: id } });
+  
+  if (storeMode.value === "add") {
+    router.push({ name: "addTask" });
+  } else if (storeMode.value === "edit") {
+    router.push({ name: "editTask", params: { id: id } });
+  } else if (id !== null && storeMode.value !== "edit") {
+    router.push({ name: "taskDetail", params: { id: id } });
   }
-  if (id !== null && storeMode.value !== 'edit') {
-    router.push({ name: 'taskDetail', params: { id: id } });
-  } 
 };
+const setLimit = (value) => {
+  showLimit.value = value;
+  console.log(showLimit.value);
+  if (showLimit.value == true) {
+    console.log('asf');
+    router.push({ name: "limit" });
+  }
+}
 const setClose = (value) => {
   showDetail.value = value;
-  router.push({ name: 'task' });
+  showLimit.value = value;
+  router.push({ name: "task" });
 };
-
-
 </script>
 
 <template>
@@ -135,11 +147,40 @@ const setClose = (value) => {
         <div class="ml-10 btn btn-outline btn-accent">
           <router-link :to="{ name: 'status' }">Manage Status</router-link>
         </div>
+        <div class="dropdown dropdown-hover ml-3">
+          <div
+            tabindex="0"
+            role="button"
+            class="btn btn-outline btn-accent m-1"
+          >
+            Status Fillter
+          </div>
+          <ul
+            tabindex="0"
+            class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            <li v-for="statuses in statusStore.statuses" :key="statuses">
+              <div>
+                <input
+                  type="checkbox"
+                  class="checkbox"
+                  :id="statuses.statusId"
+                  :value="statuses.name"
+                  v-model="filterBy"
+                />
+                <label :for="statuses.name">{{ statuses.name }}</label>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="my-2">
+      <div class="my-2 flex">
         <!-- Add Task-->
+        <div class="enable-limit" @click="setLimit(true)">
+          <button class="btn btn-info">Limits</button>
+        </div>
         <div
-          class="itbkk-button-add btn btn-outline btn-primary mr-10"
+          class="itbkk-button-add btn btn-outline btn-primary mr-12 ml-3"
           @click="setDetail(true, null, 'add')"
         >
           <svg
@@ -197,7 +238,9 @@ const setClose = (value) => {
           </div>
           <div v-if="tasks.length <= 0" class="w-full border bg-white h-24">
             <div class="flex justify-center items-center h-full">
-              <p class="text-xl font-bold animate-bounce text-slate-500">No task</p>
+              <p class="text-xl font-bold animate-bounce text-slate-500">
+                No task
+              </p>
             </div>
           </div>
           <!-- Edit Task -->
@@ -231,7 +274,7 @@ const setClose = (value) => {
                         {{ task.assignees ? task.assignees : "Unassigned" }}
                       </div>
                       <div
-                        class=" w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
+                        class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
                         @click="fetchDataById(task.id, 'view')"
                       >
                         <div
@@ -251,8 +294,9 @@ const setClose = (value) => {
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="fetchDataById(task.id, 'delete'),
-                          setIndex(index)"
+                          @click="
+                            fetchDataById(task.id, 'delete'), setIndex(index)
+                          "
                         >
                           Delete
                         </div>
@@ -274,6 +318,14 @@ const setClose = (value) => {
           @newTask="addEditTask"
           :index="storeIndex"
           @saveDelete="removeTask"
+        />
+      </teleport>
+      <teleport to="#body">
+        <LimitTaskStatus
+          v-if="showLimit"
+          @limit="setLimit"
+          :mode="storeMode"
+          @close="setClose"
         />
       </teleport>
     </div>
