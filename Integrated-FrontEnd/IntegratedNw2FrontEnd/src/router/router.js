@@ -51,8 +51,8 @@ const routes = [
     children: [
       {
         path: ":id",
-        name: "taskDetail",
-        component: TaskHome
+        name: "statusDetail",
+        component: StatusTable
       },
       {
         path: "add",

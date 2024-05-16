@@ -14,6 +14,7 @@ export const useStoreTasks = defineStore("tasks", () => {
       tasks.value = [];
       const taskData = await getTaskData();
       taskData.forEach((task) => {
+        console.log(task);
         tasks.value.push(task);
       });
     } catch (error) {
@@ -33,23 +34,24 @@ export const useStoreTasks = defineStore("tasks", () => {
     }
   }
 
-  async function deleteTask(taskId) {
+  async function deleteTask(id) {
     try {
-      await deleteItemById(taskId);
+      await deleteItemById(id);
       // tasks.value.map((task) => {console.log(task);})
       const deleted = tasks.value.splice(
-        tasks.value.findIndex((task) => task.taskId === taskId),
+        tasks.value.findIndex((task) => task.id === id),
         1
       );
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  async function updateTask(taskId, task) {
+  async function updateTask(id, task) {
     try {
-      const updatedTask = await editTask(taskId, task);
+      const updatedTask = await editTask(id, task);
       console.log(updatedTask);
-      const taskIndex = tasks.value.findIndex((task) => task.taskId === taskId);
+      console.log(tasks.value);
+      const taskIndex = tasks.value.findIndex((task) => task.id === id);
       console.log(taskIndex);
       tasks.value[taskIndex] = updatedTask;
     } catch (error) {
