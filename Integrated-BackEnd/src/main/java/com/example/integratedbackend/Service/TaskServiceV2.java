@@ -11,13 +11,18 @@ import com.example.integratedbackend.Repositories.StatusRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class TaskServiceV2 {
+    private static final Logger log = LoggerFactory.getLogger(TaskServiceV2.class);
     @Autowired
     TasksRepositoriesV2 repositories;
     @Autowired
@@ -32,7 +37,25 @@ public class TaskServiceV2 {
 //    @PersistenceContext
 //    private EntityManager entityManager;
 
-
+    public List<TaskDTOV2> getAllTodo(List<String> statusNames, String[] sortBy, String[] direction) {
+        List<Sort.Order> orders = new ArrayList<>();
+        if (sortBy != null && sortBy.length > 0) {
+            for (int i = 0; i < sortBy.length; i++) {
+                orders.add(new Sort.Order((direction[i].equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC), sortBy[i]));
+            }
+        }
+        if(statusNames != null){
+            List<Status> statuses = new ArrayList<>();
+            for (String name:statusNames
+            ) {
+                List<Status> statusList = statusRepositories.findAllByNameIgnoreCase(name);
+                statuses.addAll(statusList);
+            }
+            return  listMapper.mapList(repositories.findByStatusIn(statuses,Sort.by(orders)), TaskDTOV2.class,modelMapper);
+        }
+        List<Taskv2> tasks = repositories.findAll(Sort.by(orders));
+        return  listMapper.mapList(tasks,TaskDTOV2.class,modelMapper);
+    }
     public List<TaskDTOV2> getTasks() {
 //        return repositories.findAll();
         return  listMapper.mapList(repositories.findAll(), TaskDTOV2.class,modelMapper);

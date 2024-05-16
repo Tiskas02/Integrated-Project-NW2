@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v2/tasks")
 @CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th","*"})
@@ -20,9 +22,17 @@ public class TaskControllerV2 {
         @Autowired
         private ListMapper listMapper;
 
+//    @GetMapping("")
+//    public ResponseEntity<Object> getTasks() {
+//        return ResponseEntity.ok(listMapper.mapList(service.getTasks(), TaskDTOV2.class, modelMapper));
+//    }
     @GetMapping("")
-    public ResponseEntity<Object> getTasks() {
-        return ResponseEntity.ok(listMapper.mapList(service.getTasks(), TaskDTOV2.class, modelMapper));
+    public ResponseEntity<Object> getAllTask(
+            @RequestParam(required = false) List<String> filterStatuses,
+            @RequestParam(required = false, defaultValue = "createdOn") String[] sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection
+    ) {
+        return ResponseEntity.ok(service.getAllTodo(filterStatuses,sortBy,sortDirection));
     }
 
     @GetMapping("{id}")
