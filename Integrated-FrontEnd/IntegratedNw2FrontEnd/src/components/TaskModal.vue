@@ -11,7 +11,7 @@ const props = defineProps({
   task: Object,
   index: Number
 });
-
+console.log(props.task);
 const sentMode = ref(props.mode);
 const sentTask = ref(props.task);
 const sentIndex = ref(props.index);

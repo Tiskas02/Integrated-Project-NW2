@@ -18,6 +18,7 @@ const storeIndex = ref(0);
 //fetch data
 onMounted(async () => {
   await tasksStore.fetchTasks();
+  console.log(tasks.value);
 });
 
 
@@ -67,7 +68,8 @@ const setIndex =(indexes) => {
   storeIndex.value = indexes;
 }
 const addEditTask = async (newTask) => {
-  if(newTask.taskId === undefined){
+  console.log(newTask.id);
+  if(newTask.id === undefined){
     if(newTask.assignees === null){
       await tasksStore.createTask( {
       assignees: newTask.assignees,
@@ -86,17 +88,17 @@ const addEditTask = async (newTask) => {
     }
     else {
       if(newTask.assignees === null){
-      await tasksStore.updateTask(newTask.taskId,{
-      taskId: newTask.taskId,
+      await tasksStore.updateTask(newTask.id,{
+      id: newTask.id,
       assignees: newTask.assignees,
       statusId: newTask.status,
       title: newTask.title.trim(),
-      description: newTask.description.trim()
+      description: newTask.description
       })
     }
       else {
-        await tasksStore.updateTask(newTask.taskId,{
-      taskId: newTask.taskId,
+        await tasksStore.updateTask(newTask.id,{
+      id: newTask.id,
       assignees: newTask.assignees.trim(),
       statusId: newTask.status,
       title: newTask.title.trim(),
@@ -200,7 +202,7 @@ const setClose = (value) => {
           </div>
           <!-- Edit Task -->
           <div class="w-full h-[350px] overflow-auto">
-            <div v-for="(task, index) in tasks" :key="task.taskId">
+            <div v-for="(task, index) in tasks" :key="task.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div class="">
                   <div
@@ -209,19 +211,19 @@ const setClose = (value) => {
                     <div class="flex">
                       <div
                         class="w-[10%] px-6 py-4 whitespace-nowrap"
-                        @click="fetchDataById(task.taskId, 'view')"
+                        @click="fetchDataById(task.id, 'view')"
                       >
                         {{ index + 1 }}
                       </div>
                       <div
                         class="itbkk-title w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                        @click="fetchDataById(task.taskId, 'view')"
+                        @click="fetchDataById(task.id, 'view')"
                       >
                         {{ task.title }}
                       </div>
                       <div
                         class="itbkk-assignees w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                        @click="fetchDataById(task.taskId, 'view')"
+                        @click="fetchDataById(task.id, 'view')"
                         :style="{
                           fontStyle: task.assignees ? 'normal' : 'italic',
                         }"
@@ -230,7 +232,7 @@ const setClose = (value) => {
                       </div>
                       <div
                         class=" w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
-                        @click="fetchDataById(task.taskId, 'view')"
+                        @click="fetchDataById(task.id, 'view')"
                       >
                         <div
                           class="itbkk-status btn btn-outline shadow overflow-x-auto"
@@ -243,13 +245,13 @@ const setClose = (value) => {
                       >
                         <div
                           class="itbkk-button-edit btn btn-outline btn-warning"
-                          @click="fetchDataById(task.taskId, 'edit')"
+                          @click="fetchDataById(task.id, 'edit')"
                         >
                           Edit
                         </div>
                         <div
                           class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="fetchDataById(task.taskId, 'delete'),
+                          @click="fetchDataById(task.id, 'delete'),
                           setIndex(index)"
                         >
                           Delete

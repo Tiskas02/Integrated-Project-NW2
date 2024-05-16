@@ -36,7 +36,7 @@ const deleteTaskNoti = () => {
           <div class="text-xl font-semibold text-red-400">Delete Task</div>
           <div class="border-b my-3"></div>
           <div class="break-all itbkk-message">
-            Do you want to delete the task number {{ index + 1 }} "
+            Do you want to delete the task number {{ index + 1 }}"
             {{ task?.title }} " ?
           </div>
           <div class="flex justify-end my-4">
@@ -51,7 +51,7 @@ const deleteTaskNoti = () => {
                 () => {
                   deleteTaskNoti(),
                     $emit('close', false),
-                    $emit('saveDelete', task?.taskId);
+                    $emit('saveDelete', task?.id);
                 }
               "
               class="itbkk-button-confirm btn btn-success text-white"

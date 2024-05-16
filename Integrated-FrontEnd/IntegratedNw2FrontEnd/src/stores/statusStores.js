@@ -30,23 +30,23 @@ export const useStoreStatus = defineStore("status", () => {
     }
   }
 
-  async function updateStatus(statusId, status) {
+  async function updateStatus(id, status) {
     try {
-      const updatedStatus = await editStatus(statusId, status); // Call editStatus function
+      const updatedStatus = await editStatus(id, status); // Call editStatus function
       const statusIndex = statuses.value.findIndex(
-        (status) => status.statusId === statusId
+        (status) => status.id === id
       );
       statuses.value.splice(statusIndex, 1, updatedStatus);
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  async function deleteStatus(statusId) {
+  async function deleteStatus(id) {
     try {
-      const res = await deleteOneStatus(statusId);
+      const res = await deleteOneStatus(id);
       // statuss.value.map((status) => {console.log(status);})
       const deleted = statuses.value.splice(
-        statuses.value.findIndex((status) => status.statusId === statusId),
+        statuses.value.findIndex((status) => status.id === id),
         1
       );
       return res.status
@@ -54,12 +54,12 @@ export const useStoreStatus = defineStore("status", () => {
       throw new Error(error.message);
     }
   }
-  async function tranferStatus(oldStatusId, newStatusId) {
+  async function tranferStatus(oldId, newId) {
     try {
-      await deleteTranferStatus(oldStatusId, newStatusId);
+      await deleteTranferStatus(oldId, newId);
       // statuss.value.map((status) => {console.log(status);})
       const deleted = statuses.value.splice(
-        statuses.value.findIndex((status) => status.statusId === oldStatusId),
+        statuses.value.findIndex((status) => status.id === oldId),
         1
       );
     } catch (error) {

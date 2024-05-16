@@ -45,7 +45,9 @@ public class TaskServiceV2 {
     }
 
     public TaskIDDTOV2 createTask(NewTaskDTOV2 addTask) {
-        Status statusObj = statusRepositories.findById(addTask.getStatusId()).orElseThrow();
+        Status statusObj = statusRepositories.findById(addTask.getStatusId()).orElseThrow(
+                () -> new ItemNotFoundException("NOT FOUND")
+        );
         Taskv2 taskV2 = modelMapper.map(addTask, Taskv2.class);
         taskV2.setStatus(statusObj);
         Taskv2 updatedTask = repositories.saveAndFlush(taskV2);
@@ -69,7 +71,7 @@ public class TaskServiceV2 {
         existingTask.setTaskAssignees(editTask.getAssignees());
         if (editTask.getTitle() != null) {
             Status findStatus = statusRepositories.findById(editTask.getStatusId())
-                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editTask.getTaskId() + " doesn't exist!"));
+                    .orElseThrow(() -> new ItemNotFoundException("Status with ID " + editTask.getId() + " doesn't exist!"));
             existingTask.setStatus(findStatus);
         }
         Taskv2 updatedTask = repositories.save(existingTask);

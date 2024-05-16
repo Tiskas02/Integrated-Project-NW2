@@ -7,7 +7,7 @@ const props = defineProps({
   status: {
     type: Object,
     default: {
-      statusId: undefined,
+      id: undefined,
       name: '',
       description: ''
     }

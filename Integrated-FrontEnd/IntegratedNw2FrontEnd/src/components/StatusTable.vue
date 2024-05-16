@@ -23,13 +23,13 @@ onMounted(async () => {
 
 const addOrEditStatus = async (newStatus) => {
   try {
-    if (newStatus.statusId === undefined) {
+    if (newStatus.id === undefined) {
       await statusStore.createStatus({
       name: newStatus.name.trim(),
       description: newStatus.description.trim(),
     });
     } else {
-      await statusStore.updateStatus(newStatus.statusId, {
+      await statusStore.updateStatus(newStatus.id, {
       name: newStatus.name.trim(),
       description: newStatus.description.trim(),
     });
@@ -82,7 +82,7 @@ const setModal = async (value, mode, id) => {
   } else if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
   } else {
-    dataById.value = statusStore.statuses.find((status) => status.statusId === id);
+    dataById.value = statusStore.statuses.find((status) => status.id === id);
   }
 };
 //fuction to sent id and mode to StatusModal
@@ -189,7 +189,7 @@ const setClose = (value) => {
             </div>
           </div> -->
           <!-- Edit Task -->
-          <div v-for="(status, index) in statuses" :key="status.statusId">
+          <div v-for="(status, index) in statuses" :key="status.id">
             <div class="bg-white divide-y divide-gray-200 overflow-auto">
               <div class="w-full max-h-[550px]">
                 <div
@@ -209,16 +209,16 @@ const setClose = (value) => {
                     >
                       {{ status?.description == '' || status?.description === null ? 'No Description Provided' : status?.description }}
                     </div>
-                    <div v-if="status.statusId !== 1" class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
+                    <div v-if="status.id !== 1" class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
                       <div
                         class="btn btn-outline btn-warning"
-                        @click="fetchById(status.statusId, 'edit')"
+                        @click="fetchById(status.id, 'edit')"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
-                        @click="setModal(true, 'delete', status.statusId)"
+                        @click="setModal(true, 'delete', status.id)"
                         
                       >
                         Delete

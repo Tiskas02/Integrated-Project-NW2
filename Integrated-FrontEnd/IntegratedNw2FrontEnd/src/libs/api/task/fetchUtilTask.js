@@ -31,7 +31,7 @@ async function getTaskData() {
     }
   }
   async function addTask(newTask) {
-    console.log(newTask);
+    console.log(newTask,'fetchaddTask');
     try {
       const res = await fetch(`${url}/v2/tasks`, {
         method: "POST",
