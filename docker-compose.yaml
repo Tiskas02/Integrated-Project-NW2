@@ -42,17 +42,17 @@ services:
       - dbserver
       - backend
 
-  frontend:
-    container_name: frontEndContainer
-    build:
-      context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
-      dockerfile: Dockerfile
-    restart: always
-    networks: 
-      - FE-network
-    depends_on:
+  # frontend:
+  #   container_name: frontEndContainer
+  #   build:
+  #     context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   networks: 
+  #     - FE-network
+  #   depends_on:
       # - dbserver
-      - backend
+      # - backend
       # - reverse_proxy
 
   frontendv2:
