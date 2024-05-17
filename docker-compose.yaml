@@ -11,7 +11,7 @@ services:
     volumes:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
-    expose:
+    ports:
       - '3306'
     networks: 
       - DB-network
