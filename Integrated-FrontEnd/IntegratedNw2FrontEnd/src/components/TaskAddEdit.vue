@@ -2,15 +2,13 @@
 import { defineProps, defineEmits, ref, watch, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { storeToRefs } from "pinia";
-import { useStoreTasks } from "@/stores/taskStores";
-import { useToasterStore } from "../stores/notificationStores";
-import { ErrorTypes } from "vue-router";
+
 
 const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
-const toasterStore = useToasterStore();
-const taskStore = useStoreTasks();
+
+
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus();
 });
@@ -36,24 +34,30 @@ const props = defineProps({
 
 const newTask = ref({ ...props.task, status: props.task.status.id });
 
-// import Toaster from "./Toaster.vue";
+
+import useToasterStore from '../stores/notificationStores';
+const toasterStore = useToasterStore();
 
 const saveTaskNoti = () => {
   try {
-    if (props.mode === "add") {
+    if (props.mode === 'add') {
       // Add task logic here
       toasterStore.success({ text: "Task added successfully!" });
-    } else if (props.mode === "edit" && newTask.value.id === props.task.id) {
+    } else if (props.mode === 'edit' && newTask.value.id === props.task.id) {
       // Edit task logic here
       toasterStore.success({ text: "Task updated successfully!" });
     }
   } catch (error) {
-    console.error("Error saving task:", error);
+    console.error('Error saving task:', error);
     toasterStore.error({ text: "An error occurred while saving the task." });
   }
 };
 
-watch(newTask.value, () => {
+computed(newTask.value, () => { 
+  Errortext.value.title == '' &&
+  Errortext.value.description == '' &&
+  Errortext.value.assignee == '';
+
   if (newTask.value.title.trim().length > 100) {
     Errortext.value.title = 'Title has longer than 100 character'
   } else if (newTask.value.title.trim().length == 0) {
@@ -65,6 +69,7 @@ watch(newTask.value, () => {
   }else {
     Errortext.value.assignees = ''
   }
+ 
 });
 </script>
 
@@ -89,6 +94,7 @@ watch(newTask.value, () => {
                 <textarea
                   class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                   placeholder="Enter your title here..."
+                  maxlength="100"
                   required
                   v-model="newTask.title"
                   >{{ task?.title }}</textarea
@@ -110,7 +116,7 @@ watch(newTask.value, () => {
                       :key="status.id"
                       :value="status.id"
                     >
-                      {{ status.name }}
+                      {{ status.name}}
                     </option>
                   </select>
                 </label>
@@ -128,9 +134,9 @@ watch(newTask.value, () => {
                         ? 'Enter your assign here...'
                         : 'Unassigned'
                     "
+                    maxlength="30"
                     v-model="newTask.assignees"
-                    >{{ task?.assignee }}</textarea
-                  >
+                    >{{ task?.assignee }}</textarea>
                 </div>
               </div>
             </div>
@@ -171,6 +177,7 @@ watch(newTask.value, () => {
                         ? 'Enter your description here...'
                         : 'No Description Provided'
                     "
+                    maxlength="500"
                     v-model="newTask.description"
                     >{{ task?.description }}</textarea
                   >
@@ -185,19 +192,20 @@ watch(newTask.value, () => {
                     class="itbkk-button-confirm disabled btn btn-info text-white"
                     @click="
                       () => {
-                        saveTaskNoti();
+                        saveTaskNoti()
                         emit('sentData', newTask);
                         emit('close', false);
                       }
                     "
                     :disabled="
-                      newTask.title.trim() === '' ||
-                      ((newTask.assignees ?? '') === (task?.assignees ?? '') &&
-                        (newTask.description ?? '') ===
-                          (task?.description ?? '') &&
-                        (newTask.status ?? '') === (task?.status.id ?? '') &&
-                        (newTask.title ?? '') === (task?.title ?? ''))
-                    "
+                    newTask.title.trim() === '' ||
+                    ((newTask.assignees ?? '') ===
+                      (task?.assignees ?? '') &&
+                      (newTask.description ?? '') ===
+                        (task?.description ?? '') &&
+                      (newTask.status ?? '') === (task?.status.id ?? '') &&
+                      (newTask.title ?? '') === (task?.title ?? ''))
+                  "
                   >
                     Save
                   </button>
