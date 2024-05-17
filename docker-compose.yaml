@@ -3,7 +3,6 @@ services:
   dbserver:
     container_name: dataContainer
     image: mysql/mysql-server
-    restart: always
     environment:
       MYSQL_DATABASE: 'kradanItBangMod'
       MYSQL_ROOT_PASSWORD: 'nw2'
@@ -12,7 +11,7 @@ services:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
     ports:
-      - '3306:3306'
+      - "3306:3306"
     networks: 
       - DB-network
 
@@ -22,7 +21,6 @@ services:
     build:
       context: ./Integrated-BackEnd
       dockerfile: Dockerfile
-    restart: always
     networks: 
       - DB-network
       - FE-network
@@ -60,7 +58,6 @@ services:
     build:
       context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
       dockerfile: Dockerfile
-    restart: always
     networks: 
       - FE-network
     depends_on:
