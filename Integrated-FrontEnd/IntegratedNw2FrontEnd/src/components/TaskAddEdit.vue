@@ -16,7 +16,7 @@ const props = defineProps({
       id: undefined,
       assignees: null,
       status: {
-        statusId: undefined,
+        id: undefined,
         name: "",
         description: "",
       },
@@ -28,19 +28,9 @@ const props = defineProps({
   },
 });
 console.log(props.task);
-const newTask = ref({ ...props.task, status: props.task.status.statusId });
-
-// watch(
-//   newTask.value,
-//   () => {
-//     console.log(newTask.value);
-//   },
-//   { deep: true }
-// );
-// );
-const logFuction = () => {
-  console.log(newTask.value);
-};
+const newTask = ref({ ...props.task, status: props.task.status.id });
+console.log('=========');
+console.log(newTask.value);
 
 import useToasterStore from '../stores/notificationStores';
 const toasterStore = useToasterStore();
@@ -101,10 +91,10 @@ const saveTaskNoti = () => {
                     <!-- <option>Status</option> -->
                     <option
                       v-for="status in allStatus"
-                      :key="status.statusId"
-                      :value="status.statusId"
+                      :key="status.id"
+                      :value="status.id"
                     >
-                      {{ status.name }}
+                      {{ status.name}}
                     </option>
                   </select>
                 </label>
@@ -123,8 +113,7 @@ const saveTaskNoti = () => {
                         : 'Unassigned'
                     "
                     v-model="newTask.assignees"
-                    >{{ task?.assignee }}</textarea
-                  >
+                    >{{ task?.assignee }}</textarea>
                 </div>
               </div>
             </div>
@@ -190,7 +179,7 @@ const saveTaskNoti = () => {
                       (task?.assignees ?? '') &&
                       (newTask.description ?? '') ===
                         (task?.description ?? '') &&
-                      (newTask.status ?? '') === (task?.status.statusId ?? '') &&
+                      (newTask.status ?? '') === (task?.status.id ?? '') &&
                       (newTask.title ?? '') === (task?.title ?? ''))
                   "
                   >

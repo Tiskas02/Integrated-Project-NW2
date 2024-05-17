@@ -9,7 +9,7 @@ const props = defineProps({
   status: {
     type: Object,
     default: {
-      statusId: undefined,
+      id: undefined,
       name: "",
       description: "",
     },
@@ -17,15 +17,9 @@ const props = defineProps({
 });
 const statusStore = useStoreStatus();
 const { statuses } = storeToRefs(statusStore);
-const oldId = ref(props.status.statusId);
+const oldId = ref(props.status.id);
 const newId = ref(null);
-watch(
-  newId,
-  () => {
-    console.log(newId.value);
-  },
-  { deep: true }
-);
+
 
 // true = should transfer, false = should delete
 const shouldDeleteOrTransfer = ref(false);
@@ -34,7 +28,7 @@ const checkerror = ref(false);
 
 onMounted(async () => {
   const deleted = await shouldDeleteOrTransferStatus(
-    props.status.statusId
+    props.status.id
   );
   console.log(deleted);
   if (deleted === '404') {
@@ -106,8 +100,8 @@ const transferStatusNoti = () => {
                   >
                     <option
                       v-for="status in statuses"
-                      :key="status.statusId"
-                      :value="status.statusId"
+                      :key="status.id"
+                      :value="status.id"
                     >
                       {{ status.name }}
                     </option>

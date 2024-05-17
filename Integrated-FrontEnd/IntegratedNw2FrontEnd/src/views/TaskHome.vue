@@ -15,7 +15,6 @@ import { useRoute } from 'vue-router';
 
 // const dataLoaded = ref(false)
 const tasksStore = useStoreTasks();
-const { isLoading } = storeToRefs(tasksStore);
 const route = useRoute();
 const showPath = ref(false);
 
@@ -66,3 +65,5 @@ watch(() => route.path, () => {
 
 
 <style scoped></style>
+
+

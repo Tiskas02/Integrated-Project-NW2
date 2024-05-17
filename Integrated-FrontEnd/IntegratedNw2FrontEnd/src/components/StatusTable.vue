@@ -1,18 +1,16 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import StatusModal from "./StatusModal.vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
-import { useStoreTasks } from "@/stores/taskStores";
 
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
 const storeMode = ref("");
 const statusStore = useStoreStatus();
-const taskStore = useStoreTasks();
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
 
@@ -20,15 +18,18 @@ onMounted(async () => {
   await statusStore.fetchStatus();
 });
 
+
+
+
 const addOrEditStatus = async (newStatus) => {
   try {
-    if (newStatus.statusId === undefined) {
+    if (newStatus.id === undefined) {
       await statusStore.createStatus({
       name: newStatus.name.trim(),
       description: newStatus.description.trim(),
     });
     } else {
-      await statusStore.updateStatus(newStatus.statusId, {
+      await statusStore.updateStatus(newStatus.id, {
       name: newStatus.name.trim(),
       description: newStatus.description.trim(),
     });
@@ -81,7 +82,7 @@ const setModal = async (value, mode, id) => {
   } else if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
   } else {
-    dataById.value = statusStore.statuses.find((status) => status.statusId === id);
+    dataById.value = statusStore.statuses.find((status) => status.id === id);
   }
 };
 //fuction to sent id and mode to StatusModal
@@ -95,6 +96,7 @@ const fetchById = async (id, mode) => {
   if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
   } 
+  
   if (dataById.value.status == "404") {
       alert("The requested status does not exist");
       router.replace({ name: "status" });
@@ -105,10 +107,10 @@ const fetchById = async (id, mode) => {
   showModal.value = true;
 };
 
-if (route.params.id) {
-  console.log('dsad')
-  fetchById(route.params.id , 'view');
-}
+if (route.name === 'statusDetail' && route.params.id) {
+    fetchById(route.params.id, 'view');
+  }
+
 
 const setClose = (value) => {
   showModal.value = value;
@@ -187,7 +189,7 @@ const setClose = (value) => {
             </div>
           </div> -->
           <!-- Edit Task -->
-          <div v-for="(status, index) in statuses" :key="status.statusId">
+          <div v-for="(status, index) in statuses" :key="status.id">
             <div class="bg-white divide-y divide-gray-200 overflow-auto">
               <div class="w-full max-h-[550px]">
                 <div
@@ -207,16 +209,16 @@ const setClose = (value) => {
                     >
                       {{ status?.description == '' || status?.description === null ? 'No Description Provided' : status?.description }}
                     </div>
-                    <div v-if="status.statusId !== 1" class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
+                    <div v-if="status.id !== 1" class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
                       <div
                         class="btn btn-outline btn-warning"
-                        @click="fetchById(status.statusId, 'edit')"
+                        @click="fetchById(status.id, 'edit')"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
-                        @click="setModal(true, 'delete', status.statusId)"
+                        @click="setModal(true, 'delete', status.id)"
                         
                       >
                         Delete

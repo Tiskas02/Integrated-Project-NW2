@@ -8,7 +8,7 @@ const props = defineProps({
   status: {
     type: Object,
     default: {
-      statusId: undefined,
+      id: undefined,
       name: "",
       description: "",
     },
@@ -22,7 +22,7 @@ const storeModeSent = ref(props.mode);
 
 //store data
 const storeData = ref({
-  statusId: undefined,
+  id: undefined,
   name: "",
   description: "",
 });
@@ -120,7 +120,7 @@ const saveStatusNoti = () => {
                     storeData.name.trim() === '' ||
                     (storeData.name === status?.name &&
                       storeData.description === status?.description &&
-                      storeData.statusId === status?.statusId)
+                      storeData.id === status?.id)
                   "
                 >
                   Save

@@ -5,6 +5,7 @@ import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskServiceV2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th","http://intproj23.sit.kmutt.ac.th","*"})
 public class TaskControllerV2 {
         @Autowired
-        TaskServiceV2 service;
+        private TaskServiceV2 service;
         @Autowired
         private ModelMapper modelMapper;
         @Autowired
@@ -30,7 +31,7 @@ public class TaskControllerV2 {
     }
         @PostMapping("")
         public ResponseEntity<Object> createTask(@RequestBody NewTaskDTOV2 newTask) {
-            return ResponseEntity.ok(modelMapper.map(service.createTask(newTask), TaskIDDTOV2.class));
+            return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(service.createTask(newTask), NewTaskReturnV2.class));
         }
 
         @DeleteMapping("{id}")
