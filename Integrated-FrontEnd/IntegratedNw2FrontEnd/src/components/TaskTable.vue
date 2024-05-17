@@ -11,20 +11,19 @@ import LimitTaskStatus from "./LimitTaskStatus.vue";
 const route = useRoute();
 const router = useRouter();
 const tasksStore = useStoreTasks();
-const { tasks } = storeToRefs(tasksStore);
+const statusStore = useStoreStatus();
+const { statuses } = storeToRefs(statusStore);
+const { isLoading, tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const showLimit = ref(false);
 const storeMode = ref("");
 const storeTask = ref({});
 const storeIndex = ref(0);
-
 //fetch data
 onMounted(async () => {
   await tasksStore.fetchTasks();
   console.log(tasks.value);
 });
-
-
 //fetch data by id
 const fetchDataById = async (id, mode) => {
   storeMode.value = mode;
@@ -51,22 +50,17 @@ const fetchDataById = async (id, mode) => {
     showDetail.value = false;
   }
 
-  // if (storeTask.value.status == "404") {
-      
-      
-  //     showDetail.value = false;
-  //     router.replace({ name: "task" });
-  //     return;
-  //   }
-
-    showDetail.value = true;
+  if (storeTask.value.status == "404") {
+    alert("The requested task does not exist");
+    router.replace({ name: "task" });
+    showDetail.value = false;
+    return;
+  }
 };
 
-if (route.name === 'taskDetail' && route.params.id) {
-    fetchDataById(route.params.id, 'view');
-    console.log('dsadas');
-    showDetail.value = true;
-  }
+if (route.params.id) {
+  fetchDataById(route.params.id, "view");
+}
 
 const removeTask = async (id) => {
   await tasksStore.deleteTask(id);
