@@ -41,6 +41,7 @@ public class TaskControllerV2 {
     }
         @PostMapping("")
         public ResponseEntity<Object> createTask(@RequestBody NewTaskDTOV2 newTask) {
+            System.out.println(newTask);
             return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(service.createTask(newTask), NewTaskReturnV2.class));
         }
 
