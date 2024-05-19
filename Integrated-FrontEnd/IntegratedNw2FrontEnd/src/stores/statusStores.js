@@ -5,10 +5,8 @@ import {
   addStatus,
   editStatus,
   deleteOneStatus,
-  deleteTranferStatus
+  deleteTranferStatus,
 } from "@/libs/api/status/fetchUtilStatus";
-
-
 
 export const useStoreStatus = defineStore("status", () => {
   const statuses = ref([]);
@@ -25,12 +23,12 @@ export const useStoreStatus = defineStore("status", () => {
   }
   async function createStatus(newStatus) {
     try {
-      const addedStatus = await addStatus(newStatus);    
-      if (addStatus.status === 400) {
-        toasterStore.error({ text: "An error occurred while saving the task." });
+      const addedStatus = await addStatus(newStatus);
+      console.log(addedStatus.status);
+      if (addedStatus.status === undefined) {
         statuses.value.push(addedStatus);
       }
-  
+      return addedStatus;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -55,7 +53,7 @@ export const useStoreStatus = defineStore("status", () => {
         statuses.value.findIndex((status) => status.id === id),
         1
       );
-      return res.status
+      return res.status;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -79,6 +77,6 @@ export const useStoreStatus = defineStore("status", () => {
     createStatus,
     updateStatus,
     deleteStatus,
-    tranferStatus
+    tranferStatus,
   };
 });

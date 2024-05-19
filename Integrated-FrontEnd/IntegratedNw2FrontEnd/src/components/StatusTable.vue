@@ -6,7 +6,8 @@ import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useStoreTasks } from "@/stores/taskStores";
-
+import useToasterStore from "../stores/notificationStores";
+import Toaster from "./Toaster.vue";
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
@@ -15,7 +16,7 @@ const statusStore = useStoreStatus();
 const taskStore = useStoreTasks();
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
-
+const toasterStore = useToasterStore();
 onMounted(async () => {
   await statusStore.fetchStatus();
 });
@@ -23,28 +24,32 @@ onMounted(async () => {
 const addOrEditStatus = async (newStatus) => {
   try {
     if (newStatus.id === undefined) {
-      await statusStore.createStatus({
-      name: newStatus.name.trim(),
-      description: newStatus.description.trim(),
-    });
+      const nahee = await statusStore.createStatus({
+        name: newStatus.name.trim(),
+        description: newStatus.description.trim(),
+      });
+      console.log(nahee);
+      if (nahee.id !== undefined) {
+        toasterStore.success({ text: "Status add successfully!" });
+      } else if (nahee.status == 400) {
+        toasterStore.error({ text: "An error occurred while add the Status. Status is Duplicated" })
+      }
     } else {
       await statusStore.updateStatus(newStatus.id, {
-      name: newStatus.name.trim(),
-      description: newStatus.description.trim(),
-    });
+        name: newStatus.name.trim(),
+        description: newStatus.description.trim(),
+      });
     }
   } catch (error) {
+    
     console.error("Error adding/editing status:", error);
-    // Handle error appropriately, e.g., show error message to user
   }
 };
-import useToasterStore from '../stores/notificationStores';
-const toasterStore = useToasterStore();
 
 const deleteStatusNoti = (res) => {
   try {
     // Simulate deletion logic here
-     if (res === 200) {
+    if (res === 200) {
       // Assuming task deletion is successful
       toasterStore.success({ text: "Status deleted successfully!" });
     } else {
@@ -53,7 +58,7 @@ const deleteStatusNoti = (res) => {
       throw new Error("Failed to delete task.");
     }
   } catch (error) {
-    console.error('Error deleting task:', error);
+    console.error("Error deleting task:", error);
     toasterStore.error({ text: "An error occurred while deleting the task." });
   }
 };
@@ -61,16 +66,15 @@ const deleteStatusNoti = (res) => {
 const deleteOne = async (id) => {
   const res = await statusStore.deleteStatus(id);
   if (res !== 404) {
-    deleteStatusNoti(res)
-  } else
-  if (res === 404) {
+    deleteStatusNoti(res);
+  } else if (res === 404) {
     alert("Error deleting status");
   }
 };
 //tranfer status
 const deleteTranfer = async (value) => {
   // console.log(value);
- await statusStore.tranferStatus(value.oldId, value.newId);
+  await statusStore.tranferStatus(value.oldId, value.newId);
 };
 
 const setModal = async (value, mode, id) => {
@@ -94,20 +98,20 @@ const fetchById = async (id, mode) => {
   storeMode.value = mode;
   if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { id: id } });
-  } 
+  }
   if (dataById.value.status == "404") {
-      alert("The requested status does not exist");
-      router.replace({ name: "status" });
-      showModal.value = false;
-      return;
-    }
-  
+    alert("The requested status does not exist");
+    router.replace({ name: "status" });
+    showModal.value = false;
+    return;
+  }
+
   showModal.value = true;
 };
 
 if (route.params.id) {
-  console.log('dsad')
-  fetchById(route.params.id , 'view');
+  console.log("dsad");
+  fetchById(route.params.id, "view");
 }
 
 const setClose = (value) => {
@@ -174,7 +178,7 @@ const setClose = (value) => {
             >
               Description
             </div>
-            
+
             <div
               class="w-[20%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             >
@@ -205,9 +209,17 @@ const setClose = (value) => {
                     <div
                       class="w-[50%] itbkk-description px-6 py-4 whitespace-nowrap overflow-x-auto break-all italic"
                     >
-                      {{ status?.description == '' || status?.description === null ? 'No Description Provided' : status?.description }}
+                      {{
+                        status?.description == "" ||
+                        status?.description === null
+                          ? "No Description Provided"
+                          : status?.description
+                      }}
                     </div>
-                    <div v-if="status.id !== 1" class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4">
+                    <div
+                      v-if="status.id !== 1"
+                      class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4"
+                    >
                       <div
                         class="btn btn-outline btn-warning"
                         @click="fetchById(status.id, 'edit')"
@@ -217,7 +229,6 @@ const setClose = (value) => {
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
                         @click="setModal(true, 'delete', status.id)"
-                        
                       >
                         Delete
                       </div>

@@ -37,31 +37,9 @@ watch(
   { deep: true, immediate: true }
 );
 
-import useToasterStore from "../stores/notificationStores";
-const toasterStore = useToasterStore();
 
-const saveStatusNoti = () => {
-  try {
-    if (props.mode === "add") {
-      if(addStatus.status === 201){
-        toasterStore.success({ text: "Status added successfully!" });
-      }else if (addStatus.status === 400) { 
-        toasterStore.error({ text: "An error occurred while saving the task." })
-      } else {
-        toasterStore.error({ text: "An error occurred while saving the task." })
-      }
-    } else if (
-      props.mode === "edit" &&
-      storeData.value.id === props.status.id
-    ) {
-      // Edit task logic here
-      toasterStore.success({ text: "Status updated successfully!" });
-    }
-  } catch (error) {
-    console.error("Error saving task:", error);
-    toasterStore.error({ text: "An error occurred while saving the task." });
-  }
-};
+
+
 
 computed(storeData.value, () => {
   Errortext.value.name == "" &&
@@ -134,7 +112,7 @@ computed(storeData.value, () => {
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   @click="
                     () => {
-                      saveStatusNoti(), emit('close', false);
+                       emit('close', false);
                       emit('newStatus', storeData);
                     }
                   "

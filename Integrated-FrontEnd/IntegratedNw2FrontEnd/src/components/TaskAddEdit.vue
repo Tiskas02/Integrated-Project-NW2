@@ -77,7 +77,7 @@ computed(newTask.value, () => {
   <div>
     <div>
       <div
-        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50"
+        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-20 z-[2]"
         style="translate: transform(-50%, -50%)"
       >
         <div class="w-[60%] m-[auto] max-h-screen">

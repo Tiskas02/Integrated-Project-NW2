@@ -19,16 +19,14 @@ const showDetail = ref(false);
 const showLimit = ref(false);
 const storeMode = ref("");
 const storeTask = ref({});
-const storeTasks = ref({})
+const storeTasks = ref({});
 const storeIndex = ref(0);
-const storeStatus = ref({});
-const filterBy = ref([]);
 const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
 //fetch data
 onMounted(async () => {
   const data = await tasksStore.fetchTasks();
-  storeTasks.value = data
+  storeTasks.value = data;
   console.log(tasks.value);
 });
 onMounted(async () => {
@@ -37,7 +35,7 @@ onMounted(async () => {
 //fetch data by id
 const fetchDataById = async (id, mode) => {
   storeMode.value = mode;
- 
+
   storeTask.value = await getTaskById(id);
   statusStore.value = await getStatusData();
 
@@ -146,7 +144,7 @@ const setClose = (value) => {
 };
 
 const SortOrder = async () => {
-  await tasksStore.sortTasksByStatus(sortOrder.value) 
+  await tasksStore.sortTasksByStatus(sortOrder.value);
   if (sortOrder.value === "DEFAULT") {
     console.log(sortOrder.value);
     sortOrder.value = "ASC";
@@ -159,91 +157,119 @@ const SortOrder = async () => {
   }
 };
 
+
 const statusFilterList = (itemName) => {
   const index = selectFilter.value.findIndex((item) => {
-    return item === itemName
-  })
-  console.log(index)
+    return item === itemName;
+  });
+  console.log(index);
   if (index === -1) {
-    selectFilter.value.push(itemName)
+    selectFilter.value.push(itemName);
   } else {
-    selectFilter.value.splice(index, 1)
+    selectFilter.value.splice(index, 1);
   }
-  console.log(selectFilter.value)
-}
+  console.log(selectFilter.value);
+};
 
 const getFilterTask = computed(() => {
   return selectFilter.value.length > 0
     ? tasks.value.filter((task) =>
         selectFilter.value.includes(task.status.name)
       )
-    : tasks.value
-})
+    : tasks.value;
+});
 
 const ClearStatuses = () => {
-  selectFilter.value.splice(0, selectFilter.value.length)
-  console.log(selectFilter.value)
-}
+  selectFilter.value.splice(0, selectFilter.value.length);
+  console.log(selectFilter.value);
+};
 </script>
 
 <template>
   <div>
     <div class="flex justify-between">
-      <div class="my-2 flex gap-2 w-4/5">
+      <div class="my-2 flex gap-2 w-3/5">
         <div class="ml-10 btn btn-outline btn-accent">
           <router-link :to="{ name: 'status' }">Manage Status</router-link>
         </div>
-          <div class="ml-3 btn btn-outline btn-accent" @click="SortOrder" v-if="sortOrder == 'DEFAULT'">
-            Sort by
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-            >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path
-                d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"
-                fill="#00BFA5"
-              />
-            </svg>
-          </div>
-          <div class="ml-3 btn btn-outline btn-accent" @click="SortOrder" v-else-if="sortOrder == 'ASC'">
-            Sort by
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-            >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path
-                d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"
-                fill="#00BFA5"
-              />
-            </svg>
-          </div>
-          <div class="ml-3 btn btn-outline btn-accent" @click="SortOrder" v-else="sortOrder == 'DESC'">
-            Sort by
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-            >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path
-                d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"
-                fill="#00BFA5"
-              />
-            </svg>
-          </div>
-          <div
+        <div
+          class="ml-3 btn btn-outline btn-accent"
+          @click="SortOrder"
+          v-if="sortOrder == 'DEFAULT'"
+        >
+          Sort by
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Layer_1"
+            data-name="Layer 1"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+          >
+            <path
+              d="M22,23c0,.553-.447,1-1,1h-4.112c-.686,0-1.318-.373-1.65-.973s-.312-1.333,.051-1.913c.03-.049,4.553-5.114,4.553-5.114h-3.841c-.553,0-1-.447-1-1s.447-1,1-1h4.112c.686,0,1.317,.372,1.649,.972s.313,1.333-.051,1.915c-.03,.048-.064,.094-.103,.136l-4.449,4.978h3.841c.553,0,1,.447,1,1Zm0-19.5v5.5c0,.553-.447,1-1,1s-1-.447-1-1v-2h-3v2c0,.553-.447,1-1,1s-1-.447-1-1V3.5c0-1.93,1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5Zm-2,1.5v-1.5c0-.827-.673-1.5-1.5-1.5s-1.5,.673-1.5,1.5v1.5h3Zm-9.707,12.707l-3.293,3.293V1c0-.553-.447-1-1-1s-1,.447-1,1V21l-3.293-3.293c-.391-.391-1.023-.391-1.414,0s-.391,1.023,0,1.414l4.293,4.293c.39,.39,.902,.585,1.414,.585s1.024-.195,1.414-.585l4.293-4.293c.391-.391,.391-1.023,0-1.414s-1.023-.391-1.414,0Z"
+              fill="#B0BEC5"
+            />
+          </svg>
+        </div>
+        <div
+          class="ml-3 btn btn-outline btn-accent"
+          @click="SortOrder"
+          v-else-if="sortOrder == 'ASC'"
+        >
+          Sort by
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Layer_1"
+            data-name="Layer 1"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+          >
+            <path
+              d="M22,23c0,.553-.447,1-1,1h-4.112c-.686,0-1.318-.373-1.65-.973s-.312-1.333,.051-1.913c.03-.049,4.553-5.114,4.553-5.114h-3.841c-.553,0-1-.447-1-1s.447-1,1-1h4.112c.686,0,1.317,.372,1.649,.972s.313,1.333-.051,1.915c-.03,.048-.064,.094-.103,.136l-4.449,4.978h3.841c.553,0,1,.447,1,1Zm0-19.5v5.5c0,.553-.447,1-1,1s-1-.447-1-1v-2h-3v2c0,.553-.447,1-1,1s-1-.447-1-1V3.5c0-1.93,1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5Zm-2,1.5v-1.5c0-.827-.673-1.5-1.5-1.5s-1.5,.673-1.5,1.5v1.5h3Zm-9.707,12.707l-3.293,3.293V1c0-.553-.447-1-1-1s-1,.447-1,1V21l-3.293-3.293c-.391-.391-1.023-.391-1.414,0s-.391,1.023,0,1.414l4.293,4.293c.39,.39,.902,.585,1.414,.585s1.024-.195,1.414-.585l4.293-4.293c.391-.391,.391-1.023,0-1.414s-1.023-.391-1.414,0Z"
+              fill="#304FFE"
+            />
+          </svg>
+        </div>
+        <div
+          class="ml-3 btn btn-outline btn-accent"
+          @click="SortOrder"
+          v-else="sortOrder == 'DESC'"
+        >
+          Sort by
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Layer_1"
+            data-name="Layer 1"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+          >
+            <path
+              d="M15,1c0-.553,.447-1,1-1h4.112c.686,0,1.317,.372,1.649,.972,.332,.599,.313,1.332-.049,1.913-.03,.049-4.554,5.115-4.554,5.115h3.841c.553,0,1,.447,1,1s-.447,1-1,1h-4.112c-.686,0-1.317-.372-1.649-.972-.332-.599-.313-1.332,.049-1.913,.03-.049,4.554-5.115,4.554-5.115h-3.841c-.553,0-1-.447-1-1Zm7,16.5v5.5c0,.553-.447,1-1,1s-1-.447-1-1v-2h-3v2c0,.553-.447,1-1,1s-1-.447-1-1v-5.5c0-1.93,1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5Zm-2,0c0-.827-.673-1.5-1.5-1.5s-1.5,.673-1.5,1.5v1.5h3v-1.5Zm-9.707,.207l-3.293,3.293V1c0-.553-.447-1-1-1s-1,.447-1,1V21l-3.293-3.293c-.391-.391-1.023-.391-1.414,0s-.391,1.023,0,1.414l4.293,4.293c.39,.39,.902,.585,1.414,.585s1.024-.195,1.414-.585l4.293-4.293c.391-.391,.391-1.023,0-1.414s-1.023-.391-1.414,0Z"
+              fill="#D50000"
+            />
+          </svg>
+        </div>
+        <div
           class="flex gap-2 items-center justify-center h-[48px] w-full border border-[#00BFA5] rounded-lg"
         >
-          <img :src="SearchIcon" width="35px" class="pl-3" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Outline"
+            viewBox="0 0 10 24"
+            width="45"
+            height="15"
+          >
+            <path
+              d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
+              fill="#00BFA5"
+            />
+          </svg>
+
           <div
-            class="dropdown dropdown-bottom w-full flex border-l border-l-[#00BFA5] h-[48px]"
+            class="dropdown dropdown-bottom dropdown-hover w-full flex border-l border-l-[#00BFA5] h-[48px]"
           >
             <div
               tabindex="0"
@@ -251,7 +277,7 @@ const ClearStatuses = () => {
               class="overflow-x-auto max-h-[40px] btn w-full text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
             >
               <div
-              v-for="statuses in selectFilter"
+                v-for="statuses in selectFilter"
                 class="bg-[#00BFA5] text-white rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around"
               >
                 <div>{{ statuses }}</div>
@@ -263,7 +289,7 @@ const ClearStatuses = () => {
               class="dropdown-content z-[1] menu p-2 shadow bg-base-100 mt-2 rounded-box w-full"
             >
               <li
-              v-for="statuses in statusStore.statuses"
+                v-for="statuses in statusStore.statuses"
                 :key="statuses.id"
                 @click="statusFilterList(statuses.name)"
               >
