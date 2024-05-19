@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch } from "vue";
+import { defineProps, defineEmits, ref, watch, computed } from "vue";
 import { useStoreStatus } from "../stores/statusStores.js";
 import { storeToRefs } from "pinia";
 
@@ -43,8 +43,13 @@ const toasterStore = useToasterStore();
 const saveStatusNoti = () => {
   try {
     if (props.mode === "add") {
-      // Add task logic here
-      toasterStore.success({ text: "Status added successfully!" });
+      if(addStatus.status === 201){
+        toasterStore.success({ text: "Status added successfully!" });
+      }else if (addStatus.status === 400) { 
+        toasterStore.error({ text: "An error occurred while saving the task." })
+      } else {
+        toasterStore.error({ text: "An error occurred while saving the task." })
+      }
     } else if (
       props.mode === "edit" &&
       storeData.value.id === props.status.id
@@ -57,6 +62,21 @@ const saveStatusNoti = () => {
     toasterStore.error({ text: "An error occurred while saving the task." });
   }
 };
+
+computed(storeData.value, () => {
+  Errortext.value.name == "" &&
+  Errortext.value.description == "";
+
+  if (storeData.value.name.trim().length > 50) {
+    Errortext.value.name = 'Status name is too long than 50 character'
+  }else if (storeData.value.name.trim().length == 0) {
+    Errortext.value.name = 'Status name can not be empty'
+  }else if (storeData.value.description.trim().length > 200) {
+    Errortext.value.description = 'Status description is too long than 200 character'
+  }else {
+    Errortext.value.description = ''
+  }
+})
 </script>
 
 <template>
@@ -82,6 +102,7 @@ const saveStatusNoti = () => {
                   placeholder="Enter your title here..."
                   required
                   v-model="storeData.name"
+                  maxlength="50"
                   >{{ status?.name }}</textarea
                 >
               </div>
@@ -100,6 +121,7 @@ const saveStatusNoti = () => {
                     class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
                     placeholder="Enter your description here..."
                     v-model="storeData.description"
+                    maxlength="200"
                     >{{ status?.description }}</textarea
                   >
                 </div>

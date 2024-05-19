@@ -8,6 +8,8 @@ import {
   deleteTranferStatus
 } from "@/libs/api/status/fetchUtilStatus";
 
+
+
 export const useStoreStatus = defineStore("status", () => {
   const statuses = ref([]);
   async function fetchStatus() {
@@ -23,8 +25,12 @@ export const useStoreStatus = defineStore("status", () => {
   }
   async function createStatus(newStatus) {
     try {
-      const addedStatus = await addStatus(newStatus);
-      statuses.value.push(addedStatus);
+      const addedStatus = await addStatus(newStatus);    
+      if (addStatus.status === 400) {
+        toasterStore.error({ text: "An error occurred while saving the task." });
+        statuses.value.push(addedStatus);
+      }
+  
     } catch (error) {
       throw new Error(error.message);
     }

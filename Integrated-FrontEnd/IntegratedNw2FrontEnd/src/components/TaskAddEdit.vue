@@ -2,9 +2,13 @@
 import { defineProps, defineEmits, ref, watch, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { storeToRefs } from "pinia";
+
+
 const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
+
+
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus();
 });
@@ -27,10 +31,9 @@ const props = defineProps({
     },
   },
 });
-console.log(props.task);
+
 const newTask = ref({ ...props.task, status: props.task.status.id });
-console.log('=========');
-console.log(newTask.value);
+
 
 import useToasterStore from '../stores/notificationStores';
 const toasterStore = useToasterStore();
@@ -50,6 +53,24 @@ const saveTaskNoti = () => {
   }
 };
 
+computed(newTask.value, () => { 
+  Errortext.value.title == '' &&
+  Errortext.value.description == '' &&
+  Errortext.value.assignee == '';
+
+  if (newTask.value.title.trim().length > 100) {
+    Errortext.value.title = 'Title has longer than 100 character'
+  } else if (newTask.value.title.trim().length == 0) {
+    Errortext.value.title = 'Title can not be empty!!'
+  }else if (newTask.value.description.trim().length > 500) {
+    Errortext.value.description = 'Description has longer than 500 character'
+  }else if (newTask.value.assignees.trim().length > 30) {
+    Errortext.value.assignees = 'Assignees has longer than 30 character'
+  }else {
+    Errortext.value.assignees = ''
+  }
+ 
+});
 </script>
 
 <template>
@@ -73,6 +94,7 @@ const saveTaskNoti = () => {
                 <textarea
                   class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                   placeholder="Enter your title here..."
+                  maxlength="100"
                   required
                   v-model="newTask.title"
                   >{{ task?.title }}</textarea
@@ -112,6 +134,7 @@ const saveTaskNoti = () => {
                         ? 'Enter your assign here...'
                         : 'Unassigned'
                     "
+                    maxlength="30"
                     v-model="newTask.assignees"
                     >{{ task?.assignee }}</textarea>
                 </div>
@@ -154,6 +177,7 @@ const saveTaskNoti = () => {
                         ? 'Enter your description here...'
                         : 'No Description Provided'
                     "
+                    maxlength="500"
                     v-model="newTask.description"
                     >{{ task?.description }}</textarea
                   >

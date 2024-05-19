@@ -2,11 +2,12 @@
 import { storeToRefs } from "pinia";
 import { useStoreTasks } from "../stores/taskStores.js";
 import { useStoreStatus } from "../stores/statusStores.js";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import TaskModal from "../components/TaskModal.vue";
 import { useRoute, useRouter } from "vue-router";
-import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
+import { getTaskById, getTaskData } from "@/libs/api/task/fetchUtilTask.js";
 import LimitTaskStatus from "./LimitTaskStatus.vue";
+import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -18,16 +19,27 @@ const showDetail = ref(false);
 const showLimit = ref(false);
 const storeMode = ref("");
 const storeTask = ref({});
+const storeTasks = ref({})
 const storeIndex = ref(0);
+const storeStatus = ref({});
+const filterBy = ref([]);
+const sortOrder = ref("DEFAULT");
+const selectFilter = ref([]);
 //fetch data
 onMounted(async () => {
-  await tasksStore.fetchTasks();
+  const data = await tasksStore.fetchTasks();
+  storeTasks.value = data
   console.log(tasks.value);
+});
+onMounted(async () => {
+  await statusStore.fetchStatus();
 });
 //fetch data by id
 const fetchDataById = async (id, mode) => {
   storeMode.value = mode;
+ 
   storeTask.value = await getTaskById(id);
+  statusStore.value = await getStatusData();
 
   if (storeMode.value === "add") {
     showDetail.value = true;
@@ -110,7 +122,7 @@ const addEditTask = async (newTask) => {
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;
-  
+
   if (storeMode.value === "add") {
     router.push({ name: "addTask" });
   } else if (storeMode.value === "edit") {
@@ -123,49 +135,157 @@ const setLimit = (value) => {
   showLimit.value = value;
   console.log(showLimit.value);
   if (showLimit.value == true) {
-    console.log('asf');
+    console.log("asf");
     router.push({ name: "limit" });
   }
-}
+};
 const setClose = (value) => {
   showDetail.value = value;
   showLimit.value = value;
   router.push({ name: "task" });
 };
+
+const SortOrder = async () => {
+  await tasksStore.sortTasksByStatus(sortOrder.value) 
+  if (sortOrder.value === "DEFAULT") {
+    console.log(sortOrder.value);
+    sortOrder.value = "ASC";
+  } else if (sortOrder.value === "ASC") {
+    console.log(sortOrder.value);
+    sortOrder.value = "DESC";
+  } else {
+    console.log(sortOrder.value);
+    sortOrder.value = "DEFAULT";
+  }
+};
+
+const statusFilterList = (itemName) => {
+  const index = selectFilter.value.findIndex((item) => {
+    return item === itemName
+  })
+  console.log(index)
+  if (index === -1) {
+    selectFilter.value.push(itemName)
+  } else {
+    selectFilter.value.splice(index, 1)
+  }
+  console.log(selectFilter.value)
+}
+
+const getFilterTask = computed(() => {
+  return selectFilter.value.length > 0
+    ? tasks.value.filter((task) =>
+        selectFilter.value.includes(task.status.name)
+      )
+    : tasks.value
+})
+
+const ClearStatuses = () => {
+  selectFilter.value.splice(0, selectFilter.value.length)
+  console.log(selectFilter.value)
+}
 </script>
 
 <template>
   <div>
     <div class="flex justify-between">
-      <div class="my-2">
+      <div class="my-2 flex gap-2 w-4/5">
         <div class="ml-10 btn btn-outline btn-accent">
           <router-link :to="{ name: 'status' }">Manage Status</router-link>
         </div>
-        <div class="dropdown dropdown-hover ml-3">
-          <div
-            tabindex="0"
-            role="button"
-            class="btn btn-outline btn-accent m-1"
-          >
-            Status Fillter
+          <div class="ml-3 btn btn-outline btn-accent" @click="SortOrder" v-if="sortOrder == 'DEFAULT'">
+            Sort by
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"
+                fill="#00BFA5"
+              />
+            </svg>
           </div>
-          <ul
-            tabindex="0"
-            class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+          <div class="ml-3 btn btn-outline btn-accent" @click="SortOrder" v-else-if="sortOrder == 'ASC'">
+            Sort by
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"
+                fill="#00BFA5"
+              />
+            </svg>
+          </div>
+          <div class="ml-3 btn btn-outline btn-accent" @click="SortOrder" v-else="sortOrder == 'DESC'">
+            Sort by
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"
+                fill="#00BFA5"
+              />
+            </svg>
+          </div>
+          <div
+          class="flex gap-2 items-center justify-center h-[48px] w-full border border-[#00BFA5] rounded-lg"
+        >
+          <img :src="SearchIcon" width="35px" class="pl-3" />
+          <div
+            class="dropdown dropdown-bottom w-full flex border-l border-l-[#00BFA5] h-[48px]"
           >
-            <li v-for="statuses in statusStore.statuses" :key="statuses">
-              <div>
-                <input
-                  type="checkbox"
-                  class="checkbox"
-                  :id="statuses.statusId"
-                  :value="statuses.name"
-                  v-model="filterBy"
-                />
-                <label :for="statuses.name">{{ statuses.name }}</label>
+            <div
+              tabindex="0"
+              role="button"
+              class="overflow-x-auto max-h-[40px] btn w-full text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
+            >
+              <div
+              v-for="statuses in selectFilter"
+                class="bg-[#00BFA5] text-white rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around"
+              >
+                <div>{{ statuses }}</div>
+                <div class="pr-3" @click="statusFilterList(statuses)">X</div>
               </div>
-            </li>
-          </ul>
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content z-[1] menu p-2 shadow bg-base-100 mt-2 rounded-box w-full"
+            >
+              <li
+              v-for="statuses in statusStore.statuses"
+                :key="statuses.id"
+                @click="statusFilterList(statuses.name)"
+              >
+                <div class="hover:text-white hover:bg-[#00BFA5]">
+                  <input
+                    type="checkbox"
+                    class="checkbox hover:border-white"
+                    :id="statuses.id"
+                    :checked="selectFilter.includes(statuses.name)"
+                    :value="statuses.id"
+                  />
+                  <label :for="statuses.name">{{ statuses.name }}</label>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <p
+            class="pr-3 text-[#00BFA5] cursor-pointer"
+            @click="ClearStatuses()"
+          >
+            X
+          </p>
         </div>
       </div>
       <div class="my-2 flex">
@@ -239,7 +359,7 @@ const setClose = (value) => {
           </div>
           <!-- Edit Task -->
           <div class="w-full h-[350px] overflow-auto">
-            <div v-for="(task, index) in tasks" :key="task.id">
+            <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div class="">
                   <div
