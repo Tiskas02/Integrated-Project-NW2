@@ -1,21 +1,40 @@
 package com.example.integratedbackend.ErrorHandle;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Data
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
-    private String timestamp;
-    private int status;
-    private String error;
-    private String message;
-    private String path;
+    private final ZonedDateTime timestamp;
+    private final int status;
+    private final String message;
+    private final String instance;
+    private String stackTrace;
+    private List<ValidationError> errors;
 
-    public ErrorResponse(String timestamp, int status, String error, String message, String path) {
-        this.timestamp = timestamp;
+    public ErrorResponse(int status, String message, String instance) {
         this.status = status;
-        this.error = error;
         this.message = message;
-        this.path = path;
+        this.instance = instance;
+        this.timestamp = ZonedDateTime.now();
     }
 
+    private record ValidationError(String field, String message) {
+    }
+
+    public void addValidationError(String field, String message) {
+        if (Objects.isNull(errors)) {
+            errors = new ArrayList<>();
+        }
+        errors.add(new ValidationError(field, message));
+    }
 }

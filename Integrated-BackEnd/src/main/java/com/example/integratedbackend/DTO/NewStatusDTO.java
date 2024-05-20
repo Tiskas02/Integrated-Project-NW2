@@ -1,9 +1,13 @@
 package com.example.integratedbackend.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class NewStatusDTO {
+
+    @NotBlank(message = "must not be null")
     private String name;
     private String description;
 
