@@ -37,24 +37,27 @@ watch(
   { deep: true, immediate: true }
 );
 
-
-
-
+const nameCharCount = computed(() =>
+  storeData.value.name ? storeData.value.name.length : 0
+);
+const descriptionCharCount = computed(() =>
+  storeData.value.description ? storeData.value.description.length : 0
+);
 
 computed(storeData.value, () => {
-  Errortext.value.name == "" &&
-  Errortext.value.description == "";
+  Errortext.value.name == "" && Errortext.value.description == "";
 
   if (storeData.value.name.trim().length > 50) {
-    Errortext.value.name = 'Status name is too long than 50 character'
-  }else if (storeData.value.name.trim().length == 0) {
-    Errortext.value.name = 'Status name can not be empty'
-  }else if (storeData.value.description.trim().length > 200) {
-    Errortext.value.description = 'Status description is too long than 200 character'
-  }else {
-    Errortext.value.description = ''
+    Errortext.value.name = "Status name is too long than 50 character";
+  } else if (storeData.value.name.trim().length == 0) {
+    Errortext.value.name = "Status name can not be empty";
+  } else if (storeData.value.description.trim().length > 200) {
+    Errortext.value.description =
+      "Status description is too long than 200 character";
+  } else {
+    Errortext.value.description = "";
   }
-})
+});
 </script>
 
 <template>
@@ -79,11 +82,12 @@ computed(storeData.value, () => {
                   class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                   placeholder="Enter your title here..."
                   required
-                  v-model="storeData.name"
                   maxlength="50"
+                  v-model="storeData.name"
                   >{{ status?.name }}</textarea
                 >
               </div>
+              <div class="flex justify-end text-xs">{{ nameCharCount }}/50</div>
             </div>
             <div class="mt-5">
               <div role="tablist" class="tabs tabs-bordered mb-3">
@@ -104,6 +108,9 @@ computed(storeData.value, () => {
                   >
                 </div>
               </div>
+              <div class="flex justify-end text-xs">
+                {{ descriptionCharCount }}/200
+              </div>
             </div>
 
             <div class="flex flex-row w-full justify-end">
@@ -112,7 +119,7 @@ computed(storeData.value, () => {
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   @click="
                     () => {
-                       emit('close', false);
+                      emit('close', false);
                       emit('newStatus', storeData);
                     }
                   "

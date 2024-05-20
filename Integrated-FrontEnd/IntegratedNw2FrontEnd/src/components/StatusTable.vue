@@ -21,27 +21,54 @@ onMounted(async () => {
   await statusStore.fetchStatus();
 });
 
+// const addOrEditStatus = async (newStatus) => {
+//   try {
+//     if (newStatus.id === undefined) {
+//       const nahee = await statusStore.createStatus({
+//         name: newStatus.name.trim(),
+//         description: newStatus.description.trim(),
+//       });
+//       console.log(nahee);
+//       if (nahee.id !== undefined) {
+//         toasterStore.success({ text: "Status add successfully!" });
+//       } else if (nahee.status == 400) {
+//         toasterStore.error({ text: "An error occurred while add the Status. Status is Duplicated" })
+//       }
+//     } else {
+//       await statusStore.updateStatus(newStatus.id, {
+//         name: newStatus.name.trim(),
+//         description: newStatus.description.trim(),
+//       });
+//     }
+//   } catch (error) {
+    
+//     console.error("Error adding/editing status:", error);
+//   }
+// };
+
 const addOrEditStatus = async (newStatus) => {
   try {
+    const name = newStatus.name ? newStatus.name.trim() : '';
+    const description = newStatus.description ? newStatus.description.trim() : '';
+
     if (newStatus.id === undefined) {
       const nahee = await statusStore.createStatus({
-        name: newStatus.name.trim(),
-        description: newStatus.description.trim(),
+        name,
+        description,
       });
       console.log(nahee);
       if (nahee.id !== undefined) {
-        toasterStore.success({ text: "Status add successfully!" });
-      } else if (nahee.status == 400) {
-        toasterStore.error({ text: "An error occurred while add the Status. Status is Duplicated" })
+        toasterStore.success({ text: "Status added successfully!" });
+      } else if (nahee.status === 400) {
+        toasterStore.error({ text: "An error occurred while adding the status. Status is duplicated." });
       }
     } else {
       await statusStore.updateStatus(newStatus.id, {
-        name: newStatus.name.trim(),
-        description: newStatus.description.trim(),
+        name,
+        description,
       });
     }
   } catch (error) {
-    
     console.error("Error adding/editing status:", error);
   }
 };
@@ -217,7 +244,7 @@ const setClose = (value) => {
                       }}
                     </div>
                     <div
-                      v-if="status.id !== 1"
+                      v-if="status.id !== 1 && status.id !== 4"
                       class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4"
                     >
                       <div

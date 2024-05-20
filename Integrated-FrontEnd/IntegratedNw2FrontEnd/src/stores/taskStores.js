@@ -6,10 +6,12 @@ import {
   editTask,
 } from "../libs/api/task/fetchUtilTask.js";
 import { ref } from "vue";
+import useToasterStore from "../stores/notificationStores";
+
+
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
-
-  const url = import.meta.env.VITE_BASE_URL;
+  const toasterStore = useToasterStore();
   async function fetchTasks() {
     try {
       tasks.value = [];
@@ -27,7 +29,6 @@ export const useStoreTasks = defineStore("tasks", () => {
   async function createTask(task) {
     try {
       const addedTask = await addTask(task);
-      console.log(addedTask);
       tasks.value.push(addedTask);
       return addedTask;
     } catch (error) {
