@@ -21,5 +21,5 @@ public interface TasksRepositoriesV2 extends JpaRepository<Taskv2, Integer> {
     void updateTaskStatus(Status oldStatus, Status newStatus);
 
     List<Taskv2> findByStatusIn(List<Status> statusV2, Sort sort);
-
+    List<Taskv2> findByStatusId(Integer statusId);
 }

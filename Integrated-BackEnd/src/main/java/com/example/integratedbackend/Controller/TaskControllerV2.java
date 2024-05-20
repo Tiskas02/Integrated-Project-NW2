@@ -3,6 +3,7 @@ package com.example.integratedbackend.Controller;
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskServiceV2;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,25 +23,22 @@ public class TaskControllerV2 {
         @Autowired
         private ListMapper listMapper;
 
-//    @GetMapping("")
-//    public ResponseEntity<Object> getTasks() {
-//        return ResponseEntity.ok(listMapper.mapList(service.getTasks(), TaskDTOV2.class, modelMapper));
-//    }
-    @GetMapping("")
-    public ResponseEntity<Object> getAllTask(
-            @RequestParam(required = false) List<String> filterStatuses,
-            @RequestParam(required = false, defaultValue = "createdOn") String[] sortBy,
-            @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection
-    ) {
-        return ResponseEntity.ok(service.getAllTodo(filterStatuses,sortBy,sortDirection));
-    }
+        @GetMapping("")
+        public ResponseEntity<Object> getAllTask(
+                @RequestParam(required = false) List<String> filterStatuses,
+                @RequestParam(required = false ,defaultValue = "") String[] sortBy,
+                @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection
+        ) {
+            return ResponseEntity.ok(service.getAllTasks(filterStatuses,sortBy,sortDirection));
+        }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Object> findTaskById(@PathVariable Integer id) {
-        return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTOV2.class));
-    }
+        @GetMapping("{id}")
+        public ResponseEntity<Object> findTaskById(@PathVariable Integer id) {
+            return ResponseEntity.ok(modelMapper.map(service.findByID(id), TaskIDDTOV2.class));
+        }
         @PostMapping("")
-        public ResponseEntity<Object> createTask(@RequestBody NewTaskDTOV2 newTask) {
+        public ResponseEntity<Object> createTask(@Valid @RequestBody NewTaskDTOV2 newTask) {
+            System.out.println(newTask);
             return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(service.createTask(newTask), NewTaskReturnV2.class));
         }
 
@@ -50,7 +48,7 @@ public class TaskControllerV2 {
         }
 
         @PutMapping("{id}")
-        public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
+        public ResponseEntity<Object> updateTask(@Valid @RequestBody NewTaskDTOV2 editTask,@PathVariable Integer id){
             return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTOV2.class));
         }
 
