@@ -36,13 +36,19 @@ public class TaskServiceV2 {
     private ListMapper listMapper;
 
 
-    public List<TaskDTOV2> getAllTodo(List<String> statusNames, String[] sortBy, String[] direction) {
+    public List<TaskDTOV2> getAllTasks(List<String> statusNames, String[] sortBy, String[] direction) {
         List<Sort.Order> orders = new ArrayList<>();
-        if (sortBy != null && sortBy.length > 0) {
-            for (int i = 0; i < sortBy.length; i++) {
-                orders.add(new Sort.Order((direction[i].equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC), sortBy[i]));
-            }
+
+        if((sortBy.length != 0 && !(sortBy[0].equals("status.name"))) || sortBy.length > 1){
+            throw new ItemErrorNotFoundException("invalid filter parameter");
         }
+            if (sortBy.length != 0) {
+                for (int i = 0; i < sortBy.length; i++) {
+                    orders.add(new Sort.Order((direction[i].equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC), sortBy[i]));
+                }
+            }else {
+                orders.add(new Sort.Order(Sort.Direction.ASC, "createdOn"));
+            }
         if(statusNames != null){
             List<Status> statuses = new ArrayList<>();
             for (String name:statusNames

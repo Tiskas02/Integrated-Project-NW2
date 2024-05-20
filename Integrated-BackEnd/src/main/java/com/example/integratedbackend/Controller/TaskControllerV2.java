@@ -26,10 +26,10 @@ public class TaskControllerV2 {
         @GetMapping("")
         public ResponseEntity<Object> getAllTask(
                 @RequestParam(required = false) List<String> filterStatuses,
-                @RequestParam(required = false, defaultValue = "createdOn") String[] sortBy,
+                @RequestParam(required = false ,defaultValue = "") String[] sortBy,
                 @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection
         ) {
-            return ResponseEntity.ok(service.getAllTodo(filterStatuses,sortBy,sortDirection));
+            return ResponseEntity.ok(service.getAllTasks(filterStatuses,sortBy,sortDirection));
         }
 
         @GetMapping("{id}")
