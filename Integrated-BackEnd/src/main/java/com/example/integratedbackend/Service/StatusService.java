@@ -1,6 +1,5 @@
 package com.example.integratedbackend.Service;
 
-import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Entities.Status;
 import com.example.integratedbackend.Entities.Taskv2;
@@ -101,21 +100,20 @@ public class StatusService {
         }
     }
 
-    @Transactional
-    public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {
-        if (inputStatus.getName().equals("No Status") || inputStatus.getName().equals("Done")) {
-            throw new ItemErrorNotFoundException(inputStatus.getName()+" cannot be modified");
-        }
+    @Transactional     
+    public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {          
+        Status status=repositories.findById(id).
+                orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:"+id));
         List<Status> statusList= repositories.findAllByNameIgnoreCase(inputStatus.getName());
-        if (!statusList.isEmpty()){
+        if (!statusList.isEmpty()){ 
             throw new StatusIdNotFoundException("must be unique");
         }
-        repositories.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("NOT FOUND")
-        );
+        if (status.getName().equals("No Status") || status.getName().equals("Done")) {
+            throw new ItemErrorNotFoundException(status.getName()+" cannot be modified");
+        }
         Status updatedStatus = mapper.map(inputStatus, Status.class);
-        updatedStatus.setId(id);
-        return mapper.map(repositories.save(updatedStatus), StatusDTO.class);
+            updatedStatus.setId(id);
+            return mapper.map(repositories.save(updatedStatus),StatusDTO.class);
     }
 
     @Transactional
