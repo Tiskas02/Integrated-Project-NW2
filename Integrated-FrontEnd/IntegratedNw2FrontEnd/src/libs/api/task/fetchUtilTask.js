@@ -2,7 +2,7 @@ const url = import.meta.env.VITE_BASE_URL;
 
 async function getTaskData() {
     try {
-      const res = await fetch(`${url}/v2/tasks`);
+      const res = await fetch(`${url}/tasks`);
       const data = await res.json();
       return data;
     } catch (error) {
@@ -14,7 +14,7 @@ async function getTaskData() {
 
   async function getTaskById(id) {
     try {
-      const res = await fetch(`${url}/v2/tasks/${id}`);
+      const res = await fetch(`${url}/tasks/${id}`);
       
       // if the response is not ok, go back to the previous page
       if(!res.ok){
@@ -33,7 +33,7 @@ async function getTaskData() {
   async function addTask(newTask) {
     console.log(newTask,'fetchaddTask');
     try {
-      const res = await fetch(`${url}/v2/tasks`, {
+      const res = await fetch(`${url}/tasks`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -51,7 +51,7 @@ async function getTaskData() {
 
   async function deleteItemById(id) {
     try {
-      const res = await fetch(`${url}/v2/tasks/${id}`, {
+      const res = await fetch(`${url}/tasks/${id}`, {
         method: "DELETE",
       });
       return res.status;
@@ -63,7 +63,7 @@ async function getTaskData() {
 
   async function editTask(id, editTask) {
     try {
-      const res = await fetch(`${url}/v2/tasks/${id}`, {
+      const res = await fetch(`${url}/tasks/${id}`, {
         method: "PUT",
         headers: {
           "content-type": "application/json",
