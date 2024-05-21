@@ -2,9 +2,9 @@ version: "3.3"
 services:
   dbserver:
     container_name: dataContainer
-    build:
-      context: ./Integrated-DataBase
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./Integrated-DataBase
+    #   dockerfile: Dockerfile
     image: mysql/mysql-server
     environment:
       MYSQL_DATABASE: 'kradanItBangMod'
@@ -64,9 +64,9 @@ services:
     networks: 
       - FE-network
     depends_on:
-    #   - dbserver
+      - dbserver
       - backend
-    #   - reverse_proxy
+      - reverse_proxy
 
 volumes:
   mysqldb:
