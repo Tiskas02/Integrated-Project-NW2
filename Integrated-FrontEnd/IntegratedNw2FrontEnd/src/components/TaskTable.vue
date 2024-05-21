@@ -2,11 +2,12 @@
 import { storeToRefs } from "pinia";
 import { useStoreTasks } from "../stores/taskStores.js";
 import { useStoreStatus } from "../stores/statusStores.js";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import TaskModal from "../components/TaskModal.vue";
 import { useRoute, useRouter } from "vue-router";
-import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
+import { getTaskById, getTaskData } from "@/libs/api/task/fetchUtilTask.js";
 import LimitTaskStatus from "./LimitTaskStatus.vue";
+import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -18,16 +19,25 @@ const showDetail = ref(false);
 const showLimit = ref(false);
 const storeMode = ref("");
 const storeTask = ref({});
+const storeTasks = ref({});
 const storeIndex = ref(0);
+const sortOrder = ref("DEFAULT");
+const selectFilter = ref([]);
 //fetch data
 onMounted(async () => {
-  await tasksStore.fetchTasks();
+  const data = await tasksStore.fetchTasks();
+  storeTasks.value = data;
   console.log(tasks.value);
+});
+onMounted(async () => {
+  await statusStore.fetchStatus();
 });
 //fetch data by id
 const fetchDataById = async (id, mode) => {
   storeMode.value = mode;
+
   storeTask.value = await getTaskById(id);
+  statusStore.value = await getStatusData();
 
   if (storeMode.value === "add") {
     showDetail.value = true;
@@ -110,7 +120,7 @@ const addEditTask = async (newTask) => {
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;
-  
+
   if (storeMode.value === "add") {
     router.push({ name: "addTask" });
   } else if (storeMode.value === "edit") {
@@ -123,49 +133,185 @@ const setLimit = (value) => {
   showLimit.value = value;
   console.log(showLimit.value);
   if (showLimit.value == true) {
-    console.log('asf');
+    console.log("asf");
     router.push({ name: "limit" });
   }
-}
+};
 const setClose = (value) => {
   showDetail.value = value;
   showLimit.value = value;
   router.push({ name: "task" });
+};
+
+const SortOrder = async () => {
+  await tasksStore.sortTasksByStatus(sortOrder.value);
+  if (sortOrder.value === "DEFAULT") {
+    console.log(sortOrder.value);
+    sortOrder.value = "ASC";
+  } else if (sortOrder.value === "ASC") {
+    console.log(sortOrder.value);
+    sortOrder.value = "DESC";
+  } else {
+    console.log(sortOrder.value);
+    sortOrder.value = "DEFAULT";
+  }
+};
+
+
+const statusFilterList = (itemName) => {
+  const index = selectFilter.value.findIndex((item) => {
+    return item === itemName;
+  });
+  console.log(index);
+  if (index === -1) {
+    selectFilter.value.push(itemName);
+  } else {
+    selectFilter.value.splice(index, 1);
+  }
+  console.log(selectFilter.value);
+};
+
+const getFilterTask = computed(() => {
+  return selectFilter.value.length > 0
+    ? tasks.value.filter((task) =>
+        selectFilter.value.includes(task.status.name)
+      )
+    : tasks.value;
+});
+
+const ClearStatuses = () => {
+  selectFilter.value.splice(0, selectFilter.value.length);
+  console.log(selectFilter.value);
 };
 </script>
 
 <template>
   <div>
     <div class="flex justify-between">
-      <div class="my-2">
+      <div class="my-2 flex gap-2 w-3/5">
         <div class="ml-10 btn btn-outline btn-accent">
           <router-link :to="{ name: 'status' }">Manage Status</router-link>
         </div>
-        <div class="dropdown dropdown-hover ml-3">
+        <div
+          class="ml-3 btn btn-outline btn-accent"
+          @click="SortOrder"
+          v-if="sortOrder == 'DEFAULT'"
+        >
+          Sort by
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Layer_1"
+            data-name="Layer 1"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+          >
+            <path
+              d="M22,23c0,.553-.447,1-1,1h-4.112c-.686,0-1.318-.373-1.65-.973s-.312-1.333,.051-1.913c.03-.049,4.553-5.114,4.553-5.114h-3.841c-.553,0-1-.447-1-1s.447-1,1-1h4.112c.686,0,1.317,.372,1.649,.972s.313,1.333-.051,1.915c-.03,.048-.064,.094-.103,.136l-4.449,4.978h3.841c.553,0,1,.447,1,1Zm0-19.5v5.5c0,.553-.447,1-1,1s-1-.447-1-1v-2h-3v2c0,.553-.447,1-1,1s-1-.447-1-1V3.5c0-1.93,1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5Zm-2,1.5v-1.5c0-.827-.673-1.5-1.5-1.5s-1.5,.673-1.5,1.5v1.5h3Zm-9.707,12.707l-3.293,3.293V1c0-.553-.447-1-1-1s-1,.447-1,1V21l-3.293-3.293c-.391-.391-1.023-.391-1.414,0s-.391,1.023,0,1.414l4.293,4.293c.39,.39,.902,.585,1.414,.585s1.024-.195,1.414-.585l4.293-4.293c.391-.391,.391-1.023,0-1.414s-1.023-.391-1.414,0Z"
+              fill="#B0BEC5"
+            />
+          </svg>
+        </div>
+        <div
+          class="ml-3 btn btn-outline btn-accent"
+          @click="SortOrder"
+          v-else-if="sortOrder == 'ASC'"
+        >
+          Sort by
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Layer_1"
+            data-name="Layer 1"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+          >
+            <path
+              d="M22,23c0,.553-.447,1-1,1h-4.112c-.686,0-1.318-.373-1.65-.973s-.312-1.333,.051-1.913c.03-.049,4.553-5.114,4.553-5.114h-3.841c-.553,0-1-.447-1-1s.447-1,1-1h4.112c.686,0,1.317,.372,1.649,.972s.313,1.333-.051,1.915c-.03,.048-.064,.094-.103,.136l-4.449,4.978h3.841c.553,0,1,.447,1,1Zm0-19.5v5.5c0,.553-.447,1-1,1s-1-.447-1-1v-2h-3v2c0,.553-.447,1-1,1s-1-.447-1-1V3.5c0-1.93,1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5Zm-2,1.5v-1.5c0-.827-.673-1.5-1.5-1.5s-1.5,.673-1.5,1.5v1.5h3Zm-9.707,12.707l-3.293,3.293V1c0-.553-.447-1-1-1s-1,.447-1,1V21l-3.293-3.293c-.391-.391-1.023-.391-1.414,0s-.391,1.023,0,1.414l4.293,4.293c.39,.39,.902,.585,1.414,.585s1.024-.195,1.414-.585l4.293-4.293c.391-.391,.391-1.023,0-1.414s-1.023-.391-1.414,0Z"
+              fill="#304FFE"
+            />
+          </svg>
+        </div>
+        <div
+          class="ml-3 btn btn-outline btn-accent"
+          @click="SortOrder"
+          v-else="sortOrder == 'DESC'"
+        >
+          Sort by
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Layer_1"
+            data-name="Layer 1"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+          >
+            <path
+              d="M15,1c0-.553,.447-1,1-1h4.112c.686,0,1.317,.372,1.649,.972,.332,.599,.313,1.332-.049,1.913-.03,.049-4.554,5.115-4.554,5.115h3.841c.553,0,1,.447,1,1s-.447,1-1,1h-4.112c-.686,0-1.317-.372-1.649-.972-.332-.599-.313-1.332,.049-1.913,.03-.049,4.554-5.115,4.554-5.115h-3.841c-.553,0-1-.447-1-1Zm7,16.5v5.5c0,.553-.447,1-1,1s-1-.447-1-1v-2h-3v2c0,.553-.447,1-1,1s-1-.447-1-1v-5.5c0-1.93,1.57-3.5,3.5-3.5s3.5,1.57,3.5,3.5Zm-2,0c0-.827-.673-1.5-1.5-1.5s-1.5,.673-1.5,1.5v1.5h3v-1.5Zm-9.707,.207l-3.293,3.293V1c0-.553-.447-1-1-1s-1,.447-1,1V21l-3.293-3.293c-.391-.391-1.023-.391-1.414,0s-.391,1.023,0,1.414l4.293,4.293c.39,.39,.902,.585,1.414,.585s1.024-.195,1.414-.585l4.293-4.293c.391-.391,.391-1.023,0-1.414s-1.023-.391-1.414,0Z"
+              fill="#D50000"
+            />
+          </svg>
+        </div>
+        <div
+          class="flex gap-2 items-center justify-center h-[48px] w-full border border-[#00BFA5] rounded-lg"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Outline"
+            viewBox="0 0 10 24"
+            width="45"
+            height="15"
+          >
+            <path
+              d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
+              fill="#00BFA5"
+            />
+          </svg>
+
           <div
-            tabindex="0"
-            role="button"
-            class="btn btn-outline btn-accent m-1"
+            class="dropdown dropdown-bottom dropdown-hover w-full flex border-l border-l-[#00BFA5] h-[48px]"
           >
-            Status Fillter
-          </div>
-          <ul
-            tabindex="0"
-            class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            <li v-for="statuses in statusStore.statuses" :key="statuses">
-              <div>
-                <input
-                  type="checkbox"
-                  class="checkbox"
-                  :id="statuses.statusId"
-                  :value="statuses.name"
-                  v-model="filterBy"
-                />
-                <label :for="statuses.name">{{ statuses.name }}</label>
+            <div
+              tabindex="0"
+              role="button"
+              class="overflow-x-auto max-h-[40px] btn w-full text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
+            >
+              <div
+                v-for="statuses in selectFilter"
+                class="bg-[#00BFA5] text-white rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around"
+              >
+                <div>{{ statuses }}</div>
+                <div class="pr-3" @click="statusFilterList(statuses)">X</div>
               </div>
-            </li>
-          </ul>
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content z-[1] menu p-2 shadow bg-base-100 mt-2 rounded-box w-full"
+            >
+              <li
+                v-for="statuses in statusStore.statuses"
+                :key="statuses.id"
+                @click="statusFilterList(statuses.name)"
+              >
+                <div class="hover:text-white hover:bg-[#00BFA5]">
+                  <input
+                    type="checkbox"
+                    class="checkbox hover:border-white"
+                    :id="statuses.id"
+                    :checked="selectFilter.includes(statuses.name)"
+                    :value="statuses.id"
+                  />
+                  <label :for="statuses.name">{{ statuses.name }}</label>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <p
+            class="pr-3 text-[#00BFA5] cursor-pointer"
+            @click="ClearStatuses()"
+          >
+            X
+          </p>
         </div>
       </div>
       <div class="my-2 flex">
@@ -239,7 +385,7 @@ const setClose = (value) => {
           </div>
           <!-- Edit Task -->
           <div class="w-full h-[350px] overflow-auto">
-            <div v-for="(task, index) in tasks" :key="task.id">
+            <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div class="">
                   <div

@@ -6,9 +6,12 @@ import {
   editTask,
 } from "../libs/api/task/fetchUtilTask.js";
 import { ref } from "vue";
+import useToasterStore from "../stores/notificationStores";
+
+
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
-
+  const toasterStore = useToasterStore();
   async function fetchTasks() {
     try {
       tasks.value = [];
@@ -26,7 +29,6 @@ export const useStoreTasks = defineStore("tasks", () => {
   async function createTask(task) {
     try {
       const addedTask = await addTask(task);
-      console.log(addedTask);
       tasks.value.push(addedTask);
       return addedTask;
     } catch (error) {
@@ -63,11 +65,22 @@ export const useStoreTasks = defineStore("tasks", () => {
     return tasks.value.filter((task) => task.status === statusId);
   }
 
+  async function sortTasksByStatus(sortOrder) {
+    if (sortOrder === "DEFAULT") {
+      tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name));
+    } else if (sortOrder === "ASC") {
+      tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name));
+    } else {
+      tasks.value.sort((a, b) => a.id - b.id);
+    }
+  }
+
   return {
     tasks,
     fetchTasks,
     createTask,
     deleteTask,
     updateTask,
+    sortTasksByStatus,
   };
 });

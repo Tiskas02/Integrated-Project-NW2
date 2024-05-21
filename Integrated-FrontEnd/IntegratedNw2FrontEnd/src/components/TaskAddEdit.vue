@@ -2,9 +2,11 @@
 import { defineProps, defineEmits, ref, watch, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { storeToRefs } from "pinia";
+
 const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
+
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus();
 });
@@ -27,36 +29,71 @@ const props = defineProps({
     },
   },
 });
-console.log(props.task);
-const newTask = ref({ ...props.task, status: props.task.status.id });
-console.log('=========');
-console.log(newTask.value);
 
-import useToasterStore from '../stores/notificationStores';
+const newTask = ref({ ...props.task, status: props.task.status.id });
+
+import useToasterStore from "../stores/notificationStores";
+import router from "@/router/router";
+
 const toasterStore = useToasterStore();
 
 const saveTaskNoti = () => {
   try {
-    if (props.mode === 'add') {
+    if (props.mode === "add") {
       // Add task logic here
       toasterStore.success({ text: "Task added successfully!" });
-    } else if (props.mode === 'edit' && newTask.value.id === props.task.id) {
+    } else if (props.mode === "edit" && newTask.value.id === props.task.id) {
       // Edit task logic here
       toasterStore.success({ text: "Task updated successfully!" });
+    } else if (
+      (props.mode === "edit" && newTask.value.id === props.task.id) ||
+      newTask.value.title.length > 100 ||
+      newTask.value.assignee.length > 30
+    ) {
+      // Edit task logic here
+      toasterStore.error({ text: "Task updated successfully!" });
     }
   } catch (error) {
-    console.error('Error saving task:', error);
+    console.error("Error saving task:", error);
     toasterStore.error({ text: "An error occurred while saving the task." });
   }
 };
 
+// const charCount= computed(() => newTask.value.title.length)
+const titleCharCount = computed(() =>
+  newTask.value.title ? newTask.value.title.length : 0
+);
+const assigneesCharCount = computed(() =>
+  newTask.value.assignees ? newTask.value.assignees.length : 0
+);
+const descriptionCharCount = computed(() =>
+  newTask.value.description ? newTask.value.description.length : 0
+);
+
+computed(newTask.value, () => {
+  Errortext.value.title == "" &&
+    Errortext.value.description == "" &&
+    Errortext.value.assignee == "";
+
+  if (newTask.value.title.trim().length > 100) {
+    Errortext.value.title = "Title has longer than 100 character";
+  } else if (newTask.value.title.trim().length == 0) {
+    Errortext.value.title = "Title can not be empty!!";
+  } else if (newTask.value.description.trim().length > 500) {
+    Errortext.value.description = "Description has longer than 500 character";
+  } else if (newTask.value.assignees.trim().length > 30) {
+    Errortext.value.assignees = "Assignees has longer than 30 character";
+  } else {
+    Errortext.value.assignees = "";
+  }
+});
 </script>
 
 <template>
   <div>
     <div>
       <div
-        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50"
+        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-10 z-[2]"
         style="translate: transform(-50%, -50%)"
       >
         <div class="w-[60%] m-[auto] max-h-screen">
@@ -74,9 +111,13 @@ const saveTaskNoti = () => {
                   class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                   placeholder="Enter your title here..."
                   required
+                  maxlength="100"
                   v-model="newTask.title"
                   >{{ task?.title }}</textarea
                 >
+              </div>
+              <div class="flex justify-end text-xs">
+                {{ titleCharCount }}/100
               </div>
             </div>
             <div class="flex my-1">
@@ -94,7 +135,7 @@ const saveTaskNoti = () => {
                       :key="status.id"
                       :value="status.id"
                     >
-                      {{ status.name}}
+                      {{ status.name }}
                     </option>
                   </select>
                 </label>
@@ -112,8 +153,13 @@ const saveTaskNoti = () => {
                         ? 'Enter your assign here...'
                         : 'Unassigned'
                     "
+                    maxlength="30"
                     v-model="newTask.assignees"
-                    >{{ task?.assignee }}</textarea>
+                    >{{ task?.assignee }}</textarea
+                  >
+                </div>
+                <div class="flex justify-end text-xs">
+                  {{ assigneesCharCount }}/30
                 </div>
               </div>
             </div>
@@ -154,9 +200,13 @@ const saveTaskNoti = () => {
                         ? 'Enter your description here...'
                         : 'No Description Provided'
                     "
+                    maxlength="500"
                     v-model="newTask.description"
                     >{{ task?.description }}</textarea
                   >
+                </div>
+                <div class="flex justify-end text-xs pb-3">
+                  {{ descriptionCharCount }}/500
                 </div>
               </div>
             </div>
@@ -168,20 +218,19 @@ const saveTaskNoti = () => {
                     class="itbkk-button-confirm disabled btn btn-info text-white"
                     @click="
                       () => {
-                        saveTaskNoti()
+                        saveTaskNoti();
                         emit('sentData', newTask);
                         emit('close', false);
                       }
                     "
                     :disabled="
-                    newTask.title.trim() === '' ||
-                    ((newTask.assignees ?? '') ===
-                      (task?.assignees ?? '') &&
-                      (newTask.description ?? '') ===
-                        (task?.description ?? '') &&
-                      (newTask.status ?? '') === (task?.status.id ?? '') &&
-                      (newTask.title ?? '') === (task?.title ?? ''))
-                  "
+                      newTask.title.trim() === '' ||
+                      ((newTask.assignees ?? '') === (task?.assignees ?? '') &&
+                        (newTask.description ?? '') ===
+                          (task?.description ?? '') &&
+                        (newTask.status ?? '') === (task?.status.id ?? '') &&
+                        (newTask.title ?? '') === (task?.title ?? ''))
+                    "
                   >
                     Save
                   </button>

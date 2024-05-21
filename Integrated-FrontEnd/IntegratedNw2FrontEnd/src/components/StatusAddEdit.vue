@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch } from "vue";
+import { defineProps, defineEmits, ref, watch, computed } from "vue";
 import { useStoreStatus } from "../stores/statusStores.js";
 import { storeToRefs } from "pinia";
 
@@ -37,26 +37,27 @@ watch(
   { deep: true, immediate: true }
 );
 
-import useToasterStore from "../stores/notificationStores";
-const toasterStore = useToasterStore();
+const nameCharCount = computed(() =>
+  storeData.value.name ? storeData.value.name.length : 0
+);
+const descriptionCharCount = computed(() =>
+  storeData.value.description ? storeData.value.description.length : 0
+);
 
-const saveStatusNoti = () => {
-  try {
-    if (props.mode === "add") {
-      // Add task logic here
-      toasterStore.success({ text: "Status added successfully!" });
-    } else if (
-      props.mode === "edit" &&
-      storeData.value.id === props.status.id
-    ) {
-      // Edit task logic here
-      toasterStore.success({ text: "Status updated successfully!" });
-    }
-  } catch (error) {
-    console.error("Error saving task:", error);
-    toasterStore.error({ text: "An error occurred while saving the task." });
+computed(storeData.value, () => {
+  Errortext.value.name == "" && Errortext.value.description == "";
+
+  if (storeData.value.name.trim().length > 50) {
+    Errortext.value.name = "Status name is too long than 50 character";
+  } else if (storeData.value.name.trim().length == 0) {
+    Errortext.value.name = "Status name can not be empty";
+  } else if (storeData.value.description.trim().length > 200) {
+    Errortext.value.description =
+      "Status description is too long than 200 character";
+  } else {
+    Errortext.value.description = "";
   }
-};
+});
 </script>
 
 <template>
@@ -81,10 +82,12 @@ const saveStatusNoti = () => {
                   class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                   placeholder="Enter your title here..."
                   required
+                  maxlength="50"
                   v-model="storeData.name"
                   >{{ status?.name }}</textarea
                 >
               </div>
+              <div class="flex justify-end text-xs">{{ nameCharCount }}/50</div>
             </div>
             <div class="mt-5">
               <div role="tablist" class="tabs tabs-bordered mb-3">
@@ -100,9 +103,13 @@ const saveStatusNoti = () => {
                     class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
                     placeholder="Enter your description here..."
                     v-model="storeData.description"
+                    maxlength="200"
                     >{{ status?.description }}</textarea
                   >
                 </div>
+              </div>
+              <div class="flex justify-end text-xs">
+                {{ descriptionCharCount }}/200
               </div>
             </div>
 
@@ -112,7 +119,7 @@ const saveStatusNoti = () => {
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   @click="
                     () => {
-                      saveStatusNoti(), emit('close', false);
+                      emit('close', false);
                       emit('newStatus', storeData);
                     }
                   "

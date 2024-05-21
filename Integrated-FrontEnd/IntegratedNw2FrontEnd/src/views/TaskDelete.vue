@@ -27,7 +27,7 @@ const deleteTaskNoti = () => {
 <template>
   <div>
     <div
-      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px]"
+      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px] z-[2]"
     >
       <div class="w-[40%] m-[auto] max-h-[80%]">
         <div

@@ -11,7 +11,7 @@ services:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
     ports:
-      - "3306:3306"
+      - '3306'
     networks: 
       - DB-network
 

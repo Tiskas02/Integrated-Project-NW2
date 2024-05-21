@@ -4,6 +4,7 @@ import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Entities.Status;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.StatusService;
+import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class StatusController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createStatus(@RequestBody NewStatusDTO newStatus) {
+    public ResponseEntity<Object> createStatus(@Valid @RequestBody NewStatusDTO newStatus) {
         return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(statusService.createStatus(newStatus), StatusDTO.class));
     }
 
@@ -46,7 +47,7 @@ public class StatusController {
         return new ResponseEntity<>(statusService.transferStatus(id, newId), HttpStatus.OK);
     }
     @PutMapping("{id}")
-    public ResponseEntity<Object> updateStatus(@RequestBody NewStatusDTO editStatus,@PathVariable Integer id){
+    public ResponseEntity<Object> updateStatus(@Valid @RequestBody NewStatusDTO editStatus,@PathVariable Integer id){
         return ResponseEntity.ok(modelMapper.map(statusService.updateStatus(editStatus,id),StatusDTO.class));
     }
 

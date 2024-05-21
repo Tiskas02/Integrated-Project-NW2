@@ -34,6 +34,7 @@ async function addStatus(newStatus) {
       }),
     });
     const addedStatus = await res.json();
+    console.log(addedStatus);
     return addedStatus;
   } catch (error) {
     console.log(`error: ${error}`);
