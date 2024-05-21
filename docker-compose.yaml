@@ -2,14 +2,14 @@ version: "3.3"
 services:
   dbserver:
     container_name: dataContainer
-    # build:
-    #   context: ./Integrated-DataBase
-    #   dockerfile: Dockerfile
-    image: mysql/mysql-server
-    environment:
-      MYSQL_DATABASE: 'kradanItBangMod'
-      MYSQL_ROOT_PASSWORD: 'nw2'
-      MYSQL_ROOT_HOST: '%'
+    build:
+      context: ./Integrated-DataBase
+      dockerfile: Dockerfile
+    # image: mysql/mysql-server
+    # environment:
+    #   MYSQL_DATABASE: 'kradanItBangMod'
+    #   MYSQL_ROOT_PASSWORD: 'nw2'
+    #   MYSQL_ROOT_HOST: '%'
     volumes:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
