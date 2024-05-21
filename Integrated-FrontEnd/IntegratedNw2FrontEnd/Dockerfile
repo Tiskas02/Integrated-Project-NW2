@@ -24,7 +24,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built files from the previous stage to nginx directory
-COPY --from=build /app/dist /dist/
+COPY --from=build /app/dist /dist
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

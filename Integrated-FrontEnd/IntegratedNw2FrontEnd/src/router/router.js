@@ -5,7 +5,6 @@ import TaskModal from "@/components/TaskModal.vue";
 import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
-import StatusDelete from "@/views/StatusDelete.vue";
 import LimitTaskStatus from "@/components/LimitTaskStatus.vue";
 const history = createWebHistory('/nw2');
 const routes = [
