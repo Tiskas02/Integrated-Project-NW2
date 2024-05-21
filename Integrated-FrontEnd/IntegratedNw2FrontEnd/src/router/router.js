@@ -39,11 +39,6 @@ const routes = [
       },
     ],
   },
-  // {
-  //   path: '/task/add',
-  //   name: 'addTask',
-  //   component: TaskAddEdit
-  // },
   {
     path: "/status",
     name: "status",
