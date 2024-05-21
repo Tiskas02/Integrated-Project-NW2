@@ -32,7 +32,7 @@ services:
       - FE-network
 
   reverse_proxy:
-    image: nginx:latest
+    image: nginx:alpine
     container_name: reverse_proxy
     ports:
       - 80:80
