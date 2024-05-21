@@ -36,11 +36,11 @@ jobs:
         run: |
           docker-compose up -d --build
       # Clear Storage
-      # - name: Remove used images
-      #   run: |
-      #     docker image prune -af
+      - name: Remove used images
+        run: |
+          docker image prune -af
 
       # Clear Memory
-      # - name: Clear used memory
-      #   run: |
-      #     docker builder prune -af
+      - name: Clear used memory
+        run: |
+          docker builder prune -af
