@@ -42,6 +42,7 @@ onMounted(async () => {
     any.value = deleted;
   }
 });
+
 watch(
   any,
   () => {
@@ -51,6 +52,10 @@ watch(
   { deep: true }
 )
 console.log(any.value);
+
+const filteredStatuses = computed(() => {
+  return statuses.value.filter(status => status.id !== oldId.value);
+});
 
 import useToasterStore from '../stores/notificationStores';
 const toasterStore = useToasterStore();
@@ -99,7 +104,7 @@ const transferStatusNoti = () => {
                     v-model="newId"
                   >
                     <option
-                      v-for="status in statuses"
+                      v-for="status in filteredStatuses"
                       :key="status.id"
                       :value="status.id"
                     >

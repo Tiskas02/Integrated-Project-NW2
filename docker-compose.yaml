@@ -2,6 +2,9 @@ version: "3.3"
 services:
   dbserver:
     container_name: dataContainer
+    build:
+      context: ./Integrated-Database
+      dockerfile: Dockerfile
     image: mysql/mysql-server
     environment:
       MYSQL_DATABASE: 'kradanItBangMod'

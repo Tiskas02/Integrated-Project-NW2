@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS `kradanitbangmod`.`status` (
   `statusId` INT NOT NULL  AUTO_INCREMENT,
   `name` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+  `limitEnabled` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`statusId`),
   UNIQUE INDEX `statusId_UNIQUE` (`statusId` ASC) VISIBLE,
   UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)

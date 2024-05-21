@@ -5,21 +5,26 @@ import { useStoreStatus } from "@/stores/statusStores";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
+import LimitTaskStatus from "./LimitTaskStatus.vue";
+import useToasterStore from '../stores/notificationStores';
+import { useStoreLimit } from "@/stores/limitStores";
 
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
+const showLimit = ref(false);
 const storeMode = ref("");
 const statusStore = useStoreStatus();
+const limitStore = useStoreLimit();
 const { statuses } = storeToRefs(statusStore);
+const { isLimitEnabled, maxTasks } = storeToRefs(limitStore);
 const dataById = ref();
+const toasterStore = useToasterStore();
 
 onMounted(async () => {
   await statusStore.fetchStatus();
+  await limitStore.fetchLimitSettings();
 });
-
-
-
 
 const addOrEditStatus = async (newStatus) => {
   try {
@@ -36,11 +41,10 @@ const addOrEditStatus = async (newStatus) => {
     }
   } catch (error) {
     console.error("Error adding/editing status:", error);
-    // Handle error appropriately, e.g., show error message to user
+    toasterStore.error({ text: "An error occurred while saving the status." });
   }
 };
-import useToasterStore from '../stores/notificationStores';
-const toasterStore = useToasterStore();
+
 
 const deleteStatusNoti = (res) => {
   try {
@@ -58,6 +62,7 @@ const deleteStatusNoti = (res) => {
     toasterStore.error({ text: "An error occurred while deleting the task." });
   }
 };
+
 //delete status
 const deleteOne = async (id) => {
   const res = await statusStore.deleteStatus(id);
@@ -68,9 +73,9 @@ const deleteOne = async (id) => {
     alert("Error deleting status");
   }
 };
+
 //tranfer status
 const deleteTranfer = async (value) => {
-  // console.log(value);
  await statusStore.tranferStatus(value.oldId, value.newId);
 };
 
@@ -85,8 +90,8 @@ const setModal = async (value, mode, id) => {
     dataById.value = statusStore.statuses.find((status) => status.id === id);
   }
 };
-//fuction to sent id and mode to StatusModal
 
+//fuction to sent id and mode to StatusModal
 const fetchById = async (id, mode) => {
   if (!id) {
     return console.log("error have no id");
@@ -111,11 +116,24 @@ if (route.name === 'statusDetail' && route.params.id) {
     fetchById(route.params.id, 'view');
   }
 
+//Limit
+const setLimit = async (value) => {
+  showLimit.value = value;
+  console.log(showLimit.value);
+  if (showLimit.value == true) {
+    console.log('asf');
+    await limitStore.fetchLimitSettings();
+    router.push({ name: "limit" });
+  }
+}
 
 const setClose = (value) => {
+  showLimit.value = value;
   showModal.value = value;
   router.push({ name: "status" });
 };
+
+
 </script>
 
 <template>
@@ -126,8 +144,11 @@ const setClose = (value) => {
           <router-link :to="{ name: 'task' }">Home</router-link>
         </div>
       </div>
-      <div class="">
+      <div class="flex gap-4">
         <!-- Add Task-->
+        <div class="itbkk-setting ease-in-out" @click="setLimit(true)">
+          <button class="btn btn-outline btn-info">Setting</button>
+        </div>
         <div
           class="itbkk-button-add btn btn-outline btn-primary mr-10"
           @click="setModal(true, 'add', null)"
@@ -183,11 +204,7 @@ const setClose = (value) => {
               Action
             </div>
           </div>
-          <!-- <div class="w-full border bg-white ">
-            <div class="w-full h-32">
-              <p class="h-full flex justify-center items-center font-sans font-semibold">No status Provided</p>
-            </div>
-          </div> -->
+
           <!-- Edit Task -->
           <div v-for="(status, index) in statuses" :key="status.id">
             <div class="bg-white divide-y divide-gray-200 overflow-auto">
@@ -243,6 +260,15 @@ const setClose = (value) => {
         @sentTranferId="deleteTranfer"
       />
     </teleport>
+    <teleport to="#body">
+        <LimitTaskStatus
+          v-if="showLimit"
+          @limit="setLimit"
+          :mode="storeMode"
+          @close="setClose"
+          :exceededStatuses="exceedingStatuses"
+        />
+      </teleport>
   </div>
 </template>
 

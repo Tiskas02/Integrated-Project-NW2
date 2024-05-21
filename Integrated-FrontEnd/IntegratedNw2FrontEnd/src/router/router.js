@@ -5,7 +5,6 @@ import TaskModal from "@/components/TaskModal.vue";
 import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
-import StatusDelete from "@/views/StatusDelete.vue";
 import LimitTaskStatus from "@/components/LimitTaskStatus.vue";
 const history = createWebHistory('/nw2');
 const routes = [
@@ -32,19 +31,9 @@ const routes = [
         path: ":id/edit",
         name: "editTask",
         component: TaskAddEdit
-      },
-      {
-        path: "limit",
-        name: "limit",
-        component: LimitTaskStatus,
-      },
+      }
     ],
   },
-  // {
-  //   path: '/task/add',
-  //   name: 'addTask',
-  //   component: TaskAddEdit
-  // },
   {
     path: "/status",
     name: "status",
@@ -64,6 +53,11 @@ const routes = [
         path: ":id/edit",
         name: "editStatus",
         component: StatusAddEdit
+      },
+      {
+        path: "limit",
+        name: "limit",
+        component: LimitTaskStatus,
       },
     ],
   },

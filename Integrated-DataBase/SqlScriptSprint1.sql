@@ -10,7 +10,7 @@ CREATE TABLE `task` (
     `updatedOn` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`taskId`),
     UNIQUE KEY `taskId_UNIQUE` (`taskId`)
-)  ENGINE=INNODB DEFAULT CHARSET=UTF8MB4 COLLATE = UTF8MB4_UNICODE_CI;
+)  ENGINE=INNODB DEFAULT CHARSET=UTF8MB4 COLLATE = UTF8MB4_0900_AI_CI;
 
 SET GLOBAL time_zone = '+00:00';
 
@@ -29,5 +29,3 @@ VALUES ('ดาต้าเบส', 'ສ້າງຖານຂໍ້ມູນ', '
 
 INSERT INTO task (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
 VALUES ('_Infrastructure_', '_Setup containers_', 'ไก่งวง กับ เพนกวิน' , 'Done' , '2024-04-22 09:15:00', '2024-04-22 10:00:00');
-
-ALTER DATABASE kradanItBangMod CHARACTER SET UTF8MB4 COLLATE  UTF8MB4_0900_AI_CI;

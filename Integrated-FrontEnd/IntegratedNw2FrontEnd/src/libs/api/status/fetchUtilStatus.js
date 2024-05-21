@@ -11,6 +11,7 @@ async function getStatusData() {
     return null;
   }
 }
+
 async function getStatusDataById(id) {
   try {
     const res = await fetch(`${url}/v2/statuses/${id}`);
@@ -65,7 +66,9 @@ async function shouldDeleteOrTransferStatus(id) {
     const res = await fetch(
       `${url}/v2/statuses/${id}/indicator`
     );
+    console.log(res)
     const data = await res.json();
+    console.log(data)
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -96,9 +99,42 @@ async function deleteTranferStatus(oldStatusId, newStatusId) {
         method: "DELETE",
       }
     );
+    console.log(res)
     return res;
   } catch (error) {
     console.error("Error fetching data:", error);
+    console.log(error);
+    return null;
+  }
+}
+
+async function updateLimitSettings(enable) {
+  try {
+    const res = await fetch(`${url}/v2/statuses?enable=${enable}`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    console.log(res)
+    return res;
+  } catch (error) {
+    console.error("Error updating limit settings:", error);
+    console.log(error);
+    return null;
+  }
+}
+
+async function fetchLimitSettings() {
+  try {
+    const res = await fetch(`${url}/v2/statuses`);
+    const data = await res.json();
+    return {
+      isLimitEnabled: data.enable,
+      maxTasks: data.maxTasks,
+    };
+  } catch (error) {
+    console.error("Error fetching limit settings:", error);
     console.log(error);
     return null;
   }
@@ -111,5 +147,7 @@ export {
   editStatus,
   shouldDeleteOrTransferStatus,
   deleteOneStatus,
-  deleteTranferStatus
+  deleteTranferStatus,
+  updateLimitSettings,
+  fetchLimitSettings
 };

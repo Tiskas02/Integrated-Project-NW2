@@ -6,7 +6,7 @@ import { ref, onMounted } from "vue";
 import TaskModal from "../components/TaskModal.vue";
 import { useRoute, useRouter } from "vue-router";
 import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
-import LimitTaskStatus from "./LimitTaskStatus.vue";
+
 
 const route = useRoute();
 const router = useRouter();
@@ -15,7 +15,6 @@ const statusStore = useStoreStatus();
 const { statuses } = storeToRefs(statusStore);
 const { isLoading, tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
-const showLimit = ref(false);
 const storeMode = ref("");
 const storeTask = ref({});
 const storeIndex = ref(0);
@@ -119,19 +118,13 @@ const setDetail = (value, id, mode) => {
     router.push({ name: "taskDetail", params: { id: id } });
   }
 };
-const setLimit = (value) => {
-  showLimit.value = value;
-  console.log(showLimit.value);
-  if (showLimit.value == true) {
-    console.log('asf');
-    router.push({ name: "limit" });
-  }
-}
+
 const setClose = (value) => {
   showDetail.value = value;
-  showLimit.value = value;
   router.push({ name: "task" });
 };
+
+
 </script>
 
 <template>
@@ -170,9 +163,7 @@ const setClose = (value) => {
       </div>
       <div class="my-2 flex">
         <!-- Add Task-->
-        <div class="enable-limit" @click="setLimit(true)">
-          <button class="btn btn-info">Limits</button>
-        </div>
+        
         <div
           class="itbkk-button-add btn btn-outline btn-primary mr-12 ml-3"
           @click="setDetail(true, null, 'add')"
@@ -312,14 +303,6 @@ const setClose = (value) => {
           @newTask="addEditTask"
           :index="storeIndex"
           @saveDelete="removeTask"
-        />
-      </teleport>
-      <teleport to="#body">
-        <LimitTaskStatus
-          v-if="showLimit"
-          @limit="setLimit"
-          :mode="storeMode"
-          @close="setClose"
         />
       </teleport>
     </div>
