@@ -15,8 +15,8 @@ services:
       - mysqlconfig:/etc/mysql
     ports:
       - '3306:3306'
-    networks: 
-      - DB-network
+    # networks: 
+    #   - DB-network
 
 
   backend:
@@ -24,11 +24,11 @@ services:
     build:
       context: ./Integrated-BackEnd
       dockerfile: Dockerfile
-    networks: 
-      - DB-network
-      - FE-network
-    depends_on:
-      - dbserver 
+    # networks: 
+    #   - DB-network
+    #   - FE-network
+    # depends_on:
+    #   - dbserver 
 
   reverse_proxy:
     image: nginx:latest
@@ -37,20 +37,20 @@ services:
       - 80:80
     volumes: 
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    networks: 
-      - FE-network
-    depends_on:
-      - backend
+    # networks: 
+    #   - FE-network
+    # depends_on:
+    #   - backend
 
   frontendv2:
     container_name: frontEndContainerV2
     build:
       context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
       dockerfile: Dockerfile
-    networks: 
-      - FE-network
-    depends_on:
-      - reverse_proxy
+    # networks: 
+    #   - FE-network
+    # depends_on:
+    #   - reverse_proxy
 
 volumes:
   mysqldb:
