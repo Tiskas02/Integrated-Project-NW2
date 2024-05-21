@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useToasterStore from "../stores/notificationStores";
+import { useToasterStore } from "../stores/notificationStores";
 // import Icon from "./Icon.vue";
 
 const toastClassMap = {

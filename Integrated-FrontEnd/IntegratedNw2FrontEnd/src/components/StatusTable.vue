@@ -6,7 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useStoreTasks } from "@/stores/taskStores";
-import { useToasterStore } from "@/stores/notificationStores"
+import { useToasterStore  } from "../stores/notificationStores"
 
 const route = useRoute();
 const router = useRouter();

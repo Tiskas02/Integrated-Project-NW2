@@ -6,7 +6,7 @@ const props = defineProps({
   index: Number,
 });
 
-import useToasterStore from "../stores/notificationStores";
+import {useToasterStore} from "../stores/notificationStores";
 const toasterStore = useToasterStore();
 </script>
 
