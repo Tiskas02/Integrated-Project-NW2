@@ -30,17 +30,17 @@ jobs:
           
       - name: Clear storage
         run: |
-          docker-compose rm -vf dataContainer backEndContainer reverse_proxy  || true
-      # Runs a set of commands using the runners shell  frontEndContainerv2
+          docker-compose rm -vf dataContainer backEndContainer reverse_proxy frontEndContainerv2 || true
+      # Runs a set of commands using the runners shell  
       - name: Build deploy
         run: |
           docker-compose up -d --build
       # Clear Storage
-      # - name: Remove used images
-      #   run: |
-      #     docker image prune -af
+      - name: Remove used images
+        run: |
+          docker image prune -af
 
       # Clear Memory
-      # - name: Clear used memory
-      #   run: |
-      #     docker builder prune -af
+      - name: Clear used memory
+        run: |
+          docker builder prune -af
