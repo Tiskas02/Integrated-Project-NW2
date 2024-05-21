@@ -2,7 +2,7 @@ version: "3.3"
 services:
   dbserver:
     container_name: dataContainer
-        build:
+    build:
       context: ./Integrated-DataBase
       dockerfile: Dockerfile
     image: mysql/mysql-server
