@@ -1,13 +1,11 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch, computed } from "vue";
+import { defineProps, defineEmits } from "vue";
 const emit = defineEmits(["limit", "close"]);
 const props = defineProps({
   task: Object,
   index: Number,
 });
 
-import {useToasterStore} from "../stores/notificationStores";
-const toasterStore = useToasterStore();
 </script>
 
 <template>

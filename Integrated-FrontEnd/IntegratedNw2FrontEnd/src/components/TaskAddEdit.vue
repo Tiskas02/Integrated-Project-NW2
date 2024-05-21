@@ -1,11 +1,12 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch, computed, onMounted } from "vue";
+import { defineProps, defineEmits, ref, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
-import { storeToRefs } from "pinia";
+import { useToasterStore } from "@/stores/notificationStores";
 
 const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
+const toasterStore = useToasterStore();
 
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus();
@@ -32,10 +33,9 @@ const props = defineProps({
 
 const newTask = ref({ ...props.task, status: props.task.status.id });
 
-import useToasterStore from "../stores/notificationStores";
-import router from "@/router/router";
 
-const toasterStore = useToasterStore();
+
+
 
 const saveTaskNoti = () => {
   try {

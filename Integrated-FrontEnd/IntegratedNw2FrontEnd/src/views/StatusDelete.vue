@@ -3,7 +3,7 @@ import { shouldDeleteOrTransferStatus } from "@/libs/api/status/fetchUtilStatus"
 import { defineProps, defineEmits, ref, watch, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { storeToRefs } from "pinia";
-import { useToasterStore } from '../stores/notificationStores';
+import { useToasterStore } from '@/stores/notificationStores';
 const toasterStore = useToasterStore();
 const emit = defineEmits(["close","sentDelete","sentTranfer"]);
 

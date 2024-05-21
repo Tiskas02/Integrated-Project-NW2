@@ -1,14 +1,14 @@
 <script setup>
-// import { deleteItemById } from "../libs/fetchUtil.js";
-import { defineProps, defineEmits, ref, watch, computed } from "vue";
+import { defineProps, defineEmits} from "vue";
+import { useToasterStore } from "@/stores/notificationStores";
 const emit = defineEmits(["close", "saveDelete"]);
 const props = defineProps({
   task: Object,
   index: Number,
 });
-
-import useToasterStore from "../stores/notificationStores";
 const toasterStore = useToasterStore();
+
+
 
 const deleteTaskNoti = () => {
   try {

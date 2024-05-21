@@ -6,12 +6,9 @@ import {
   editTask,
 } from "../libs/api/task/fetchUtilTask.js";
 import { ref } from "vue";
-import {useToasterStore} from "../stores/notificationStores";
-
 
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
-  const toasterStore = useToasterStore();
   async function fetchTasks() {
     try {
       tasks.value = [];
