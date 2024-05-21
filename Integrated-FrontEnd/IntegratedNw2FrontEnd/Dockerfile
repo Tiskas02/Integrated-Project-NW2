@@ -6,7 +6,7 @@ FROM node:20 AS build
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if present) to /app
-COPY package*.json ./
+COPY package*.json vite.config.js index.html ./
 
 # Install dependencies
 RUN npm install
@@ -21,7 +21,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+# RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built files from the previous stage to nginx directory
 COPY --from=build /app/dist /dist/
