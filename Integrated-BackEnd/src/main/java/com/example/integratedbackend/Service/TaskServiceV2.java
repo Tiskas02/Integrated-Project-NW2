@@ -23,7 +23,6 @@ import java.util.List;
 
 @Service
 public class TaskServiceV2 {
-    private static final Logger log = LoggerFactory.getLogger(TaskServiceV2.class);
     @Autowired
     TasksRepositoriesV2 repositories;
     @Autowired
@@ -34,7 +33,6 @@ public class TaskServiceV2 {
     ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
-
 
     public List<TaskDTOV2> getAllTasks(List<String> statusNames, String[] sortBy, String[] direction) {
         List<Sort.Order> orders = new ArrayList<>();
@@ -54,6 +52,9 @@ public class TaskServiceV2 {
             for (String name:statusNames
             ) {
                 List<Status> statusList = statusRepositories.findAllByNameIgnoreCase(name);
+                if(statusList.isEmpty()){
+                    throw new ItemErrorNotFoundException("invalid filter parameter");
+                }
                 statuses.addAll(statusList);
             }
             return  listMapper.mapList(repositories.findByStatusIn(statuses,Sort.by(orders)), TaskDTOV2.class,modelMapper);
