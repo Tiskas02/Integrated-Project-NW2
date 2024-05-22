@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import useToasterStore from "../stores/notificationStores";
+import { useToasterStore } from "../stores/notificationStores";
 // import Icon from "./Icon.vue";
+
+const toastStore = useToasterStore();
 
 const toastClassMap = {
   warning: "warning",
@@ -13,7 +15,7 @@ const toastIconMap = {
   warning: "toast-warning",
   success: "toast-success",
 };
-const toastStore = useToasterStore();
+
 </script>
 
 <template>

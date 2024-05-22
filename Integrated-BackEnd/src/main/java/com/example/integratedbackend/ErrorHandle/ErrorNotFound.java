@@ -3,7 +3,6 @@ package com.example.integratedbackend.ErrorHandle;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;

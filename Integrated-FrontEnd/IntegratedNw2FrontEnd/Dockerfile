@@ -6,7 +6,7 @@ FROM node:20 AS build
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if present) to /app
-COPY package*.json ./
+COPY package*.json vite.config.js index.html ./
 
 # Install dependencies
 RUN npm install
@@ -32,5 +32,3 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port 80 to the outside world
 EXPOSE 80
 
-# Command to run nginx when the container starts
-CMD ["nginx", "-g", "daemon off;"]

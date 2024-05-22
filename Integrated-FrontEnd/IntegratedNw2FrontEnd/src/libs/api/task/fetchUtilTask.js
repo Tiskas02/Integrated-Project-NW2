@@ -17,10 +17,11 @@ async function getTaskData() {
       const res = await fetch(`${url}/v2/tasks/${id}`);
       
       // if the response is not ok, go back to the previous page
-      // if(!res.ok){
-      //   history.back()
-      //   return null;
-      // }
+      if(!res.ok){
+        alert("The requested task does not exist");
+        history.back()
+        return null;
+      }
 
       const data = await res.json();
       return data;

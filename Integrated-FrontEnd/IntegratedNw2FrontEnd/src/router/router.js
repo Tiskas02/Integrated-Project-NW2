@@ -5,9 +5,8 @@ import TaskModal from "@/components/TaskModal.vue";
 import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
-import StatusDelete from "@/views/StatusDelete.vue";
 import LimitTaskStatus from "@/components/LimitTaskStatus.vue";
-const history = createWebHistory('/nw2');
+const history = createWebHistory(import.meta.env.BASE_URL);
 const routes = [
   {
     path: "/",
@@ -21,17 +20,17 @@ const routes = [
       {
         path: ":id",
         name: "taskDetail",
-        component: TaskModal,
+        component: TaskModal
       },
       {
         path: "add",
         name: "addTask",
-        component: TaskAddEdit,
+        component: TaskAddEdit
       },
       {
         path: ":id/edit",
         name: "editTask",
-        component: TaskAddEdit,
+        component: TaskAddEdit
       },
       {
         path: "limit",
@@ -39,16 +38,6 @@ const routes = [
         component: LimitTaskStatus,
       },
     ],
-  },
-  // {
-  //   path: '/task/add',
-  //   name: 'addTask',
-  //   component: TaskAddEdit
-  // },
-  {
-    path: "/:notfoundpath(.*)",
-    name: "NotFound",
-    component: NotFound,
   },
   {
     path: "/status",
@@ -63,14 +52,19 @@ const routes = [
       {
         path: "add",
         name: "addStatus",
-        component: StatusAddEdit,
+        component: StatusAddEdit
       },
       {
         path: ":id/edit",
         name: "editStatus",
-        component: StatusAddEdit,
+        component: StatusAddEdit
       },
     ],
+  },
+  {
+    path: "/:notfoundpath(.*)",
+    name: "NotFound",
+    component: NotFound,
   },
 ];
 

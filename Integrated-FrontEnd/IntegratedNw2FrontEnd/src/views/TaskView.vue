@@ -20,7 +20,7 @@ const getRandomColor =() => {
   <div>
     <div >
       <div
-        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-36"
+        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-36 z-[2]"
         style="translate: transform(-50%, -50%)"
       >
         <div class="w-[60%] m-[auto] max-h-screen">

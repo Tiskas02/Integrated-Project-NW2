@@ -1,19 +1,17 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch, computed } from "vue";
+import { defineProps, defineEmits } from "vue";
 const emit = defineEmits(["limit", "close"]);
 const props = defineProps({
   task: Object,
   index: Number,
 });
 
-import useToasterStore from "../stores/notificationStores";
-const toasterStore = useToasterStore();
 </script>
 
 <template>
   <div>
     <div
-      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px]"
+      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-[100px] z-[2]"
     >
       <div class="w-[40%] m-[auto] max-h-[80%]">
         <div
