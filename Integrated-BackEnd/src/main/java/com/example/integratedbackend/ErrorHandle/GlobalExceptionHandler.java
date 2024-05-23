@@ -63,4 +63,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
+    @ExceptionHandler(TaskNameDuplicatedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleTaskNameDuplicatedException(TaskNameDuplicatedException exception, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation error. Check 'errors' field for details. ",
+                request.getDescription(false)
+        );
+        errorResponse.addValidationError("name", exception.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 }

@@ -6,6 +6,7 @@ import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.StatusIdNotFoundException;
+import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
 import com.example.integratedbackend.Repositories.StatusRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import jakarta.transaction.Transactional;
@@ -48,7 +49,7 @@ public class StatusService {
     public StatusDTO createStatus(NewStatusDTO addStatus) {
             List<Status> statusList= repositories.findAllByNameIgnoreCase(addStatus.getName());
             if (!statusList.isEmpty()){
-                throw new StatusIdNotFoundException("must be unique");
+                throw new TaskNameDuplicatedException("must be unique");
             }
         Status status = mapper.map(addStatus, Status.class);
         System.out.println(status.getName());
@@ -105,8 +106,8 @@ public class StatusService {
         Status status=repositories.findById(id).
                 orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:"+id));
         List<Status> statusList= repositories.findAllByNameIgnoreCase(inputStatus.getName());
-        if (!statusList.isEmpty()){ 
-            throw new StatusIdNotFoundException("must be unique");
+        if (!statusList.isEmpty()){
+            throw new TaskNameDuplicatedException("must be unique");
         }
         if (status.getName().equals("No Status") || status.getName().equals("Done")) {
             throw new ItemErrorNotFoundException(status.getName()+" cannot be modified");
