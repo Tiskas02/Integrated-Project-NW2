@@ -13,7 +13,7 @@ import java.util.Objects;
 public class ErrorNotFound {
     private final ZonedDateTime timestamp;
     private final int status;
-    private final  String message;
+    private final String message;
     private final String instance;
     private List<ValidationError> errors;
 

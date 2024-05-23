@@ -38,24 +38,28 @@ public class TaskService {
     public List<Tasks> getTasks() {
         return repositories.findAll();
     }
+
     public Tasks findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Task"+ " " + id + " " +"doesn't exist !!!"));
+                        "Task" + " " + id + " " + "doesn't exist !!!"));
     }
+
     @Transactional
     public TaskIDDTO createTask(NewTaskDTO addTask) {
         Tasks task = mapper.map(addTask, Tasks.class);
         Tasks updatedTask = repositories.saveAndFlush(task);
         return mapper.map(updatedTask, TaskIDDTO.class);
     }
+
     @Transactional
-    public TaskDTO deleteTask(Integer id) throws ItemNotFoundException{
+    public TaskDTO deleteTask(Integer id) throws ItemNotFoundException {
         Tasks taskToDelete = tasksRepositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("NOT FOUND"));
         tasksRepositories.delete(taskToDelete);
         return mapper.map(taskToDelete, TaskDTO.class);
     }
+
     @Transactional
     public TaskIDDTO updateTask(NewTaskDTO editTask, Integer id) {
         Optional<Tasks> oldTask = repositories.findById(id);
@@ -71,7 +75,6 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
-
 
 
 }
