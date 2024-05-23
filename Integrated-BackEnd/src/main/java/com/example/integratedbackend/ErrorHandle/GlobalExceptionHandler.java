@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         for (ObjectError objectError : globalErrors) {
             errorResponse.addValidationError(objectError.getObjectName(), objectError.getDefaultMessage());
         }
-        return ResponseEntity.unprocessableEntity().body(errorResponse);
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(StatusIdNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
