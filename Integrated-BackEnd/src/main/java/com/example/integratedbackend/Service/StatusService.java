@@ -58,21 +58,34 @@ public class StatusService {
     }
 
     @Transactional
-    public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
+    public Status deleteStatus(Integer id) {
         Status statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
         if (statusToDelete.getName().equals("No Status") || statusToDelete.getName().equals("Done")) {
-            throw new BadRequestException(statusToDelete.getName() +" cannot be deleted");
+            try {
+                throw new BadRequestException(statusToDelete.getName() +" cannot be deleted");
+            } catch (BadRequestException e) {
+                throw new RuntimeException(e);
+            }
         }
         List<Taskv2> tasksUsingStatus = tasksRepositoriesV2.findByStatusId(id);
         if (!tasksUsingStatus.isEmpty()) {
-            throw new BadRequestException("Destination status for task transfer not specified.");
+            try {
+                throw new BadRequestException("Destination status for task transfer not specified.");
+            } catch (BadRequestException e) {
+                throw new RuntimeException(e);
+            }
         }
         try {
             repositories.delete(statusToDelete);
             return statusToDelete;
         } catch (Exception e) {
-            throw new BadRequestException(statusToDelete.getName() +" cannot be deleted");        }
+            try {
+                throw new BadRequestException(statusToDelete.getName() +" cannot be deleted");
+            } catch (BadRequestException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     @Transactional
