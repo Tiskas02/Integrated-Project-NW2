@@ -54,9 +54,7 @@ public class TaskServiceV2 {
             for (String name:statusNames
             ) {
                 List<Status> statusList = statusRepositories.findAllByNameIgnoreCase(name);
-                if(statusList.isEmpty()){
-                    throw new ItemErrorNotFoundException("invalid filter parameter");
-                }
+                
                 statuses.addAll(statusList);
             }
             return  listMapper.mapList(repositories.findByStatusIn(statuses,Sort.by(orders)), TaskDTOV2.class,modelMapper);
