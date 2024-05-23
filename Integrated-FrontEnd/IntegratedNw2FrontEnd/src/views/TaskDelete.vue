@@ -1,27 +1,10 @@
 <script setup>
 import { defineProps, defineEmits} from "vue";
-import { useToasterStore } from "@/stores/notificationStores";
 const emit = defineEmits(["close", "saveDelete"]);
 const props = defineProps({
   task: Object,
   index: Number,
 });
-const toasterStore = useToasterStore();
-
-
-
-const deleteTaskNoti = () => {
-  try {
-    if (props.task) {
-      toasterStore.success({ text: "Task deleted successfully!" });
-    } else {
-      throw new Error("Failed to delete task.");
-    }
-  } catch (error) {
-    console.error("Error deleting task:", error);
-    toasterStore.error({ text: "An error occurred while deleting the task." });
-  }
-};
 </script>
 
 <template>
@@ -49,7 +32,6 @@ const deleteTaskNoti = () => {
             <div
               @click="
                 () => {
-                  deleteTaskNoti(),
                     $emit('close', false),
                     $emit('saveDelete', task?.id);
                 }

@@ -1,8 +1,5 @@
 <script setup>
 import { defineProps, defineEmits, ref, watch, computed } from "vue";
-import { useStoreStatus } from "../stores/statusStores.js";
-import { storeToRefs } from "pinia";
-
 const emit = defineEmits(["close", "newStatus"]);
 const props = defineProps({
   status: {
@@ -15,12 +12,6 @@ const props = defineProps({
   },
   mode: String,
 });
-console.log(props.mode);
-const statusStore = useStoreStatus();
-const { statuses } = storeToRefs(statusStore);
-const storeModeSent = ref(props.mode);
-
-//store data
 const storeData = ref({
   id: undefined,
   name: "",
@@ -36,14 +27,12 @@ watch(
   },
   { deep: true, immediate: true }
 );
-
 const nameCharCount = computed(() =>
   storeData.value.name ? storeData.value.name.length : 0
 );
 const descriptionCharCount = computed(() =>
   storeData.value.description ? storeData.value.description.length : 0
 );
-
 computed(storeData.value, () => {
   Errortext.value.name == "" && Errortext.value.description == "";
 
@@ -112,7 +101,6 @@ computed(storeData.value, () => {
                 {{ descriptionCharCount }}/200
               </div>
             </div>
-
             <div class="flex flex-row w-full justify-end">
               <div class="mr-2">
                 <button

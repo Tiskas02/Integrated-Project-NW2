@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
+import { ref } from "vue";
 import {
   getTaskData,
   addTask,
   deleteItemById,
   editTask,
 } from "../libs/api/task/fetchUtilTask.js";
-import { ref } from "vue";
 
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
@@ -14,12 +14,10 @@ export const useStoreTasks = defineStore("tasks", () => {
       tasks.value = [];
       const taskData = await getTaskData();
       taskData.forEach((task) => {
-        console.log(task);
         tasks.value.push(task);
       });
     } catch (error) {
       console.error("Error fetching data:", error);
-      console.log(error);
     }
   }
 
@@ -35,12 +33,12 @@ export const useStoreTasks = defineStore("tasks", () => {
 
   async function deleteTask(id) {
     try {
-      await deleteItemById(id);
-      // tasks.value.map((task) => {console.log(task);})
-      const deleted = tasks.value.splice(
+      const res = await deleteItemById(id);
+      tasks.value.splice(
         tasks.value.findIndex((task) => task.id === id),
         1
       );
+      return res;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -48,20 +46,13 @@ export const useStoreTasks = defineStore("tasks", () => {
   async function updateTask(id, task) {
     try {
       const updatedTask = await editTask(id, task);
-      console.log(updatedTask);
-      console.log(tasks.value);
       const taskIndex = tasks.value.findIndex((task) => task.id === id);
-      console.log(taskIndex);
       tasks.value[taskIndex] = updatedTask;
+      return updatedTask;
     } catch (error) {
       throw new Error(error.message);
     }
   }
-
-  async function findTaskByStatusId(statusId) {
-    return tasks.value.filter((task) => task.status === statusId);
-  }
-
   async function sortTasksByStatus(sortOrder) {
     if (sortOrder === "DEFAULT") {
       tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name));

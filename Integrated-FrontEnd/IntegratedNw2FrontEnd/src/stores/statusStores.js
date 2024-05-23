@@ -24,7 +24,6 @@ export const useStoreStatus = defineStore("status", () => {
   async function createStatus(newStatus) {
     try {
       const addedStatus = await addStatus(newStatus);
-      console.log(addedStatus.status);
       if (addedStatus.status === undefined) {
         statuses.value.push(addedStatus);
       }
@@ -41,6 +40,7 @@ export const useStoreStatus = defineStore("status", () => {
         (status) => status.id === id
       );
       statuses.value.splice(statusIndex, 1, updatedStatus);
+      return updatedStatus;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -48,8 +48,7 @@ export const useStoreStatus = defineStore("status", () => {
   async function deleteStatus(id) {
     try {
       const res = await deleteOneStatus(id);
-      // statuss.value.map((status) => {console.log(status);})
-      const deleted = statuses.value.splice(
+      statuses.value.splice(
         statuses.value.findIndex((status) => status.id === id),
         1
       );
@@ -60,12 +59,12 @@ export const useStoreStatus = defineStore("status", () => {
   }
   async function tranferStatus(oldId, newId) {
     try {
-      await deleteTranferStatus(oldId, newId);
-      // statuss.value.map((status) => {console.log(status);})
-      const deleted = statuses.value.splice(
+      const res = await deleteTranferStatus(oldId, newId);
+      statuses.value.splice(
         statuses.value.findIndex((status) => status.id === oldId),
         1
       );
+      return res.status;
     } catch (error) {
       throw new Error(error.message);
     }

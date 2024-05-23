@@ -5,7 +5,6 @@ const props = defineProps({
   task: Object,
   index: Number,
 });
-
 </script>
 
 <template>
@@ -32,7 +31,7 @@ const props = defineProps({
               @click="[$emit('close', false)]"
               class="itbkk-button-cancel btn btn-error text-white mx-2"
             >
-              close
+              Close
             </div>
         </div>
         </div>

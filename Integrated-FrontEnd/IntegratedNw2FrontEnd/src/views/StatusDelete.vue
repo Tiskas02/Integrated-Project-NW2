@@ -1,12 +1,11 @@
 <script setup>
 import { shouldDeleteOrTransferStatus } from "@/libs/api/status/fetchUtilStatus";
-import { defineProps, defineEmits, ref, watch, computed, onMounted } from "vue";
+import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { storeToRefs } from "pinia";
-import { useToasterStore } from '@/stores/notificationStores';
-const toasterStore = useToasterStore();
-const emit = defineEmits(["close","sentDelete","sentTranfer"]);
-
+const statusStore = useStoreStatus();
+const { statuses } = storeToRefs(statusStore);
+const emit = defineEmits(["close", "sentDelete", "sentTranfer"]);
 const props = defineProps({
   status: {
     type: Object,
@@ -17,61 +16,17 @@ const props = defineProps({
     },
   },
 });
-const statusStore = useStoreStatus();
-const { statuses } = storeToRefs(statusStore);
 const oldId = ref(props.status.id);
 const newId = ref(null);
-
-
-// true = should transfer, false = should delete
 const shouldDeleteOrTransfer = ref(false);
-const any = ref(null);
-const checkerror = ref(false);
-
 onMounted(async () => {
-  const deleted = await shouldDeleteOrTransferStatus(
-    props.status.id
-  );
-  console.log(deleted);
-  if (deleted === '404') {
-    checkerror.value = true;
-    shouldDeleteOrTransfer.value = false;
-    console.log(checkerror.value);
-  }else if (deleted === true){
+  const deleted = await shouldDeleteOrTransferStatus(props.status.id);
+  if (deleted === true) {
     shouldDeleteOrTransfer.value = true;
-  }else{
-    console.log('asf');
-    any.value = deleted;
+  } else {
+    shouldDeleteOrTransfer.value = false;
   }
 });
-watch(
-  any,
-  () => {
-    if(any.value === false){
-      checkerror.value = true;
-  }},
-  { deep: true }
-)
-console.log(any.value);
-
-
-
-
-const transferStatusNoti = () => {
-  try {
-    // Simulate transfer logic here
-    if (props.status) {
-      // Assuming status transfer is successful
-      toasterStore.success({ text: "Status transferred successfully!" });
-    } else {
-      // Assuming status transfer failed
-      throw new Error("Failed to transfer status.");
-    }
-  } catch (error) {
-    console.error('Error transferring status:', error);
-    toasterStore.error({ text: "An error occurred while transferring the status." });
-  }
-};
 </script>
 
 <template>
@@ -91,23 +46,21 @@ const transferStatusNoti = () => {
             Do you want to delete the Status name "{{ status.name }}" ?
           </div>
           <div v-if="shouldDeleteOrTransfer">
-            <div class="flex-row">
-            <div class="break-all itbkk-message">
-              Transfer to 
+            <div class="flex justify-start items-center">
+              <div class="itbkk-message mr-3">Transfer to</div>
+              <select
+                class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                v-model="newId"
+              >
+                <option
+                  v-for="status in statuses"
+                  :key="status.id"
+                  :value="status.id"
+                >
+                  {{ status.name }}
+                </option>
+              </select>
             </div>
-            <select
-                    class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                    v-model="newId"
-                  >
-                    <option
-                      v-for="status in statuses"
-                      :key="status.id"
-                      :value="status.id"
-                    >
-                      {{ status.name }}
-                    </option>
-                  </select>
-          </div>
           </div>
           <div class="flex justify-end my-4">
             <div
@@ -116,21 +69,24 @@ const transferStatusNoti = () => {
             >
               Cancel
             </div>
-            <div v-if="shouldDeleteOrTransfer"
-              @click="() => { 
-                transferStatusNoti(),
-                $emit('close', false),
-                $emit('sentTranfer',{oldId, newId})
-                }"
+            <div
+              v-if="shouldDeleteOrTransfer"
+              @click="
+                () => {
+                  $emit('close', false), $emit('sentTranfer', { oldId, newId });
+                }
+              "
               class="itbkk-button-confirm btn btn-success text-white"
             >
               Transfer
             </div>
-            <div v-else
-              @click="() => {
-              $emit('close', false),
-              $emit('sentDelete', oldId)
-              }"
+            <div
+              v-else
+              @click="
+                () => {
+                  $emit('close', false), $emit('sentDelete', oldId);
+                }
+              "
               class="itbkk-button-confirm btn btn-success text-white"
             >
               Confirm

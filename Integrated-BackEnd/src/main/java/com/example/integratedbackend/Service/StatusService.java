@@ -108,7 +108,7 @@ public class StatusService {
                 () -> new ItemNotFoundException("NOT FOUND ID:"+id)
         );
         List<Status> statusList= repositories.findAllByNameIgnoreCase(inputStatus.getName());
-        if (!statusList.isEmpty()){
+        if (statusList.isEmpty()){
             throw new StatusIdNotFoundException("must be unique");
         }
         if (status.getName().equals("No Status") || status.getName().equals("Done")) {

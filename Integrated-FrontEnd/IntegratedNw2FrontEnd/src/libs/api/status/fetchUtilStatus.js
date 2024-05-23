@@ -7,7 +7,6 @@ async function getStatusData() {
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);
-    console.log(error);
     return null;
   }
 }
@@ -18,7 +17,6 @@ async function getStatusDataById(id) {
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);
-    console.log(error);
     return null;
   }
 }
@@ -34,7 +32,6 @@ async function addStatus(newStatus) {
       }),
     });
     const addedStatus = await res.json();
-    console.log(addedStatus);
     return addedStatus;
   } catch (error) {
     console.log(`error: ${error}`);
@@ -42,18 +39,15 @@ async function addStatus(newStatus) {
 }
 async function editStatus(id, editStatus) {
   try {
-    const res = await fetch(
-      `${url}/v2/statuses/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          ...editStatus,
-        }),
-      }
-    );
+    const res = await fetch(`${url}/v2/statuses/${id}`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        ...editStatus,
+      }),
+    });
     const editedStatus = await res.json();
     return editedStatus;
   } catch (error) {
@@ -63,29 +57,22 @@ async function editStatus(id, editStatus) {
 
 async function shouldDeleteOrTransferStatus(id) {
   try {
-    const res = await fetch(
-      `${url}/v2/statuses/${id}/indicator`
-    );
+    const res = await fetch(`${url}/v2/statuses/${id}/indicator`);
     const data = await res.json();
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);
-    console.log(error);
     return null;
   }
 }
 async function deleteOneStatus(id) {
   try {
-    const res = await fetch(
-      `${url}/v2/statuses/${id}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const res = await fetch(`${url}/v2/statuses/${id}`, {
+      method: "DELETE",
+    });
     return res;
   } catch (error) {
     console.error("Error fetching data:", error);
-    console.log(error);
     return null;
   }
 }
@@ -112,5 +99,5 @@ export {
   editStatus,
   shouldDeleteOrTransferStatus,
   deleteOneStatus,
-  deleteTranferStatus
+  deleteTranferStatus,
 };

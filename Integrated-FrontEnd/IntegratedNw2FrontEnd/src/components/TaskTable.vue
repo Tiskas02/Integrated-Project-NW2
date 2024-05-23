@@ -1,20 +1,20 @@
 <script setup>
+import { ref, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useStoreTasks } from "../stores/taskStores.js";
 import { useStoreStatus } from "../stores/statusStores.js";
-import { ref, onMounted, computed, watch } from "vue";
-import TaskModal from "../components/TaskModal.vue";
-import { useRoute, useRouter } from "vue-router";
-import { getTaskById, getTaskData } from "@/libs/api/task/fetchUtilTask.js";
-import LimitTaskStatus from "./LimitTaskStatus.vue";
+import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
 import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
-
+import LimitTaskStatus from "./LimitTaskStatus.vue";
+import TaskModal from "../components/TaskModal.vue";
+import { useToasterStore } from "@/stores/notificationStores";
 const route = useRoute();
 const router = useRouter();
 const tasksStore = useStoreTasks();
 const statusStore = useStoreStatus();
-const { statuses } = storeToRefs(statusStore);
-const { isLoading, tasks } = storeToRefs(tasksStore);
+const toasterStore = useToasterStore();
+const { tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const showLimit = ref(false);
 const storeMode = ref("");
@@ -23,22 +23,17 @@ const storeTasks = ref({});
 const storeIndex = ref(0);
 const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
-//fetch data
 onMounted(async () => {
   const data = await tasksStore.fetchTasks();
   storeTasks.value = data;
-  console.log(tasks.value);
 });
 onMounted(async () => {
   await statusStore.fetchStatus();
 });
-//fetch data by id
 const fetchDataById = async (id, mode) => {
   storeMode.value = mode;
-
   storeTask.value = await getTaskById(id);
   statusStore.value = await getStatusData();
-
   if (storeMode.value === "add") {
     showDetail.value = true;
     router.push({ name: "addTask" });
@@ -59,12 +54,10 @@ const fetchDataById = async (id, mode) => {
   } else {
     showDetail.value = false;
   }
-
   if (storeTask.value.status == "404") {
-    alert("The requested task does not exist");
+    toasterStore.error({ text: "An error occurred redirect to task home" });
     router.replace({ name: "task" });
     showDetail.value = false;
-    return;
   }
 };
 
@@ -73,54 +66,84 @@ if (route.params.id) {
 }
 
 const removeTask = async (id) => {
-  await tasksStore.deleteTask(id);
+  const res = await tasksStore.deleteTask(id);
+  if (res !== 404) {
+    toasterStore.success({ text: "Task deleted successfully!" });
+  } else if (res === 404) {
+    toasterStore.error({ text: "An error occurred while deleting the task." });
+  }
 };
 const setIndex = (indexes) => {
   storeIndex.value = indexes;
 };
 const addEditTask = async (newTask) => {
-  console.log(newTask.id);
   if (newTask.id === undefined) {
     if (newTask.assignees === null) {
-      await tasksStore.createTask({
+      const data = await tasksStore.createTask({
         assignees: newTask.assignees,
-        statusId: newTask.status,
+        statusId: newTask.status ? newTask.status : 1,
         title: newTask.title.trim(),
         description: newTask.description.trim(),
       });
+      if (data.id) {
+        toasterStore.success({ text: "Task added successfully!" });
+      } else if (data.id === undefined) {
+        toasterStore.error({
+          text: "An error occurred while saving the task.",
+        });
+      }
     } else {
-      await tasksStore.createTask({
+      const data = await tasksStore.createTask({
         assignees: newTask.assignees.trim(),
-        statusId: newTask.status,
+        statusId: newTask.status ? newTask.status : 1,
         title: newTask.title.trim(),
         description: newTask.description.trim(),
       });
+      if (data.id) {
+        toasterStore.success({ text: "Task added successfully!" });
+      } else if (data.id === undefined) {
+        toasterStore.error({
+          text: "An error occurred while saving the task.",
+        });
+      }
     }
   } else {
     if (newTask.assignees === null) {
-      await tasksStore.updateTask(newTask.id, {
+      const dataEdit = await tasksStore.updateTask(newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees,
         statusId: newTask.status,
         title: newTask.title.trim(),
         description: newTask.description,
       });
+      if (dataEdit.id) {
+        toasterStore.success({ text: "Task Updated successfully!" });
+      } else if (dataEdit.id === undefined) {
+        toasterStore.error({
+          text: "An error occurred while saving the task.",
+        });
+      }
     } else {
-      await tasksStore.updateTask(newTask.id, {
+      const dataEdit = await tasksStore.updateTask(newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees.trim(),
         statusId: newTask.status,
         title: newTask.title.trim(),
         description: newTask.description.trim(),
       });
+      if (dataEdit.id) {
+        toasterStore.success({ text: "Task Updated successfully!" });
+      } else if (dataEdit.id === undefined) {
+        toasterStore.error({
+          text: "An error occurred while saving the task.",
+        });
+      }
     }
   }
 };
-
 const setDetail = (value, id, mode) => {
   showDetail.value = value;
   storeMode.value = mode;
-
   if (storeMode.value === "add") {
     router.push({ name: "addTask" });
   } else if (storeMode.value === "edit") {
@@ -131,9 +154,7 @@ const setDetail = (value, id, mode) => {
 };
 const setLimit = (value) => {
   showLimit.value = value;
-  console.log(showLimit.value);
   if (showLimit.value == true) {
-    console.log("asf");
     router.push({ name: "limit" });
   }
 };
@@ -146,29 +167,22 @@ const setClose = (value) => {
 const SortOrder = async () => {
   await tasksStore.sortTasksByStatus(sortOrder.value);
   if (sortOrder.value === "DEFAULT") {
-    console.log(sortOrder.value);
     sortOrder.value = "ASC";
   } else if (sortOrder.value === "ASC") {
-    console.log(sortOrder.value);
     sortOrder.value = "DESC";
   } else {
-    console.log(sortOrder.value);
     sortOrder.value = "DEFAULT";
   }
 };
 
+const updateFilterList = (filterName) => {
+  const filterIndex = selectFilter.value.indexOf(filterName);
 
-const statusFilterList = (itemName) => {
-  const index = selectFilter.value.findIndex((item) => {
-    return item === itemName;
-  });
-  console.log(index);
-  if (index === -1) {
-    selectFilter.value.push(itemName);
+  if (filterIndex === -1) {
+    selectFilter.value.push(filterName);
   } else {
-    selectFilter.value.splice(index, 1);
+    selectFilter.value.splice(filterIndex, 1);
   }
-  console.log(selectFilter.value);
 };
 
 const getFilterTask = computed(() => {
@@ -181,7 +195,6 @@ const getFilterTask = computed(() => {
 
 const ClearStatuses = () => {
   selectFilter.value.splice(0, selectFilter.value.length);
-  console.log(selectFilter.value);
 };
 </script>
 
@@ -189,11 +202,8 @@ const ClearStatuses = () => {
   <div>
     <div class="flex justify-between">
       <div class="my-2 flex gap-2 w-3/5">
-        <div class="ml-10 btn btn-outline btn-accent">
-          <router-link :to="{ name: 'status' }">Manage Status</router-link>
-        </div>
         <div
-          class="ml-3 btn btn-outline btn-accent"
+          class="ml-8 btn btn-outline"
           @click="SortOrder"
           v-if="sortOrder == 'DEFAULT'"
         >
@@ -213,7 +223,7 @@ const ClearStatuses = () => {
           </svg>
         </div>
         <div
-          class="ml-3 btn btn-outline btn-accent"
+          class="ml-8 btn btn-outline btn-primary"
           @click="SortOrder"
           v-else-if="sortOrder == 'ASC'"
         >
@@ -233,7 +243,7 @@ const ClearStatuses = () => {
           </svg>
         </div>
         <div
-          class="ml-3 btn btn-outline btn-accent"
+          class="ml-8 btn btn-outline btn-secondary"
           @click="SortOrder"
           v-else="sortOrder == 'DESC'"
         >
@@ -255,43 +265,49 @@ const ClearStatuses = () => {
         <div
           class="flex gap-2 items-center justify-center h-[48px] w-full border border-[#00BFA5] rounded-lg"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            id="Outline"
-            viewBox="0 0 10 24"
-            width="45"
-            height="15"
-          >
-            <path
-              d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
-              fill="#00BFA5"
-            />
-          </svg>
-
+          <div class="transition ease-in-out hover:scale-125 duration-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              id="Outline"
+              viewBox="0 0 10 24"
+              width="45"
+              height="15"
+            >
+              <path
+                d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
+                fill="#00BFA5"
+              />
+            </svg>
+          </div>
           <div
-            class="dropdown dropdown-bottom dropdown-hover w-full flex border-l border-l-[#00BFA5] h-[48px]"
+            class="dropdown dropdown-bottom dropdown-hover w-full flex h-[48px]"
           >
             <div
               tabindex="0"
               role="button"
-              class="overflow-x-auto max-h-[40px] btn w-full text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
+              class="overflow-x-auto max-h-[40px] btn w-full pt-2 text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
             >
               <div
                 v-for="statuses in selectFilter"
-                class="bg-[#00BFA5] text-white rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around"
+                class="bg-[#00BFA5] overflow-x text-white rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around animate-jump"
               >
                 <div>{{ statuses }}</div>
-                <div class="pr-3" @click="statusFilterList(statuses)">X</div>
+                <div
+                  class="pr-3 transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
+                  @click="updateFilterList(statuses)"
+                >
+                  x
+                </div>
               </div>
             </div>
             <ul
               tabindex="0"
-              class="dropdown-content z-[1] menu p-2 shadow bg-base-100 mt-2 rounded-box w-full"
+              class="dropdown-content z-[1] menu p-2 shadow bg-white mt-1 rounded-box w-full"
             >
               <li
                 v-for="statuses in statusStore.statuses"
                 :key="statuses.id"
-                @click="statusFilterList(statuses.name)"
+                @click="updateFilterList(statuses.name)"
               >
                 <div class="hover:text-white hover:bg-[#00BFA5]">
                   <input
@@ -307,17 +323,16 @@ const ClearStatuses = () => {
             </ul>
           </div>
           <p
-            class="pr-3 text-[#00BFA5] cursor-pointer"
+            class="pr-3 text-[#00BFA5] text-xs transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
             @click="ClearStatuses()"
           >
-            X
+            Clear
           </p>
         </div>
       </div>
       <div class="my-2 flex">
-        <!-- Add Task-->
         <div class="enable-limit" @click="setLimit(true)">
-          <button class="btn btn-info">Limits</button>
+          <button class="btn btn-info btn-outline">Limits</button>
         </div>
         <div
           class="itbkk-button-add btn btn-outline btn-primary mr-12 ml-3"
@@ -342,16 +357,15 @@ const ClearStatuses = () => {
               </clipPath>
             </defs>
           </svg>
-          add task
+          Add Task
         </div>
-        <!-- Added ml-2 class for margin-left -->
       </div>
     </div>
 
     <div class="w-full flex justify-center">
       <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40">
         <div class="min-w-full divide-y divide-gray-200">
-          <div class="#4793AF bg-slate-600 flex">
+          <div class="#4793AF bg-slate-600 flex rounded-md">
             <div
               class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             ></div>
@@ -383,63 +397,60 @@ const ClearStatuses = () => {
               </p>
             </div>
           </div>
-          <!-- Edit Task -->
-          <div class="w-full h-[350px] overflow-auto">
+          <div class="w-full h-[350px] overflow-auto rounded">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
-                <div class="">
-                  <div
-                    class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
-                  >
-                    <div class="flex">
+                <div
+                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
+                >
+                  <div class="flex">
+                    <div
+                      class="w-[10%] px-6 py-4 whitespace-nowrap"
+                      @click="fetchDataById(task.id, 'view')"
+                    >
+                      {{ index + 1 }}
+                    </div>
+                    <div
+                      class="itbkk-title w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
+                      @click="fetchDataById(task.id, 'view')"
+                    >
+                      {{ task.title }}
+                    </div>
+                    <div
+                      class="itbkk-assignees w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
+                      @click="fetchDataById(task.id, 'view')"
+                      :style="{
+                        fontStyle: task.assignees ? 'normal' : 'italic',
+                      }"
+                    >
+                      {{ task.assignees ? task.assignees : "Unassigned" }}
+                    </div>
+                    <div
+                      class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
+                      @click="fetchDataById(task.id, 'view')"
+                    >
                       <div
-                        class="w-[10%] px-6 py-4 whitespace-nowrap"
-                        @click="fetchDataById(task.id, 'view')"
+                        class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ index + 1 }}
+                        {{ task?.status.name }}
+                      </div>
+                    </div>
+                    <div
+                      class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
+                    >
+                      <div
+                        class="itbkk-button-edit btn btn-outline btn-warning"
+                        @click="fetchDataById(task.id, 'edit')"
+                      >
+                        Edit
                       </div>
                       <div
-                        class="itbkk-title w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                        @click="fetchDataById(task.id, 'view')"
+                        class="itbkk-button-delete btn btn-outline btn-error"
+                        @click="
+                          fetchDataById(task.id, 'delete'), setIndex(index)
+                        "
                       >
-                        {{ task.title }}
-                      </div>
-                      <div
-                        class="itbkk-assignees w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                        @click="fetchDataById(task.id, 'view')"
-                        :style="{
-                          fontStyle: task.assignees ? 'normal' : 'italic',
-                        }"
-                      >
-                        {{ task.assignees ? task.assignees : "Unassigned" }}
-                      </div>
-                      <div
-                        class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
-                        @click="fetchDataById(task.id, 'view')"
-                      >
-                        <div
-                          class="itbkk-status btn btn-outline shadow overflow-x-auto"
-                        >
-                          {{ task?.status.name }}
-                        </div>
-                      </div>
-                      <div
-                        class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
-                      >
-                        <div
-                          class="itbkk-button-edit btn btn-outline btn-warning"
-                          @click="fetchDataById(task.id, 'edit')"
-                        >
-                          Edit
-                        </div>
-                        <div
-                          class="itbkk-button-delete btn btn-outline btn-error"
-                          @click="
-                            fetchDataById(task.id, 'delete'), setIndex(index)
-                          "
-                        >
-                          Delete
-                        </div>
+                        Delete
                       </div>
                     </div>
                   </div>
@@ -449,26 +460,26 @@ const ClearStatuses = () => {
           </div>
         </div>
       </div>
-      <teleport to="#body">
-        <TaskModal
-          v-if="showDetail"
-          @close="setClose"
-          :mode="storeMode"
-          :task="storeTask"
-          @newTask="addEditTask"
-          :index="storeIndex"
-          @saveDelete="removeTask"
-        />
-      </teleport>
-      <teleport to="#body">
-        <LimitTaskStatus
-          v-if="showLimit"
-          @limit="setLimit"
-          :mode="storeMode"
-          @close="setClose"
-        />
-      </teleport>
     </div>
+    <teleport to="#body">
+      <TaskModal
+        v-if="showDetail"
+        @close="setClose"
+        :mode="storeMode"
+        :task="storeTask"
+        @newTask="addEditTask"
+        :index="storeIndex"
+        @saveDelete="removeTask"
+      />
+    </teleport>
+    <teleport to="#body">
+      <LimitTaskStatus
+        v-if="showLimit"
+        @limit="setLimit"
+        :mode="storeMode"
+        @close="setClose"
+      />
+    </teleport>
   </div>
 </template>
 

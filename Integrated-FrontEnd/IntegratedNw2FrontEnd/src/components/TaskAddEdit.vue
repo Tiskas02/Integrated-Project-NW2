@@ -1,13 +1,9 @@
 <script setup>
 import { defineProps, defineEmits, ref, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
-import { useToasterStore } from "@/stores/notificationStores";
-
 const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
-const toasterStore = useToasterStore();
-
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus();
 });
@@ -30,36 +26,10 @@ const props = defineProps({
     },
   },
 });
-
-const newTask = ref({ ...props.task, status: props.task.status.id });
-
-
-
-
-
-const saveTaskNoti = () => {
-  try {
-    if (props.mode === "add") {
-      // Add task logic here
-      toasterStore.success({ text: "Task added successfully!" });
-    } else if (props.mode === "edit" && newTask.value.id === props.task.id) {
-      // Edit task logic here
-      toasterStore.success({ text: "Task updated successfully!" });
-    } else if (
-      (props.mode === "edit" && newTask.value.id === props.task.id) ||
-      newTask.value.title.length > 100 ||
-      newTask.value.assignee.length > 30
-    ) {
-      // Edit task logic here
-      toasterStore.error({ text: "Task updated successfully!" });
-    }
-  } catch (error) {
-    console.error("Error saving task:", error);
-    toasterStore.error({ text: "An error occurred while saving the task." });
-  }
-};
-
-// const charCount= computed(() => newTask.value.title.length)
+const newTask = ref({
+  ...props.task,
+  status: props.task.status.id ? props.task.status.id : 1,
+});
 const titleCharCount = computed(() =>
   newTask.value.title ? newTask.value.title.length : 0
 );
@@ -69,12 +39,10 @@ const assigneesCharCount = computed(() =>
 const descriptionCharCount = computed(() =>
   newTask.value.description ? newTask.value.description.length : 0
 );
-
 computed(newTask.value, () => {
   Errortext.value.title == "" &&
     Errortext.value.description == "" &&
     Errortext.value.assignee == "";
-
   if (newTask.value.title.trim().length > 100) {
     Errortext.value.title = "Title has longer than 100 character";
   } else if (newTask.value.title.trim().length == 0) {
@@ -129,7 +97,6 @@ computed(newTask.value, () => {
                     class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     v-model="newTask.status"
                   >
-                    <!-- <option>Status</option> -->
                     <option
                       v-for="status in allStatus"
                       :key="status.id"
@@ -143,7 +110,6 @@ computed(newTask.value, () => {
             </div>
             <div class="flex">
               <div class="my-auto mx-2">Assignees</div>
-
               <div>
                 <div class="w-full">
                   <textarea
@@ -218,7 +184,6 @@ computed(newTask.value, () => {
                     class="itbkk-button-confirm disabled btn btn-info text-white"
                     @click="
                       () => {
-                        saveTaskNoti();
                         emit('sentData', newTask);
                         emit('close', false);
                       }

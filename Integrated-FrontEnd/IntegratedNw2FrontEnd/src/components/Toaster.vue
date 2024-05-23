@@ -68,7 +68,7 @@ const toastIconMap = {
   align-items: center;
   gap: 1rem;
 
-  border-radius: 0.3rem;
+  border-radius: 1rem;
 
   border: 1px solid transparent;
 
