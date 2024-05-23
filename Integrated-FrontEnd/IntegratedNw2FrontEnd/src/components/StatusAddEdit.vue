@@ -22,7 +22,6 @@ watch(
   () => {
     if (props.mode === "edit") {
       storeData.value = { ...props.status };
-      console.log(storeData.value);
     }
   },
   { deep: true, immediate: true }

@@ -34,8 +34,9 @@ export const useStoreStatus = defineStore("status", () => {
   }
 
   async function updateStatus(id, status) {
+    console.log(status);
     try {
-      const updatedStatus = await editStatus(id, status); // Call editStatus function
+      const updatedStatus = await editStatus(id, status); 
       const statusIndex = statuses.value.findIndex(
         (status) => status.id === id
       );

@@ -1,12 +1,12 @@
 package com.example.integratedbackend.Service;
 
-import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Entities.Status;
 import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.StatusIdNotFoundException;
+import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
 import com.example.integratedbackend.Repositories.StatusRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import jakarta.transaction.Transactional;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class StatusService {
@@ -49,7 +50,7 @@ public class StatusService {
     public StatusDTO createStatus(NewStatusDTO addStatus) {
             List<Status> statusList= repositories.findAllByNameIgnoreCase(addStatus.getName());
             if (!statusList.isEmpty()){
-                throw new StatusIdNotFoundException("must be unique");
+                throw new TaskNameDuplicatedException("must be unique");
             }
         Status status = mapper.map(addStatus, Status.class);
         System.out.println(status.getName());
@@ -101,22 +102,22 @@ public class StatusService {
         }
     }
 
-    @Transactional
-    public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {
-
-        Status status=repositories.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("NOT FOUND ID:"+id)
-        );
+    @Transactional     
+    public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {          
+        Status status=repositories.findById(id).
+                orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:"+id));
         List<Status> statusList= repositories.findAllByNameIgnoreCase(inputStatus.getName());
-        if (statusList.isEmpty()){
-            throw new StatusIdNotFoundException("must be unique");
+        for (Status s : statusList) {
+            if(!id.equals(s.getId()) && Objects.equals(inputStatus.getName(), s.getName()) ){
+                throw new TaskNameDuplicatedException("must be unique");
+            }
         }
-        if (status.getName().equals("No Status") || status.getName().equals("Done")) {
-            throw new ItemErrorNotFoundException(status.getName()+" cannot be modified");
+        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equalsIgnoreCase("Done")) {
+            throw new TaskNameDuplicatedException("must be unique");
         }
         Status updatedStatus = mapper.map(inputStatus, Status.class);
-        updatedStatus.setId(id);
-        return mapper.map(repositories.save(updatedStatus), StatusDTO.class);
+            updatedStatus.setId(id);
+            return mapper.map(repositories.save(updatedStatus),StatusDTO.class);
     }
 
     @Transactional

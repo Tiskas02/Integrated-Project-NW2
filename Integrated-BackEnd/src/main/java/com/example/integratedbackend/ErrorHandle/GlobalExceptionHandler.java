@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         for (ObjectError objectError : globalErrors) {
             errorResponse.addValidationError(objectError.getObjectName(), objectError.getDefaultMessage());
         }
-        return ResponseEntity.unprocessableEntity().body(errorResponse);
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(StatusIdNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -61,6 +61,17 @@ public class GlobalExceptionHandler {
 
         errorResponse.addValidationError("status", exception.getMessage());
 
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+    @ExceptionHandler(TaskNameDuplicatedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleTaskNameDuplicatedException(TaskNameDuplicatedException exception, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation error. Check 'errors' field for details. ",
+                request.getDescription(false)
+        );
+        errorResponse.addValidationError("name", exception.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 }
