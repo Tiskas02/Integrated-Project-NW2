@@ -218,7 +218,7 @@ const setClose = (value) => {
                       }}
                     </div>
                     <div
-                      v-if="status.id !== 1 && status.id !== 4"
+                      v-if="status.id !== 1 && status.id !== 7"
                       class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4"
                     >
                       <div
