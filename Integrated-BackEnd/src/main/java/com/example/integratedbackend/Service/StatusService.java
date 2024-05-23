@@ -63,7 +63,7 @@ public class StatusService {
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
         if (statusToDelete.getName().equals("No Status") || statusToDelete.getName().equals("Done")) {
             try {
-                throw new BadRequestException(statusToDelete.getName() +" cannot be deleted");
+                throw new BadRequestException("No Status cannot be deleted and Done cannot be deleted respectively");
             } catch (BadRequestException e) {
                 throw new RuntimeException(e);
             }
