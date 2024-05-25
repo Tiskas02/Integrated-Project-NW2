@@ -32,20 +32,7 @@ const nameCharCount = computed(() =>
 const descriptionCharCount = computed(() =>
   storeData.value.description ? storeData.value.description.length : 0
 );
-computed(storeData.value, () => {
-  Errortext.value.name == "" && Errortext.value.description == "";
 
-  if (storeData.value.name.trim().length > 50) {
-    Errortext.value.name = "Status name is too long than 50 character";
-  } else if (storeData.value.name.trim().length == 0) {
-    Errortext.value.name = "Status name can not be empty";
-  } else if (storeData.value.description.trim().length > 200) {
-    Errortext.value.description =
-      "Status description is too long than 200 character";
-  } else {
-    Errortext.value.description = "";
-  }
-});
 </script>
 
 <template>
@@ -100,7 +87,7 @@ computed(storeData.value, () => {
                 {{ descriptionCharCount }}/200
               </div>
             </div>
-            <div class="flex flex-row w-full justify-end">
+            <div class="flex flex-row w-full justify-end my-4">
               <div class="mr-2">
                 <button
                   class="itbkk-button-confirm disabled btn btn-info text-white"
