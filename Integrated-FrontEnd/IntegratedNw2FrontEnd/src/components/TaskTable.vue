@@ -129,7 +129,7 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees.trim(),
         statusId: newTask.status,
         title: newTask.title.trim(),
-        description: newTask.description.trim(),
+        description: newTask.description,
       });
       if (dataEdit.id) {
         toasterStore.success({ text: "Task Updated successfully!" });
