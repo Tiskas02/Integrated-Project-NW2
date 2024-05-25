@@ -109,11 +109,13 @@ public class StatusService {
         List<Status> statusList = repositories.findAllByNameIgnoreCase(inputStatus.getName());
         for (Status s : statusList) {
             if (!id.equals(s.getId()) && Objects.equals(inputStatus.getName(), s.getName())) {
+                System.out.println("in");
                 throw new TaskNameDuplicatedException("must be unique");
+
             }
         }
         if (status.getName().equalsIgnoreCase("No Status") || status.getName().equalsIgnoreCase("Done")) {
-            throw new TaskNameDuplicatedException("must be unique");
+            throw new ItemErrorNotFoundException("No Status cannot be deleted and Done cannot be deleted respectively");
         }
         Status updatedStatus = mapper.map(inputStatus, Status.class);
         updatedStatus.setId(id);
