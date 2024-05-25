@@ -108,7 +108,7 @@ public class StatusService {
                 orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:" + id));
         List<Status> statusList = repositories.findAllByNameIgnoreCase(inputStatus.getName());
         for (Status s : statusList) {
-            if (!id.equals(s.getId()) && Objects.equals(inputStatus.getName(), s.getName())) {
+            if (!id.equals(s.getId()) && inputStatus.getName().equalsIgnoreCase(s.getName())) {
                 System.out.println("in");
                 throw new TaskNameDuplicatedException("must be unique");
 
