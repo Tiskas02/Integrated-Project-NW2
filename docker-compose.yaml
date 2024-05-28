@@ -31,8 +31,7 @@ services:
       FE-network:
         ipv4_address: 172.0.2.2
     depends_on:
-      database:
-        condition: service_healthy
+      - database
     restart: unless-stopped
 
   frontendv2:
