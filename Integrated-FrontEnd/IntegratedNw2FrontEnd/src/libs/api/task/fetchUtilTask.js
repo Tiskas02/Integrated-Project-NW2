@@ -19,7 +19,6 @@ async function getTaskById(id) {
       history.back();
       return null;
     }
-
     const data = await res.json();
     return data;
   } catch (error) {
@@ -27,8 +26,8 @@ async function getTaskById(id) {
     return null;
   }
 }
+
 async function addTask(newTask) {
-  console.log(newTask, "fetchaddTask");
   try {
     const res = await fetch(`${url}/v2/tasks`, {
       method: "POST",
@@ -75,4 +74,5 @@ async function editTask(id, editTask) {
     console.log(`error: ${error}`);
   }
 }
+
 export { getTaskData, getTaskById, addTask, deleteItemById, editTask };

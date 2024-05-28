@@ -6,7 +6,6 @@ import { useStoreTasks } from "../stores/taskStores.js";
 import { useStoreStatus } from "../stores/statusStores.js";
 import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
 import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
-import LimitTaskStatus from "./LimitTaskStatus.vue";
 import TaskModal from "../components/TaskModal.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 const route = useRoute();
@@ -16,7 +15,6 @@ const statusStore = useStoreStatus();
 const toasterStore = useToasterStore();
 const { tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
-const showLimit = ref(false);
 const storeMode = ref("");
 const storeTask = ref({});
 const storeTasks = ref({});
@@ -87,7 +85,7 @@ const addEditTask = async (newTask) => {
       });
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
-      } else if (data.id === undefined) {
+      } else if (!data.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
         });
@@ -101,7 +99,7 @@ const addEditTask = async (newTask) => {
       });
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
-      } else if (data.id === undefined) {
+      } else if (!data.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
         });
@@ -114,7 +112,7 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees,
         statusId: newTask.status,
         title: newTask.title.trim(),
-        description: newTask.description,
+        description: newTask.description.trim(),
       });
       if (dataEdit.id) {
         toasterStore.success({ text: "Task Updated successfully!" });
@@ -129,11 +127,11 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees.trim(),
         statusId: newTask.status,
         title: newTask.title.trim(),
-        description: newTask.description,
+        description: newTask.description.trim(),
       });
       if (dataEdit.id) {
         toasterStore.success({ text: "Task Updated successfully!" });
-      } else if (dataEdit.id === undefined) {
+      } else if (!dataEdit.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
         });
@@ -152,15 +150,9 @@ const setDetail = (value, id, mode) => {
     router.push({ name: "taskDetail", params: { id: id } });
   }
 };
-const setLimit = (value) => {
-  showLimit.value = value;
-  if (showLimit.value == true) {
-    router.push({ name: "limit" });
-  }
-};
+
 const setClose = (value) => {
   showDetail.value = value;
-  showLimit.value = value;
   router.push({ name: "task" });
 };
 
@@ -200,11 +192,11 @@ const ClearStatuses = () => {
 
 <template>
   <div>
-    <div class="flex justify-between">
-      <div class="ml-8 my-2 flex gap-2 w-2/5">
+    <div class="flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between ">
+      <div class="ml-8 my-2 flex gap-2 tablet:w-2/5 mobile:mr-4 mobile:w-full">
         
         <div
-          class="flex gap-2 items-center justify-center h-[48px] w-full border border-[#00BFA5] rounded-lg"
+          class="flex gap-2 items-center justify-center h-[48px] w-full  border border-[#00BFA5] rounded-lg "
         >
           <div class="transition ease-in-out hover:scale-125 duration-300">
             <svg
@@ -226,7 +218,7 @@ const ClearStatuses = () => {
             <div
               tabindex="0"
               role="button"
-              class="overflow-x-auto max-h-[40px] btn w-full pt-2 text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
+              class="overflow-x-auto max-h-[40px] btn w-full pt-2 text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent "
             >
               <div
                 v-for="statuses in selectFilter"
@@ -243,14 +235,14 @@ const ClearStatuses = () => {
             </div>
             <ul
               tabindex="0"
-              class="dropdown-content z-[1] menu p-2 shadow bg-white mt-1 rounded-box w-full"
+              class="dropdown-content z-[1] menu p-2 shadow bg-white mt-1 rounded-box w-full "
             >
               <li
                 v-for="statuses in statusStore.statuses"
                 :key="statuses.id"
                 @click="updateFilterList(statuses.name)"
               >
-                <div class="hover:text-white hover:bg-[#00BFA5]">
+                <div class="hover:text-white hover:bg-[#00BFA5] hover:shadow-inner ">
                   <input
                     type="checkbox"
                     class="checkbox hover:border-white"
@@ -258,7 +250,7 @@ const ClearStatuses = () => {
                     :checked="selectFilter.includes(statuses.name)"
                     :value="statuses.id"
                   />
-                  <label :for="statuses.name">{{ statuses.name }}</label>
+                  <label class="overflow-auto" :for="statuses.name">{{ statuses.name }}</label>
                 </div>
               </li>
             </ul>
@@ -332,11 +324,8 @@ const ClearStatuses = () => {
           </svg>
         </div>
       <div class="my-2 flex">
-        <div class="enable-limit" @click="setLimit(true)">
-          <button class="btn btn-info btn-outline">Limits</button>
-        </div>
         <div
-          class="itbkk-button-add btn btn-outline btn-primary mr-12 ml-3 md:mr-20 lg:mr-12"
+          class="itbkk-button-add btn btn-outline btn-primary tablet:mr-12 ml-3 md:mr-20 lg:mr-12  tablet:ml-8 mobile:mr-4"
           @click="setDetail(true, null, 'add')"
         >
           <svg
@@ -365,28 +354,28 @@ const ClearStatuses = () => {
 
     <div class="w-full flex justify-center">
       <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40">
-        <div class="min-w-full divide-y divide-gray-200">
-          <div class="#4793AF bg-slate-600 flex rounded-md">
+        <div class="min-w-full divide-y divide-gray-200 overflow-auto">
+          <div class="#4793AF bg-slate-600 flex rounded-md overflow-auto">
             <div
-              class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase"
+              class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase overflow-auto"
             ></div>
             <div
-              class="w-[22%] px-6 py-3 text-left text-md font-bold text-white uppercase"
+              class="w-[22%] px-6 py-3 text-left text-md font-bold text-white uppercase overflow-auto"
             >
               Title
             </div>
             <div
-              class="w-[22%] px-6 py-3 text-left text-md font-bold text-white uppercase"
+              class="w-[22%] px-6 py-3 text-left text-md font-bold text-white uppercase overflow-auto"
             >
               Assignees
             </div>
             <div
-              class="w-[22%] px-6 py-3 text-center text-md font-bold text-white uppercase"
+              class="w-[22%] px-6 py-3 text-center text-md font-bold text-white uppercase overflow-auto"
             >
               Status
             </div>
             <div
-              class="w-[22%] px-6 py-3 text-left text-md font-bold text-white uppercase"
+              class="w-[22%] px-6 py-3 text-left text-md font-bold text-white uppercase overflow-auto"
             >
               Action
             </div>
@@ -398,13 +387,13 @@ const ClearStatuses = () => {
               </p>
             </div>
           </div>
-          <div class="w-full sm:h-[300px] md:h-[380px] lg:h-[500px] xl:h-[550px] 2xl:h-[600px] overflow-auto rounded">
+          <div class="w-full sm:h-[300px] md:h-[380px] lg:h-[500px] xl:h-[550px] 2xl:h-[600px] overflow-auto rounded ">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div
-                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
+                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
-                  <div class="flex">
+                  <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[10%] px-6 py-4 whitespace-nowrap"
                       @click="fetchDataById(task.id, 'view')"
@@ -471,14 +460,6 @@ const ClearStatuses = () => {
         @newTask="addEditTask"
         :index="storeIndex"
         @saveDelete="removeTask"
-      />
-    </teleport>
-    <teleport to="#body">
-      <LimitTaskStatus
-        v-if="showLimit"
-        @limit="setLimit"
-        :mode="storeMode"
-        @close="setClose"
       />
     </teleport>
   </div>

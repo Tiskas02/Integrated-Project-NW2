@@ -8,6 +8,10 @@ export default {
     extend: {
 
     },
+    screens: {
+      'mobile':'320px',
+      'tablet':'425px'
+    }
   },
   plugins: [
     require("daisyui"),

@@ -31,7 +31,7 @@ watch(
               </div>
             </div>
             <div class="flex w-full items-center justify-between">
-              <div class="">
+              <div>
                 <div class="text-sm breadcrumbs ml-8 text-slate-700">
                   <ul>
                     <li class="itbkk-botton-home text-lg">
@@ -39,20 +39,23 @@ watch(
                         <div>Home</div>
                       </router-link>
                     </li>
-                    <li class="itbkk-botton-status text-lg ">
+                    <li class="itbkk-botton-status text-lg">
                       <router-link :to="{ name: 'status' }">Status</router-link>
                     </li>
                   </ul>
                 </div>
               </div>
               <div v-if="!usePath">
-              <div class="itbkk-botton-status mr-11 btn btn-outline btn-accent ">
-                <router-link :to="{ name: 'status' }"
-                  >Manage Status</router-link
+                <router-link :to="{ name: 'status' }">
+                  <div
+                    class="itbkk-botton-status tablet:mr-11 btn btn-outline btn-accent mobile:mr-4 mobile:ml-4"
+                  >
+                    Manage Status
+                  </div></router-link
                 >
-              </div></div>
+              </div>
             </div>
-            <div v-if="usePath" class="w-full ">
+            <div v-if="usePath" class="w-full">
               <StatusTable />
             </div>
             <div v-else class="w-full">

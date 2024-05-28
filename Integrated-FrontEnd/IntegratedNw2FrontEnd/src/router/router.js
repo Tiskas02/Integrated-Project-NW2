@@ -5,7 +5,6 @@ import TaskModal from "@/components/TaskModal.vue";
 import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
-import LimitTaskStatus from "@/components/LimitTaskStatus.vue";
 const history = createWebHistory(import.meta.env.BASE_URL);
 const routes = [
   {
@@ -31,11 +30,6 @@ const routes = [
         path: ":id/edit",
         name: "editTask",
         component: TaskAddEdit,
-      },
-      {
-        path: "limit",
-        name: "limit",
-        component: LimitTaskStatus,
       },
     ],
   },

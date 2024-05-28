@@ -109,7 +109,7 @@ const getRandomColor = () => {
                     }
                   "
                 >
-                  Cancel
+                  Close
                 </div>
               </div>
             </div>

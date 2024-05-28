@@ -120,10 +120,11 @@ const setClose = (value) => {
 
 <template>
   <div>
-    <div class="flex justify-end">
+    <div class="flex justify-between">
+      <div class=" tablet:mx-12 text-xl mobile:mx-4 font-semibold text-center tablet:pt-4">Manage Status</div>
       <div>
         <div
-          class="itbkk-button-add btn btn-outline btn-primary mr-10 md:mr-20 lg:mr-10"
+          class="itbkk-button-add btn btn-outline btn-primary mr-10 md:mr-20 lg:mr-10 flex"
           @click="setModal(true, 'add', null)"
         >
           <svg
@@ -154,8 +155,8 @@ const setClose = (value) => {
       <div
         class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 overflow-y-auto mt-4"
       >
-        <div class="min-w-full divide-y divide-gray-200">
-          <div class="#4793AF bg-slate-600 flex">
+        <div class="min-w-full divide-y divide-gray-200 ">
+          <div class="#4793AF bg-slate-600 flex overflow-auto">
             <div
               class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             ></div>
@@ -179,7 +180,7 @@ const setClose = (value) => {
           <div v-if="statuses.length <= 0" class="w-full border bg-white h-24">
             <div class="flex justify-center items-center h-full">
               <p class="text-xl font-bold animate-bounce text-slate-500">
-                No task
+                No Status
               </p>
             </div>
           </div>
@@ -190,7 +191,7 @@ const setClose = (value) => {
                   <div
                     class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
                   >
-                    <div class="flex">
+                    <div class="flex hover:shadow-inner hover:bg-slate-50">
                       <div class="w-[10%] px-6 py-4 whitespace-nowrap">
                         {{ index + 1 }}
                       </div>
