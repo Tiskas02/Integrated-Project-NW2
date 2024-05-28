@@ -1,6 +1,6 @@
 version: "3.3"
 services:
-  dbserver:
+  database:
     container_name: dataContainer
     build:
       context: ./Integrated-DataBase
@@ -8,10 +8,17 @@ services:
     volumes:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
+    healthcheck:
+			test: [“CMD”, “/healthcheck.sh”]
+			interval: 2s
+			timeout: 2s
+			retries: 20
     ports:
       - '3306:3306'
     networks: 
-      - DB-network
+      BE-network:
+        ipv4_address: 172.0.1.1 
+    restart: unless-stopped
 
 
   backend:
@@ -20,8 +27,15 @@ services:
       context: ./Integrated-BackEnd
       dockerfile: Dockerfile
     networks: 
-      - DB-network
-      - FE-network
+      BE-network:
+        ipv4_address: 172.0.1.2
+      FE-network:
+        ipv4_address: 172.0.2.2
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+
 
   frontendv2:
     container_name: frontEndContainerV2
@@ -29,23 +43,37 @@ services:
       context: ./Integrated-FrontEnd/IntegratedNw2FrontEnd
       dockerfile: Dockerfile
     networks: 
-      - FE-network
+      FE-network:
+        ipv4_address: 172.0.2.1
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   reverse_proxy:
     image: nginx:alpine
     container_name: reverse_proxy
     ports:
-      - 80:80
+      - '80:80'
     volumes: 
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     networks: 
-      - FE-network
+      FE-network:
+        ipv4_address: 172.0.2.3
+    depends_on:
+      - frontendv2
+    restart: unless-stopped
 
 volumes:
   mysqldb:
   mysqlconfig:
 
 networks:
-  DB-network:
+  BE-network:
+    ipam:
+      config:
+        - subnet: '172.0.1.0/24'
   FE-network:
+    ipam:
+      config:
+        - subnet: '172.0.2.0/24'
 
