@@ -9,7 +9,7 @@ services:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
     healthcheck:
-			test: [“CMD”, “/healthcheck.sh”]
+			test: ["CMD", "/healthcheck.sh"]
 			interval: 2s
 			timeout: 2s
 			retries: 20
