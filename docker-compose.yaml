@@ -9,17 +9,16 @@ services:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
     healthcheck:
-			test: ["CMD", "/healthcheck.sh"]
-			interval: 2s
-			timeout: 2s
-			retries: 20
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
     ports:
       - '3306:3306'
     networks: 
       BE-network:
         ipv4_address: 172.0.1.1 
     restart: unless-stopped
-
 
   backend:
     container_name: backEndContainer
@@ -35,7 +34,6 @@ services:
       database:
         condition: service_healthy
     restart: unless-stopped
-
 
   frontendv2:
     container_name: frontEndContainerV2
@@ -76,4 +74,3 @@ networks:
     ipam:
       config:
         - subnet: '172.0.2.0/24'
-
