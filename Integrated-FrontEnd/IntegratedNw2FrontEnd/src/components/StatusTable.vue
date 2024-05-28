@@ -184,7 +184,7 @@ const setClose = (value) => {
               </p>
             </div>
           </div>
-          <div class="w-full sm:h-[300px] md:h-[380px] lg:h-[500px] xl:h-[550px] 2xl:h-[600px] overflow-auto rounded">
+          <div class="w-full mobile:h-[330px] tablet:h-[500px] sm:h-[300px] md:h-[380px] lg:h-[500px] xl:h-[550px] 2xl:h-[600px] overflow-auto rounded">
             <div v-for="(status, index) in statuses" :key="status.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div class="w-full max-h-[550px]">
