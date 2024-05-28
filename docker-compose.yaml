@@ -8,11 +8,11 @@ services:
     volumes:
       - mysqldb:/var/lib/mysql
       - mysqlconfig:/etc/mysql
-    # healthcheck:
-    #   test: ["CMD", "/healthcheck.sh"]
-    #   interval: 2s
-    #   timeout: 2s
-    #   retries: 20
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
     ports:
       - '3306:3306'
     networks: 
@@ -30,9 +30,10 @@ services:
         ipv4_address: 172.0.1.2
       FE-network:
         ipv4_address: 172.0.2.2
-    # depends_on:
-    #   - database
     restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
 
   frontendv2:
     container_name: frontEndContainerV2
@@ -42,9 +43,9 @@ services:
     networks: 
       FE-network:
         ipv4_address: 172.0.2.1
+    restart: unless-stopped
     depends_on:
       - backend
-    restart: unless-stopped
 
   reverse_proxy:
     image: nginx:alpine
@@ -56,9 +57,9 @@ services:
     networks: 
       FE-network:
         ipv4_address: 172.0.2.3
+    restart: unless-stopped
     depends_on:
       - frontendv2
-    restart: unless-stopped
 
 volumes:
   mysqldb:
