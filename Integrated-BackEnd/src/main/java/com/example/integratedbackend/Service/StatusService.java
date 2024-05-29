@@ -62,7 +62,7 @@ public class StatusService {
     public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
         Status statusToDelete = repositories.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id + "NOT FOUND"));
-        if (statusToDelete.getName().equals("No Status") || statusToDelete.getName().equals("Done")) {
+        if (statusToDelete.getName().equalsIgnoreCase("No Status") || statusToDelete.getName().equalsIgnoreCase("Done")) {
             throw new BadRequestException(statusToDelete.getName() + " cannot be deleted");
         }
         List<Taskv2> tasksUsingStatus = tasksRepositoriesV2.findByStatusId(id);
@@ -109,9 +109,7 @@ public class StatusService {
         List<Status> statusList = repositories.findAllByNameIgnoreCase(inputStatus.getName());
         for (Status s : statusList) {
             if (!id.equals(s.getId()) && inputStatus.getName().equalsIgnoreCase(s.getName())) {
-                System.out.println("in");
                 throw new TaskNameDuplicatedException("must be unique");
-
             }
         }
         if (status.getName().equalsIgnoreCase("No Status") || status.getName().equalsIgnoreCase("Done")) {
