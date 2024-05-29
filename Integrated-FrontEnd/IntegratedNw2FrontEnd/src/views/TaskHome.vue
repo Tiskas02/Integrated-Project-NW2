@@ -24,10 +24,19 @@ watch(
         <div class="w-full bg-slate-100 h-full rounded-2xl shadow-inner">
           <div class="w-[100%] py-3 flex-col flex items-start">
             <div>
-              <div
-                class="font-bold text-3xl text-blue-220 mt-6 mx-10 text-slate-700"
-              >
-                IT-Bangmod Kradan Kanban
+              <div class="mt-6 mx-10 flex items-center">
+                <div
+                  class="mobile:w-[70%] mobile:h-[70%] tablet:w-[7%] tablet:h-[7%] transition ease-in-out hover:scale-125 duration-300"
+                >
+                  <router-link :to="{ name: 'task' }"
+                    ><img src="/icon.png"
+                  /></router-link>
+                </div>
+                <div
+                  class="font-bold text-3xl text-blue-220 text-slate-700 ml-2"
+                >
+                  IT-Bangmod Kradan Kanban
+                </div>
               </div>
             </div>
             <div class="flex w-full items-center justify-between">

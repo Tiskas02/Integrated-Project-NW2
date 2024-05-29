@@ -387,7 +387,7 @@ const ClearStatuses = () => {
               </p>
             </div>
           </div>
-          <div class="w-full mobile:h-[330px] tablet:h-[500px] md:h-[380px] lg:h-[500px] xl:h-[550px] 2xl:h-[600px] overflow-auto rounded ">
+          <div class="w-full mobile:h-[330px] tablet:h-[400px] md:h-[380px] lg:h-[500px] xl:h-[550px] 2xl:h-[600px] overflow-auto rounded ">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div
