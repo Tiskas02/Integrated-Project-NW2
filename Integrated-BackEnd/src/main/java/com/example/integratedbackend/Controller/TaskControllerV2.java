@@ -39,7 +39,7 @@ public class TaskControllerV2 {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createTask(@Valid @RequestBody NewStatusDTO.NewTaskDTOV2 newTask) {
+    public ResponseEntity<Object> createTask(@Valid @RequestBody NewTaskDTOV2 newTask) {
         return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(service.createTask(newTask), NewTaskReturnV2.class));
     }
 
@@ -49,7 +49,7 @@ public class TaskControllerV2 {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> updateTask(@Valid @RequestBody NewStatusDTO.NewTaskDTOV2 editTask, @PathVariable Integer id) {
+    public ResponseEntity<Object> updateTask(@Valid @RequestBody NewTaskDTOV2 editTask, @PathVariable Integer id) {
         return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask, id), TaskIDDTOV2.class));
     }
 
