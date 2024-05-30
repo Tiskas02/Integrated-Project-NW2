@@ -81,7 +81,7 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees,
         statusId: newTask.status ? newTask.status : 1,
         title: newTask.title.trim(),
-        description: newTask.description.trim(),
+        description: newTask.description ? newTask.description.trim() : newTask.description,
       });
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
@@ -95,7 +95,7 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees.trim(),
         statusId: newTask.status ? newTask.status : 1,
         title: newTask.title.trim(),
-        description: newTask.description.trim(),
+        description: newTask.description ? newTask.description.trim() : newTask.description,
       });
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
@@ -112,7 +112,7 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees,
         statusId: newTask.status,
         title: newTask.title.trim(),
-        description: newTask.description.trim(),
+        description: newTask.description ? newTask.description.trim() : newTask.description,
       });
       if (dataEdit.id) {
         toasterStore.success({ text: "Task Updated successfully!" });
@@ -127,7 +127,7 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees.trim(),
         statusId: newTask.status,
         title: newTask.title.trim(),
-        description: newTask.description.trim(),
+        description: newTask.description ? newTask.description.trim() : newTask.description,
       });
       if (dataEdit.id) {
         toasterStore.success({ text: "Task Updated successfully!" });
