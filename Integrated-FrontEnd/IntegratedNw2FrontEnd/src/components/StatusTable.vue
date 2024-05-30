@@ -19,16 +19,13 @@ onMounted(async () => {
 });
 const addOrEditStatus = async (newStatus) => {
   try {
-    const name = newStatus.name ? newStatus.name.trim() : "";
-    const description = newStatus.description
-      ? newStatus.description.trim()
-      : "";
+    const name = newStatus.name ? newStatus.name.trim() : newStatus.name;
+    const description = newStatus.description ? newStatus.description.trim() : newStatus.description;
     if (newStatus.id === undefined) {
       const check = await statusStore.createStatus({
         name,
         description,
       });
-      console.log(check.errors[0].message);
       if (check.id !== undefined) {
         toasterStore.success({ text: "Status added successfully!" });
       } else if (check.errors[0].message){
