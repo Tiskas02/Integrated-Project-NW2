@@ -1,6 +1,7 @@
 package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.NewStatusDTO;
+import com.example.integratedbackend.DTO.NewTaskDTOV2;
 import com.example.integratedbackend.DTO.TaskDTOV2;
 import com.example.integratedbackend.DTO.TaskIDDTOV2;
 import com.example.integratedbackend.Entities.Status;
@@ -65,7 +66,7 @@ public class TaskServiceV2 {
                         "Task" + " " + id + " " + "doesn't exist !!!"));
     }
 
-    public TaskIDDTOV2 createTask(NewStatusDTO.NewTaskDTOV2 addTask) {
+    public TaskIDDTOV2 createTask(NewTaskDTOV2 addTask) {
         Status statusObj = statusRepositories.findById(addTask.getStatusId()).orElseThrow(
                 () -> new StatusIdNotFoundException("does not exist")
         );
@@ -85,7 +86,7 @@ public class TaskServiceV2 {
 
 
     @Transactional
-    public TaskIDDTOV2 updateTask(NewStatusDTO.NewTaskDTOV2 editTask, Integer id) {
+    public TaskIDDTOV2 updateTask(NewTaskDTOV2 editTask, Integer id) {
         Taskv2 existingTask = repositories.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
         existingTask.setTaskTitle(editTask.getTitle());
