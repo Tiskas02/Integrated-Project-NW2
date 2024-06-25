@@ -5,6 +5,7 @@ import TaskModal from "@/components/TaskModal.vue";
 import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
+import FormTask from "@/shared/FormTask.vue";
 const history = createWebHistory(import.meta.env.BASE_URL);
 const routes = [
   {
@@ -32,6 +33,11 @@ const routes = [
         component: TaskAddEdit,
       },
     ],
+  },
+  {
+    path: "/form",
+    name: "form",
+    component: FormTask,
   },
   {
     path: "/status",
