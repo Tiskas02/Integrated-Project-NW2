@@ -20,7 +20,9 @@ onMounted(async () => {
 const addOrEditStatus = async (newStatus) => {
   try {
     const name = newStatus.name ? newStatus.name.trim() : newStatus.name;
-    const description = newStatus.description ? newStatus.description.trim() : newStatus.description;
+    const description = newStatus.description
+      ? newStatus.description.trim()
+      : newStatus.description;
     if (newStatus.id === undefined) {
       const check = await statusStore.createStatus({
         name,
@@ -28,11 +30,11 @@ const addOrEditStatus = async (newStatus) => {
       });
       if (check.id !== undefined) {
         toasterStore.success({ text: "Status added successfully!" });
-      } else if (check.errors[0].message){
+      } else if (check.errors[0].message) {
         toasterStore.error({
           text: `Status Name ${check.errors[0].message} `,
         });
-      }else if (check.status === 400) {
+      } else if (check.status === 400) {
         toasterStore.error({
           text: "An error occurred while adding the status.",
         });
@@ -117,24 +119,35 @@ const setClose = (value) => {
 
 <template>
   <div>
-    <div class="flex justify-between">
-      <div class=" tablet:mx-12 text-xl mobile:mx-4 font-semibold text-center tablet:pt-4 hover:animate-bounce">Manage Status</div>
-      <div>
+    <div class="w-full flex justify-center my-3">
+      <div
+        class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
+      >
+        Manage Status
+      </div>
+    </div>
+    <div
+      class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between mt mb-7"
+    >
+      <div
+        class="w-[95%] h-full m-auto border rounded-md bg-gradient-to-r from-indigo-800 to-black shadow-inner flex justify-start items-center px-6"
+      >
+        <div class="font-bold text-white">Tool Bar :</div>
         <div
-          class="itbkk-button-add btn btn-outline btn-primary mr-10 md:mr-20 lg:mr-10 flex"
+          class="itbkk-button-add btn btn-outline flex mx-8"
           @click="setModal(true, 'add', null)"
         >
           <svg
             width="20"
             height="20"
             viewBox="0 0 20 20"
-            fill="none"
+            fill="#f8fafc"
             xmlns="http://www.w3.org/2000/svg"
           >
             <g clip-path="url(#clip0_529_11)">
               <path
                 d="M11 9H15V11H11V15H9V11H5V9H9V5H11V9ZM10 20C7.34784 20 4.8043 18.9464 2.92893 17.0711C1.05357 15.1957 0 12.6522 0 10C0 7.34784 1.05357 4.8043 2.92893 2.92893C4.8043 1.05357 7.34784 0 10 0C12.6522 0 15.1957 1.05357 17.0711 2.92893C18.9464 4.8043 20 7.34784 20 10C20 12.6522 18.9464 15.1957 17.0711 17.0711C15.1957 18.9464 12.6522 20 10 20ZM10 18C12.1217 18 14.1566 17.1571 15.6569 15.6569C17.1571 14.1566 18 12.1217 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 12.1217 2.84285 14.1566 4.34315 15.6569C5.84344 17.1571 7.87827 18 10 18Z"
-                fill="#7C5ED2"
+                fill="#f8fafc"
               />
             </g>
             <defs>
@@ -143,7 +156,7 @@ const setClose = (value) => {
               </clipPath>
             </defs>
           </svg>
-          Add Status
+          <div class="text-white">Add Status</div>
         </div>
       </div>
     </div>
@@ -152,8 +165,8 @@ const setClose = (value) => {
       <div
         class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 overflow-y-auto mt-4"
       >
-        <div class="min-w-full divide-y divide-gray-200 ">
-          <div class="#4793AF bg-slate-600 flex overflow-auto">
+        <div class="min-w-full divide-y divide-gray-200">
+          <div class="#4793AF bg-slate-800 flex overflow-auto">
             <div
               class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             ></div>
@@ -181,7 +194,9 @@ const setClose = (value) => {
               </p>
             </div>
           </div>
-          <div class="w-full mobile:h-[330px] tablet:h-[400px] sm:h-[300px] md:h-[380px] lg:h-[500px] xl:h-[550px] 2xl:h-[600px] overflow-auto rounded">
+          <div
+            class="w-full h-[500px] overflow-auto rounded"
+          >
             <div v-for="(status, index) in statuses" :key="status.id">
               <div class="bg-white divide-y divide-gray-200 overflow-auto">
                 <div class="w-full max-h-[550px]">
