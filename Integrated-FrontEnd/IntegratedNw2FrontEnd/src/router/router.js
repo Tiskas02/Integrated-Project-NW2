@@ -5,11 +5,17 @@ import TaskModal from "@/components/TaskModal.vue";
 import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
+import Login from "@/components/Login.vue";
 const history = createWebHistory(import.meta.env.BASE_URL);
 const routes = [
   {
     path: "/",
-    redirect: "/task",
+    redirect: "/login",
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: Login,
   },
   {
     path: "/task",

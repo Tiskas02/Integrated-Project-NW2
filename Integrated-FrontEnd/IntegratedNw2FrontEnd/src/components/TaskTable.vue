@@ -134,7 +134,7 @@ const addEditTask = async (newTask) => {
         statusId: newTask.status,
         title: newTask.title.trim(),
         description: newTask.description
-          ? newTask.description.trim()
+          ? newTask.descriptionw.trim()
           : newTask.description,
       });
       if (dataEdit.id) {
@@ -258,18 +258,16 @@ const ClearStatuses = () => {
     </div> -->
     <div class="w-full flex justify-center my-3">
       <div
-            class=" font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
-          >
-            Manage Tasks
-          </div>
+        class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
+      >
+        Manage Tasks
+      </div>
     </div>
     <div
-      class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between mt mb-7"
+      class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between"
     >
-      <div
-        class="w-[95%] h-full m-auto border rounded-md bg-gradient-to-r from-indigo-800 to-black shadow-inner flex justify-start items-center px-6"
-      >
-        <div class="font-bold text-white">Tool Bar :</div>
+      <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
+        <div class="font-bold text-slate-700">Tool Bar :</div>
         <div class="my-2 flex">
           <div
             class="itbkk-button-add btn btn-outline mx-5"
@@ -279,13 +277,13 @@ const ClearStatuses = () => {
               width="20"
               height="20"
               viewBox="0 0 20 20"
-              fill="#f8fafc"
+              fill="#334155"
               xmlns="http://www.w3.org/2000/svg"
             >
               <g clip-path="url(#clip0_529_11)">
                 <path
                   d="M11 9H15V11H11V15H9V11H5V9H9V5H11V9ZM10 20C7.34784 20 4.8043 18.9464 2.92893 17.0711C1.05357 15.1957 0 12.6522 0 10C0 7.34784 1.05357 4.8043 2.92893 2.92893C4.8043 1.05357 7.34784 0 10 0C12.6522 0 15.1957 1.05357 17.0711 2.92893C18.9464 4.8043 20 7.34784 20 10C20 12.6522 18.9464 15.1957 17.0711 17.0711C15.1957 18.9464 12.6522 20 10 20ZM10 18C12.1217 18 14.1566 17.1571 15.6569 15.6569C17.1571 14.1566 18 12.1217 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 12.1217 2.84285 14.1566 4.34315 15.6569C5.84344 17.1571 7.87827 18 10 18Z"
-                  fill="#f8fafc"
+                  fill="#334155"
                 />
               </g>
               <defs>
@@ -294,87 +292,87 @@ const ClearStatuses = () => {
                 </clipPath>
               </defs>
             </svg>
-            <div class="text-white">Add Task</div>
+            <div class="text-slate-700">Add Task</div>
           </div>
         </div>
-        <div class=" my-2 flex gap-2 tablet:w-2/5 mobile:mr-4 mobile:w-full"> 
-        <div
-          class="flex gap-2 items-center justify-center h-[48px] w-full border border-white rounded-lg"
-        >
-          <div class="transition ease-in-out hover:scale-125 duration-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              id="Outline"
-              viewBox="0 0 10 24"
-              width="45"
-              height="15"
-            >
-              <path
-                d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
-                fill="#f8fafc"
-              />
-            </svg>
-          </div>
+        <div class="my-2 flex gap-2 tablet:w-2/5 mobile:mr-4 mobile:w-full">
           <div
-            class="dropdown dropdown-bottom dropdown-hover w-full flex h-[48px]"
+            class="flex gap-2 items-center justify-center h-[48px] w-full border border-slate-700 rounded-lg"
           >
+            <div class="transition ease-in-out hover:scale-125 duration-300">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                id="Outline"
+                viewBox="0 0 10 24"
+                width="45"
+                height="15"
+              >
+                <path
+                  d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
+                  fill="#334155"
+                />
+              </svg>
+            </div>
             <div
-              tabindex="0"
-              role="button"
-              class="overflow-x-auto max-h-[40px] btn w-full pt-2 text-[#00BFA5] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
+              class="dropdown dropdown-bottom dropdown-hover w-full flex h-[48px]"
             >
               <div
-                v-for="statuses in selectFilter"
-                class="bg-slate-500 overflow-x text-white rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around animate-jump"
+                tabindex="0"
+                role="button"
+                class="overflow-x-auto max-h-[40px] btn w-full pt-2 text-[#334155] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
               >
-                <div>{{ statuses }}</div>
                 <div
-                  class="pr-3 transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
-                  @click="updateFilterList(statuses)"
+                  v-for="statuses in selectFilter"
+                  class="bg-slate-500 overflow-x text-slate-700 rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around animate-jump"
                 >
-                  x
+                  <div>{{ statuses }}</div>
+                  <div
+                    class="pr-3 transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
+                    @click="updateFilterList(statuses)"
+                  >
+                    x
+                  </div>
                 </div>
               </div>
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content z-[1] menu p-2 shadow bg-white mt-1 rounded-box w-full"
-            >
-              <li
-                v-for="statuses in statusStore.statuses"
-                :key="statuses.id"
-                @click="updateFilterList(statuses.name)"
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-white mt-1 rounded-box w-full"
               >
-                <div
-                  class="hover:text-white hover:bg-slate-700 hover:shadow-inner"
+                <li
+                  v-for="statuses in statusStore.statuses"
+                  :key="statuses.id"
+                  @click="updateFilterList(statuses.name)"
                 >
-                  <input
-                    type="checkbox"
-                    class="checkbox hover:border-white"
-                    :id="statuses.id"
-                    :checked="selectFilter.includes(statuses.name)"
-                    :value="statuses.id"
-                  />
-                  <label class="overflow-auto" :for="statuses.name">{{
-                    statuses.name
-                  }}</label>
-                </div>
-              </li>
-            </ul>
+                  <div
+                    class="hover:text-white hover:bg-slate-700 hover:shadow-inner"
+                  >
+                    <input
+                      type="checkbox"
+                      class="checkbox hover:border-white"
+                      :id="statuses.id"
+                      :checked="selectFilter.includes(statuses.name)"
+                      :value="statuses.id"
+                    />
+                    <label class="overflow-auto" :for="statuses.name">{{
+                      statuses.name
+                    }}</label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <p
+              class="pr-3 text-slate-700 text-xs transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
+              @click="ClearStatuses()"
+            >
+              Clear
+            </p>
           </div>
-          <p
-            class="pr-3 text-white text-xs transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
-            @click="ClearStatuses()"
-          >
-            Clear
-          </p>
         </div>
-      </div>
       </div>
     </div>
 
     <div class="w-full flex justify-center">
-      <div class="shadow-md rounded-md w-[95%] h-[95%] ">
+      <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40">
         <div class="min-w-full divide-y divide-gray-200 overflow-auto">
           <div class="#4793AF bg-slate-800 flex rounded-md overflow-auto">
             <div
@@ -470,12 +468,9 @@ const ClearStatuses = () => {
               </p>
             </div>
           </div>
-          <div
-            class="w-full h-[500px] overflow-auto rounded"
-          >
-          <!-- mobile:h-[330px] tablet:h-[400px] md:h-[900px] lg:h-[900px] xl:h-[900px] 2xl:h-[900px] -->
+          <div class="w-full h-[500px] overflow-auto rounded">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
-              <div class="bg-white divide-y divide-gray-200 overflow-auto">
+              <div class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner">
                 <div
                   class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
