@@ -5,9 +5,31 @@ const user = ref({
   username: "",
   password: "",
 });
+
 const watchUser = computed(() => {
   return user.value.password, user.value.username;
 });
+
+const validateUsername = () => {
+  return user.value.username.length > 0 && user.value.username.length <= 50;
+}
+
+const validatePassword = () => {
+  return user.value.password.length > 0 && user.value.password.length <= 14;
+}
+
+// Computed property to determine if the form is valid
+const isFormValid = computed(() => {
+  return validateUsername() && validatePassword();
+});
+
+const submitForm = () => {
+  if(isFormValid.value) {
+    console.log("Form is valid", user.value);
+  } else {
+    console.log("Form is invalid");
+  }
+}
 </script>
 
 <template>
@@ -40,6 +62,7 @@ const watchUser = computed(() => {
             </div>
             <input
               type="text"
+              v-model="user.username"
               placeholder="Enter your Username"
               class="input input-bordered text-sm w-[20rem] bg-white"
             />
@@ -57,6 +80,7 @@ const watchUser = computed(() => {
             </div>
             <input
               type="password"
+              v-model="user.password"
               placeholder="Enter your password"
               class="input input-bordered text-sm w-[20rem] bg-white"
             />
@@ -66,7 +90,11 @@ const watchUser = computed(() => {
               </span>
             </div> -->
           </label>
-          <div class="w-[20rem] btn btn-primary text-white mt-6">Login</div>
+          <button class="w-[20rem] btn btn-primary text-white mt-6"
+          :disabled="!isFormValid"
+          @click="submitForm">
+            Login
+          </button>
         </div>
       </div>
     </div>

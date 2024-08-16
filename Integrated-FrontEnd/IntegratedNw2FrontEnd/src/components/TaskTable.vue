@@ -134,7 +134,7 @@ const addEditTask = async (newTask) => {
         statusId: newTask.status,
         title: newTask.title.trim(),
         description: newTask.description
-          ? newTask.descriptionw.trim()
+          ? newTask.description.trim()
           : newTask.description,
       });
       if (dataEdit.id) {
