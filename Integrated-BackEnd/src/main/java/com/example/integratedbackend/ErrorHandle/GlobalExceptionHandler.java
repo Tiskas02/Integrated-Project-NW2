@@ -25,8 +25,16 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<com.example.integratedbackend.ErrorHandle.ErrorResponse> handleItemNotFoundException(ItemNotFoundException ex, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage(), requestURI );
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage(), requestURI);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), requestURI);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler(ItemErrorNotFoundException.class)
@@ -48,8 +56,9 @@ public class GlobalExceptionHandler {
         for (ObjectError objectError : globalErrors) {
             errorResponse.addValidationError(objectError.getObjectName(), objectError.getDefaultMessage());
         }
-        return ResponseEntity.unprocessableEntity().body(errorResponse);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(StatusIdNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleStatusIdNotFoundException(StatusIdNotFoundException exception, WebRequest request) {
@@ -58,9 +67,19 @@ public class GlobalExceptionHandler {
                 "Validation error. Check 'errors' field for details. ",
                 request.getDescription(false)
         );
-
         errorResponse.addValidationError("status", exception.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
+    @ExceptionHandler(TaskNameDuplicatedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleTaskNameDuplicatedException(TaskNameDuplicatedException exception, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation error. Check 'errors' field for details. ",
+                request.getDescription(false)
+        );
+        errorResponse.addValidationError("name", exception.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 }

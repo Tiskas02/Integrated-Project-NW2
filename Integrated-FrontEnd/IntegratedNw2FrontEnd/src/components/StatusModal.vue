@@ -1,7 +1,7 @@
 <script setup>
 import StatusAddEdit from './StatusAddEdit.vue';
 import StatusDelete from '@/views/StatusDelete.vue';
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { defineProps, defineEmits, ref} from 'vue';
 const emit = defineEmits(['close', 'newStatus', 'deleteId', 'sentTranferId']);
 const props = defineProps({
   status: {
@@ -14,6 +14,8 @@ const props = defineProps({
   },
   statusMode: String
 });
+const sentStatusMode = ref(props.statusMode);
+const sentStatus = ref(props.status);
 const sentclose = (value) => {
   emit('close', value);
 };
@@ -21,15 +23,12 @@ const sentNewStatus = (value) => {
   emit('newStatus', value);
 };
 const sentDelteId = (value) => {
-  console.log(value);
   emit('deleteId', value);
 };
 const sentTranferId = (value) => {
-  console.log(value);
   emit('sentTranferId', value);
 };
-const sentStatusMode = ref(props.statusMode);
-const sentStatus = ref(props.status);
+
 </script>
  
 <template>

@@ -1,8 +1,5 @@
 <script setup>
 import { defineProps, defineEmits, ref, watch, computed } from "vue";
-import { useStoreStatus } from "../stores/statusStores.js";
-import { storeToRefs } from "pinia";
-
 const emit = defineEmits(["close", "newStatus"]);
 const props = defineProps({
   status: {
@@ -15,12 +12,6 @@ const props = defineProps({
   },
   mode: String,
 });
-console.log(props.mode);
-const statusStore = useStoreStatus();
-const { statuses } = storeToRefs(statusStore);
-const storeModeSent = ref(props.mode);
-
-//store data
 const storeData = ref({
   id: undefined,
   name: "",
@@ -31,12 +22,10 @@ watch(
   () => {
     if (props.mode === "edit") {
       storeData.value = { ...props.status };
-      console.log(storeData.value);
     }
   },
   { deep: true, immediate: true }
 );
-
 const nameCharCount = computed(() =>
   storeData.value.name ? storeData.value.name.length : 0
 );
@@ -44,20 +33,6 @@ const descriptionCharCount = computed(() =>
   storeData.value.description ? storeData.value.description.length : 0
 );
 
-computed(storeData.value, () => {
-  Errortext.value.name == "" && Errortext.value.description == "";
-
-  if (storeData.value.name.trim().length > 50) {
-    Errortext.value.name = "Status name is too long than 50 character";
-  } else if (storeData.value.name.trim().length == 0) {
-    Errortext.value.name = "Status name can not be empty";
-  } else if (storeData.value.description.trim().length > 200) {
-    Errortext.value.description =
-      "Status description is too long than 200 character";
-  } else {
-    Errortext.value.description = "";
-  }
-});
 </script>
 
 <template>
@@ -112,8 +87,7 @@ computed(storeData.value, () => {
                 {{ descriptionCharCount }}/200
               </div>
             </div>
-
-            <div class="flex flex-row w-full justify-end">
+            <div class="flex flex-row w-full justify-end my-4">
               <div class="mr-2">
                 <button
                   class="itbkk-button-confirm disabled btn btn-info text-white"

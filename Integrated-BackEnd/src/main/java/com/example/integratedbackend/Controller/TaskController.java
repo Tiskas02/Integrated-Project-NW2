@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
-@CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th","*"})
+@CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th"})
 public class TaskController {
     @Autowired
     TaskService service;
@@ -42,7 +42,7 @@ public class TaskController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTO editTask,@PathVariable Integer id){
-        return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask,id),TaskIDDTO.class));
+    public ResponseEntity<Object> updateTask(@RequestBody NewTaskDTO editTask, @PathVariable Integer id) {
+        return ResponseEntity.ok(modelMapper.map(service.updateTask(editTask, id), TaskIDDTO.class));
     }
 }

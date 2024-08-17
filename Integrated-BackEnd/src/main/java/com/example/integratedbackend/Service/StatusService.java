@@ -1,12 +1,12 @@
 package com.example.integratedbackend.Service;
 
-import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.Entities.Status;
 import com.example.integratedbackend.Entities.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.StatusIdNotFoundException;
+import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
 import com.example.integratedbackend.Repositories.StatusRepositories;
 import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
 import jakarta.transaction.Transactional;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class StatusService {
@@ -35,10 +36,11 @@ public class StatusService {
     public StatusService(StatusRepositories repositories) {
         this.repositories = repositories;
     }
-    public List<Status> getStatus(){
-//        return repositories.findAll();
-        return  listMapper.mapList(repositories.findAll(), Status.class,mapper);
+
+    public List<Status> getStatus() {
+        return listMapper.mapList(repositories.findAll(), Status.class, mapper);
     }
+
     public Status findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
@@ -47,33 +49,32 @@ public class StatusService {
 
     @Transactional
     public StatusDTO createStatus(NewStatusDTO addStatus) {
-            List<Status> statusList= repositories.findAllByNameIgnoreCase(addStatus.getName());
-            if (!statusList.isEmpty()){
-                throw new StatusIdNotFoundException("must be unique");
-            }
+        List<Status> statusList = repositories.findAllByNameIgnoreCase(addStatus.getName());
+        if (!statusList.isEmpty()) {
+            throw new TaskNameDuplicatedException("must be unique");
+        }
         Status status = mapper.map(addStatus, Status.class);
-        System.out.println(status.getName());
-        System.out.println(status.getDescription());
         Status updatedStatus = repositories.saveAndFlush(status);
         return mapper.map(updatedStatus, StatusDTO.class);
     }
 
     @Transactional
-    public Status deleteStatus(Integer id) throws ItemNotFoundException, BadRequestException {
+    public Status deleteStatus(Integer id) throws ItemNotFoundException{
         Status statusToDelete = repositories.findById(id)
-                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id +  "NOT FOUND"));
-        if (statusToDelete.getName().equals("No Status") || statusToDelete.getName().equals("Done")) {
-            throw new BadRequestException(statusToDelete.getName() +" cannot be deleted");
+                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id + "NOT FOUND"));
+        if (statusToDelete.getName().equalsIgnoreCase("No Status") || statusToDelete.getName().equalsIgnoreCase("Done")) {
+            throw new ItemErrorNotFoundException(statusToDelete.getName() + " cannot be deleted");
         }
         List<Taskv2> tasksUsingStatus = tasksRepositoriesV2.findByStatusId(id);
         if (!tasksUsingStatus.isEmpty()) {
-            throw new BadRequestException("Destination status for task transfer not specified.");
+            throw new ItemErrorNotFoundException("Destination status for task transfer not specified.");
         }
         try {
             repositories.delete(statusToDelete);
             return statusToDelete;
         } catch (Exception e) {
-            throw new BadRequestException(statusToDelete.getName() +" cannot be deleted");        }
+            throw new ItemErrorNotFoundException(statusToDelete.getName() + " cannot be deleted");
+        }
     }
 
     @Transactional
@@ -103,16 +104,17 @@ public class StatusService {
 
     @Transactional
     public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {
-        if (inputStatus.getName().equals("No Status") || inputStatus.getName().equals("Done")) {
-            throw new ItemErrorNotFoundException(inputStatus.getName()+" cannot be modified");
+        Status status = repositories.findById(id).
+                orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:" + id));
+        List<Status> statusList = repositories.findAllByNameIgnoreCase(inputStatus.getName());
+        for (Status s : statusList) {
+            if (!id.equals(s.getId()) && inputStatus.getName().equalsIgnoreCase(s.getName())) {
+                throw new TaskNameDuplicatedException("must be unique");
+            }
         }
-        List<Status> statusList= repositories.findAllByNameIgnoreCase(inputStatus.getName());
-        if (!statusList.isEmpty()){
-            throw new StatusIdNotFoundException("must be unique");
+        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equalsIgnoreCase("Done")) {
+            throw new ItemErrorNotFoundException("No Status cannot be deleted and Done cannot be deleted respectively");
         }
-        repositories.findById(id).orElseThrow(
-                () -> new ItemNotFoundException("NOT FOUND")
-        );
         Status updatedStatus = mapper.map(inputStatus, Status.class);
         updatedStatus.setId(id);
         return mapper.map(repositories.save(updatedStatus), StatusDTO.class);
@@ -121,7 +123,7 @@ public class StatusService {
     @Transactional
     public Boolean deleteOrTransfer(Integer id) {
         Status status = repositories.findById(id)
-                .orElseThrow(()-> new ItemNotFoundException("Not Found"));
+                .orElseThrow(() -> new ItemNotFoundException("Not Found"));
         List<Taskv2> tasks = tasksRepositoriesV2.findAllByStatus(status);
         return !tasks.isEmpty();
     }

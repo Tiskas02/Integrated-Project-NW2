@@ -8,7 +8,7 @@ const createToast = (text, status) => ({
   id: Math.random() * 1000,
 });
 
-export default defineStore("toaster-store", {
+export const useToasterStore = defineStore("toaster-store", {
   state: () => ({
     toasts: [],
   }),

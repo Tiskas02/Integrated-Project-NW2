@@ -1,40 +1,21 @@
+<p align="center">
+  <img width="300" hight="300" alt="Screenshot 2567-05-29" src="https://github.com/Tiskas02/Integrated-Project-NW2/assets/111374293/f0286a1e-5a70-4174-b61c-1081a4a2ed3e">
+</p>
+
+
 # Integrated Project 
+
+## NW-2 GROUP
+
 #### Member
 * Jiraplus Chanpong 65130500011 ✨
 * Tanawin Keeratikasemsook  65130500026 ✨
 * Saksit tatitrisakul 65130500078 ✨
 
-## Prerequisites
+## Link to this site
+Link to this site  :  [IT-Bangmod Kradan Kanban](http://intproj23.sit.kmutt.ac.th/nw2/task).
 
-- Accumulated credits in prior education: 40 credits or more
+## Preview Website
+<img width="1491" alt="Screenshot 2567-05-29 at 15 28 31" src="https://github.com/Tiskas02/Integrated-Project-NW2/assets/111374293/f0d90025-8df5-4097-9df0-1c36ddd409f6">
 
 
-
-## Course Learning Outcomes
-
-1. **Analyzing and Designing:** This project will involve analyzing requirements and designing solutions accordingly.
-   
-2. **Application of Technical Concepts:** The project will demonstrate the application of technical concepts and practices in core information technologies.
-
-## Installation
-
-[Provide instructions on how to install and set up the project environment, including any dependencies.]
-
-## Usage
-
-[Explain how to use the project once it's set up, including any commands or procedures.]
-
-## Contributing
-
-[If applicable, provide guidelines for contributing to the project.]
-
-## License
-
-[Specify the project's license, if any.]
-
-## Contact
-
-[Provide contact information for inquiries or support related to the project.]
-
-[Provide contact information for inquiries or support related to the project.]
- 

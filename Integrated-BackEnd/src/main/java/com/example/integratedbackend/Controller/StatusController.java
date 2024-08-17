@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v2/statuses")
-@CrossOrigin(origins = {"http://localhost", "http://ip23nw2.sit.kmutt.ac.th" ,"http://intproj23.sit.kmutt.ac.th","*"})
+@CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th","*"})
 public class StatusController {
     @Autowired
     StatusService statusService;
@@ -25,7 +25,7 @@ public class StatusController {
 
     @GetMapping("")
     public ResponseEntity<Object> getStatus() {
-        return ResponseEntity.ok(listMapper.mapList(statusService.getStatus(), StatusDTO.class,modelMapper));
+        return ResponseEntity.ok(listMapper.mapList(statusService.getStatus(), StatusDTO.class, modelMapper));
     }
 
     @GetMapping("{id}")
@@ -42,13 +42,15 @@ public class StatusController {
     public Status deleteStatus(@PathVariable Integer id) throws BadRequestException {
         return statusService.deleteStatus(id);
     }
+
     @DeleteMapping("/{id}/{newId}")
     public ResponseEntity<Object> transferStatus(@PathVariable Integer id, @PathVariable Integer newId) throws BadRequestException {
         return new ResponseEntity<>(statusService.transferStatus(id, newId), HttpStatus.OK);
     }
+
     @PutMapping("{id}")
-    public ResponseEntity<Object> updateStatus(@Valid @RequestBody NewStatusDTO editStatus,@PathVariable Integer id){
-        return ResponseEntity.ok(modelMapper.map(statusService.updateStatus(editStatus,id),StatusDTO.class));
+    public ResponseEntity<Object> updateStatus(@Valid @RequestBody NewStatusDTO editStatus, @PathVariable Integer id) {
+        return ResponseEntity.ok(modelMapper.map(statusService.updateStatus(editStatus, id), StatusDTO.class));
     }
 
     @GetMapping("{id}/indicator")

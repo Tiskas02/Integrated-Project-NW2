@@ -3,7 +3,6 @@ package com.example.integratedbackend.ErrorHandle;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.Objects;
 public class ErrorNotFound {
     private final ZonedDateTime timestamp;
     private final int status;
-    private final  String message;
+    private final String message;
     private final String instance;
     private List<ValidationError> errors;
 

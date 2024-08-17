@@ -1,107 +1,79 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import StatusModal from "./StatusModal.vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
-import { useStoreTasks } from "@/stores/taskStores";
-import useToasterStore from "../stores/notificationStores";
-import Toaster from "./Toaster.vue";
+import { useToasterStore } from "@/stores/notificationStores";
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
 const storeMode = ref("");
 const statusStore = useStoreStatus();
-const taskStore = useStoreTasks();
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
 const toasterStore = useToasterStore();
 onMounted(async () => {
   await statusStore.fetchStatus();
 });
-
-// const addOrEditStatus = async (newStatus) => {
-//   try {
-//     if (newStatus.id === undefined) {
-//       const nahee = await statusStore.createStatus({
-//         name: newStatus.name.trim(),
-//         description: newStatus.description.trim(),
-//       });
-//       console.log(nahee);
-//       if (nahee.id !== undefined) {
-//         toasterStore.success({ text: "Status add successfully!" });
-//       } else if (nahee.status == 400) {
-//         toasterStore.error({ text: "An error occurred while add the Status. Status is Duplicated" })
-//       }
-//     } else {
-//       await statusStore.updateStatus(newStatus.id, {
-//         name: newStatus.name.trim(),
-//         description: newStatus.description.trim(),
-//       });
-//     }
-//   } catch (error) {
-    
-//     console.error("Error adding/editing status:", error);
-//   }
-// };
-
 const addOrEditStatus = async (newStatus) => {
   try {
-    const name = newStatus.name ? newStatus.name.trim() : '';
-    const description = newStatus.description ? newStatus.description.trim() : '';
-
+    const name = newStatus.name ? newStatus.name.trim() : newStatus.name;
+    const description = newStatus.description
+      ? newStatus.description.trim()
+      : newStatus.description;
     if (newStatus.id === undefined) {
-      const nahee = await statusStore.createStatus({
+      const check = await statusStore.createStatus({
         name,
         description,
       });
-      console.log(nahee);
-      if (nahee.id !== undefined) {
+      if (check.id !== undefined) {
         toasterStore.success({ text: "Status added successfully!" });
-      } else if (nahee.status === 400) {
-        toasterStore.error({ text: "An error occurred while adding the status. Status is duplicated." });
+      } else if (check.errors[0].message) {
+        toasterStore.error({
+          text: `Status Name ${check.errors[0].message} `,
+        });
+      } else if (check.status === 400) {
+        toasterStore.error({
+          text: "An error occurred while adding the status.",
+        });
       }
     } else {
-      await statusStore.updateStatus(newStatus.id, {
+      const check = await statusStore.updateStatus(newStatus.id, {
         name,
         description,
       });
+      if (check.id !== undefined) {
+        toasterStore.success({ text: "Status edit successfully!" });
+      } else if (check.status === 400) {
+        toasterStore.error({
+          text: "An error occurred while editing the status.",
+        });
+      }
     }
   } catch (error) {
     console.error("Error adding/editing status:", error);
   }
 };
 
-const deleteStatusNoti = (res) => {
-  try {
-    // Simulate deletion logic here
-    if (res === 200) {
-      // Assuming task deletion is successful
-      toasterStore.success({ text: "Status deleted successfully!" });
-    } else {
-      console.log(res);
-      // Assuming task deletion failed
-      throw new Error("Failed to delete task.");
-    }
-  } catch (error) {
-    console.error("Error deleting task:", error);
+const deleteOne = async (id) => {
+  const status = await statusStore.deleteStatus(id);
+  if (status === 200) {
+    toasterStore.success({ text: "Status deleted successfully!" });
+  } else {
     toasterStore.error({ text: "An error occurred while deleting the task." });
   }
 };
-//delete status
-const deleteOne = async (id) => {
-  const res = await statusStore.deleteStatus(id);
-  if (res !== 404) {
-    deleteStatusNoti(res);
-  } else if (res === 404) {
-    alert("Error deleting status");
-  }
-};
-//tranfer status
 const deleteTranfer = async (value) => {
-  // console.log(value);
-  await statusStore.tranferStatus(value.oldId, value.newId);
+  const status = await statusStore.tranferStatus(value.oldId, value.newId);
+  if (status === 200) {
+    toasterStore.success({ text: "Status tranfer successfully!" });
+  } else {
+    toasterStore.error({
+      text: "An error occurred while tranfering the task.",
+    });
+  }
 };
 
 const setModal = async (value, mode, id) => {
@@ -115,11 +87,10 @@ const setModal = async (value, mode, id) => {
     dataById.value = statusStore.statuses.find((status) => status.id === id);
   }
 };
-//fuction to sent id and mode to StatusModal
 
 const fetchById = async (id, mode) => {
   if (!id) {
-    return console.log("error have no id");
+    return alert("No id provided");
   }
   dataById.value = await getStatusDataById(id);
   storeMode.value = mode;
@@ -137,7 +108,6 @@ const fetchById = async (id, mode) => {
 };
 
 if (route.params.id) {
-  console.log("dsad");
   fetchById(route.params.id, "view");
 }
 
@@ -149,29 +119,35 @@ const setClose = (value) => {
 
 <template>
   <div>
-    <div class="flex justify-between">
-      <div class="">
-        <div class="ml-10 btn btn-outline btn-accent">
-          <router-link :to="{ name: 'task' }">Home</router-link>
-        </div>
+    <div class="w-full flex justify-center my-3">
+      <div
+        class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
+      >
+        Manage Status
       </div>
-      <div class="">
-        <!-- Add Task-->
+    </div>
+    <div
+      class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between "
+    >
+      <div
+        class="w-[95%] h-full m-auto  flex justify-start items-center px-6"
+      >
+        <div class="font-bold text-slate-700">Tool Bar :</div>
         <div
-          class="itbkk-button-add btn btn-outline btn-primary mr-10"
+          class="itbkk-button-add btn btn-outline flex mx-8"
           @click="setModal(true, 'add', null)"
         >
           <svg
             width="20"
             height="20"
             viewBox="0 0 20 20"
-            fill="none"
+            fill="#334155"
             xmlns="http://www.w3.org/2000/svg"
           >
             <g clip-path="url(#clip0_529_11)">
               <path
                 d="M11 9H15V11H11V15H9V11H5V9H9V5H11V9ZM10 20C7.34784 20 4.8043 18.9464 2.92893 17.0711C1.05357 15.1957 0 12.6522 0 10C0 7.34784 1.05357 4.8043 2.92893 2.92893C4.8043 1.05357 7.34784 0 10 0C12.6522 0 15.1957 1.05357 17.0711 2.92893C18.9464 4.8043 20 7.34784 20 10C20 12.6522 18.9464 15.1957 17.0711 17.0711C15.1957 18.9464 12.6522 20 10 20ZM10 18C12.1217 18 14.1566 17.1571 15.6569 15.6569C17.1571 14.1566 18 12.1217 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 12.1217 2.84285 14.1566 4.34315 15.6569C5.84344 17.1571 7.87827 18 10 18Z"
-                fill="#7C5ED2"
+                fill="#334155"
               />
             </g>
             <defs>
@@ -180,18 +156,17 @@ const setClose = (value) => {
               </clipPath>
             </defs>
           </svg>
-          Add Status
+          <div class="text-slate-700">Add Status</div>
         </div>
-        <!-- Added ml-2 class for margin-left -->
       </div>
     </div>
 
     <div class="w-full flex justify-center">
       <div
-        class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 overflow-y-auto mt-4"
+        class="overflow-x-auto shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40 overflow-y-auto"
       >
         <div class="min-w-full divide-y divide-gray-200">
-          <div class="#4793AF bg-slate-600 flex">
+          <div class="#4793AF bg-slate-800 flex overflow-auto">
             <div
               class="w-[10%] px-6 py-3 text-left text-md font-bold text-white uppercase"
             ></div>
@@ -212,52 +187,59 @@ const setClose = (value) => {
               Action
             </div>
           </div>
-          <!-- <div class="w-full border bg-white ">
-            <div class="w-full h-32">
-              <p class="h-full flex justify-center items-center font-sans font-semibold">No status Provided</p>
+          <div v-if="statuses.length <= 0" class="w-full border bg-white h-24">
+            <div class="flex justify-center items-center h-full">
+              <p class="text-xl font-bold animate-bounce text-slate-500">
+                No Status
+              </p>
             </div>
-          </div> -->
-          <!-- Edit Task -->
-          <div v-for="(status, index) in statuses" :key="status.id">
-            <div class="bg-white divide-y divide-gray-200 overflow-auto">
-              <div class="w-full max-h-[550px]">
-                <div
-                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
-                >
-                  <div class="flex">
-                    <div class="w-[10%] px-6 py-4 whitespace-nowrap">
-                      {{ index + 1 }}
-                    </div>
-                    <div
-                      class="w-[20%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
-                    >
-                      {{ status.name }}
-                    </div>
-                    <div
-                      class="w-[50%] itbkk-description px-6 py-4 whitespace-nowrap overflow-x-auto break-all italic"
-                    >
-                      {{
-                        status?.description == "" ||
-                        status?.description === null
-                          ? "No Description Provided"
-                          : status?.description
-                      }}
-                    </div>
-                    <div
-                      v-if="status.id !== 1 && status.id !== 4"
-                      class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4"
-                    >
-                      <div
-                        class="btn btn-outline btn-warning"
-                        @click="fetchById(status.id, 'edit')"
-                      >
-                        Edit
+          </div>
+          <div
+            class="w-full h-[500px] overflow-auto rounded "
+          >
+            <div v-for="(status, index) in statuses" :key="status.id">
+              <div class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner">
+                <div class="w-full max-h-[550px]">
+                  <div
+                    class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
+                  >
+                    <div class="flex hover:shadow-inner hover:bg-slate-50">
+                      <div class="w-[10%] px-6 py-4 whitespace-nowrap">
+                        {{ index + 1 }}
                       </div>
                       <div
-                        class="itbkk-button-delete btn btn-outline btn-error"
-                        @click="setModal(true, 'delete', status.id)"
+                        class="w-[20%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
                       >
-                        Delete
+                        {{ status.name }}
+                      </div>
+                      <div
+                        class="w-[50%] itbkk-description px-6 py-4 whitespace-nowrap overflow-x-auto break-all italic"
+                      >
+                        {{
+                          status?.description == "" ||
+                          status?.description === null
+                            ? "No Description Provided"
+                            : status?.description
+                        }}
+                      </div>
+                      <div
+                        v-if="
+                          status.name !== 'Done' && status.name !== 'No Status'
+                        "
+                        class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4"
+                      >
+                        <div
+                          class="btn btn-outline btn-warning"
+                          @click="fetchById(status.id, 'edit')"
+                        >
+                          Edit
+                        </div>
+                        <div
+                          class="itbkk-button-delete btn btn-outline btn-error"
+                          @click="setModal(true, 'delete', status.id)"
+                        >
+                          Delete
+                        </div>
                       </div>
                     </div>
                   </div>
