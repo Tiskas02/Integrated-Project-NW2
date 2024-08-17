@@ -21,6 +21,5 @@ public class UserService {
             return false;
         }
         return passwordEncoder.matches(rawPassword, user.getPasswordHash());
-
     }
 }
