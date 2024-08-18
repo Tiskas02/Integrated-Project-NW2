@@ -20,6 +20,13 @@ public class UserService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    public boolean isValidUsername(String username){
+        return username != null && username.matches("^[a-zA-Z0-9._-]{3,20}$");
+    }
+
+    public boolean isValidPassword(String rawPassword){
+        return rawPassword != null && rawPassword.length() <= 14;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -31,6 +38,9 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean checkPassword(String username, String rawPassword) {
+        if(!isValidUsername(username) || !isValidPassword(rawPassword)){
+            return false;
+        }
         User user = userRepository.findByUsername(username);
         if (user == null) {
             return false;

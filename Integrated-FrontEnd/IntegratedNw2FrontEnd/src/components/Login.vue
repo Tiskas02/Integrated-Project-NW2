@@ -1,6 +1,7 @@
 <script setup>
 import router from "@/router/router";
 import { ref, computed } from "vue";
+
 const url = import.meta.env.VITE_BASE_URL;
 const user = ref({
   username: "",
@@ -25,7 +26,8 @@ const isFormValid = computed(() => {
     user.value.password.length > 0
   );
 });
-function parseJwt(token) {
+
+const parseJwt = (token) =>{
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
@@ -39,6 +41,7 @@ function parseJwt(token) {
 
   return JSON.parse(jsonPayload);
 }
+
 async function userLogin(user) {
   try {
     const res = await fetch(`${url}/v2/user`, {
@@ -63,6 +66,7 @@ async function userLogin(user) {
     console.log(`error: ${error}`);
   }
 }
+
 const submitForm = async () => {
   const payload = await userLogin(user.value);
   if (payload) {
