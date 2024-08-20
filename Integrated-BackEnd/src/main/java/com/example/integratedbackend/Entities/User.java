@@ -22,12 +22,16 @@ public class User {
     private String name;
 
     @Column(name = "username", nullable = false, length = 50)
+    @NotEmpty(message = "Username cannot be empty")
+    @Size(max = 50, message = "Username cannot be longer than 50 characters")
     private String username;
 
     @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @Column(name = "password", nullable = false, length = 100)
+    @NotEmpty(message = "Password cannot be empty")
+    @Size(max = 14, message = "Password cannot be longer than 14 characters")
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
