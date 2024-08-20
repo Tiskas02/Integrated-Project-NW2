@@ -22,17 +22,17 @@ public class AuthController {
     @GetMapping("/check-password")
     public ResponseEntity<?> checkPassword(@RequestParam String password, @RequestParam String username) {
         if (username == null || username.isEmpty() || username.length() > 50 || password == null || password.isEmpty() || password.length() > 14) {
-            // Returning 400 Bad Request with a custom error message
+            // Return 400 Bad Request
             return ResponseEntity.badRequest().body("Username or Password is invalid");
         }
 
         boolean isValid = userService.checkPassword(username, password);
         if (!isValid) {
-            // Returning 401 Unauthorized with a custom error message
+            // Return 401 Unauthorized
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username or Password is incorrect");
         }
 
-        // Returning 200 OK with a success message or true
+        // Return 200 OK
         return ResponseEntity.ok(true);
     }
 

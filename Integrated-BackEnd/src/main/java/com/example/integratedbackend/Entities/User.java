@@ -4,22 +4,33 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.context.annotation.Role;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 @Data
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
-    @Column(nullable = false, unique = true)
-    @NotEmpty(message = "Username cannot be empty")
-    @Size(max = 50, message = "Username cannot be longer than 50 characters")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "oid", nullable = false, unique = true, length = 36)
+    private UUID oid;
+
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
+
+    @Column(name = "username", nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false)
-    @NotEmpty(message = "Password cannot be empty")
-    @Size(max = 14, message = "Password cannot be longer than 14 characters")
+    @Column(name = "email", nullable = false, length = 50)
+    private String email;
+
+    @Column(name = "password", nullable = false, length = 100)
     private String passwordHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private UserRole role;
 }
