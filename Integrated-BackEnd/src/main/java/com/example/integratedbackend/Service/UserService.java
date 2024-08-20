@@ -15,8 +15,6 @@ import java.util.ArrayList;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
 
     public boolean isValidUsername(String username){
         return username != null && username.matches("^[a-zA-Z0-9._-]{3,20}$");
@@ -32,17 +30,17 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPasswordHash(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 
-    public boolean checkPassword(String username, String rawPassword) {
-        if(!isValidUsername(username) || !isValidPassword(rawPassword)){
-            return false;
-        }
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return false;
-        }
-        return passwordEncoder.matches(rawPassword, user.getPasswordHash());
-    }
+//    public boolean checkPassword(String username, String rawPassword) {
+//        if(!isValidUsername(username) || !isValidPassword(rawPassword)){
+//            return false;
+//        }
+//        User user = userRepository.findByUsername(username);
+//        if (user == null) {
+//            return false;
+//        }
+//        return passwordEncoder.matches(rawPassword, user.getPassword());
+//    }
 }

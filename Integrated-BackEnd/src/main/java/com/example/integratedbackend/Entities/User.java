@@ -32,7 +32,7 @@ public class User {
     @Column(name = "password", nullable = false, length = 100)
     @NotEmpty(message = "Password cannot be empty")
     @Size(max = 14, message = "Password cannot be longer than 14 characters")
-    private String passwordHash;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

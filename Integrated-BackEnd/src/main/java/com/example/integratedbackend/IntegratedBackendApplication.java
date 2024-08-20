@@ -33,9 +33,5 @@ public class IntegratedBackendApplication {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
 }
