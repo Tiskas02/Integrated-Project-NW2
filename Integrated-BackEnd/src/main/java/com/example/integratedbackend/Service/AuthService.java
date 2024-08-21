@@ -2,7 +2,7 @@ package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.LoginRequest;
 import com.example.integratedbackend.DTO.LoginResponse;
-import com.example.integratedbackend.Entities.User;
+
 import com.example.integratedbackend.JWT.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

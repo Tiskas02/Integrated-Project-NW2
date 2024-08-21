@@ -1,17 +1,23 @@
 package com.example.integratedbackend.JWT;
 
+import com.example.integratedbackend.Entities.UserRole;
+import com.example.integratedbackend.Repositories.Users.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+    @Autowired
+    private UserRepository userRepository;
 
     private String SECRET_KEY = "secret";
 
@@ -38,7 +44,37 @@ public class JwtUtil {
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
+
+        String name = getNameByUsername(username);
+        UUID oid = getOidByUsername(username);
+        String email = getEmailByUsername(username);
+        UserRole role = getRoleByUsername(username);
+
+        claims.put("iss", "https://intproj23.sit.kmutt.ac.th/NW-2/");
+        claims.put("iat", new Date(System.currentTimeMillis()));
+        claims.put("exp", new Date(System.currentTimeMillis() + 1000 * 60 * 30)); // 30 mins exp
+        claims.put("name", name);
+        claims.put("oid", oid);
+        claims.put("email", email);
+        claims.put("role", role);
+
         return createToken(claims, username);
+    }
+
+    private UserRole getRoleByUsername(String username) {
+        return userRepository.findByUsername(username).getRole();
+    }
+
+    private String getEmailByUsername(String username) {
+        return userRepository.findByUsername(username).getEmail();
+    }
+
+    private UUID getOidByUsername(String username) {
+        return userRepository.findByUsername(username).getOid();
+    }
+
+    private String getNameByUsername(String username) {
+        return userRepository.findByUsername(username).getName();
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
