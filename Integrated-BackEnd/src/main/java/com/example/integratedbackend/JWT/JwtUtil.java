@@ -1,7 +1,7 @@
 package com.example.integratedbackend.JWT;
 
-import com.example.integratedbackend.Entities.UserRole;
-import com.example.integratedbackend.Repositories.Users.UserRepository;
+import com.example.integratedbackend.Users.UserRole;
+import com.example.integratedbackend.Users.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

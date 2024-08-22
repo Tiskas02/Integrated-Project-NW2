@@ -1,12 +1,11 @@
 package com.example.integratedbackend.Service;
 
-import com.example.integratedbackend.Entities.User;
-import com.example.integratedbackend.Repositories.Users.UserRepository;
+import com.example.integratedbackend.Users.User;
+import com.example.integratedbackend.Users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

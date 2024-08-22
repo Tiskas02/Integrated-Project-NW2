@@ -1,24 +1,20 @@
 package com.example.integratedbackend.Service;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.Entities.Status;
-import com.example.integratedbackend.Entities.Taskv2;
+import com.example.integratedbackend.Kradankanban.Status;
+import com.example.integratedbackend.Kradankanban.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
-import com.example.integratedbackend.ErrorHandle.StatusIdNotFoundException;
 import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
-import com.example.integratedbackend.Repositories.StatusRepositories;
-import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
+import com.example.integratedbackend.Kradankanban.StatusRepositories;
+import com.example.integratedbackend.Kradankanban.TasksRepositoriesV2;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class StatusService {

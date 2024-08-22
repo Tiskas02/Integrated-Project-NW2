@@ -1,10 +1,9 @@
-package com.example.integratedbackend.Entities;
+package com.example.integratedbackend.Users;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.context.annotation.Role;
 
 import java.util.UUID;
 

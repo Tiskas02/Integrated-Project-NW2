@@ -1,16 +1,15 @@
 package com.example.integratedbackend.Service;
 
-import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.NewTaskDTOV2;
 import com.example.integratedbackend.DTO.TaskDTOV2;
 import com.example.integratedbackend.DTO.TaskIDDTOV2;
-import com.example.integratedbackend.Entities.Status;
-import com.example.integratedbackend.Entities.Taskv2;
+import com.example.integratedbackend.Kradankanban.Status;
+import com.example.integratedbackend.Kradankanban.Taskv2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.StatusIdNotFoundException;
-import com.example.integratedbackend.Repositories.StatusRepositories;
-import com.example.integratedbackend.Repositories.TasksRepositoriesV2;
+import com.example.integratedbackend.Kradankanban.StatusRepositories;
+import com.example.integratedbackend.Kradankanban.TasksRepositoriesV2;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.example.integratedbackend.Entities;
+package com.example.integratedbackend.Kradankanban;
 
 import jakarta.persistence.*;
 import lombok.Data;

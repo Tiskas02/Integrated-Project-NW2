@@ -1,4 +1,4 @@
-package com.example.integratedbackend.Entities;
+package com.example.integratedbackend.Users;
 
 public enum UserRole {
     LECTURER,
