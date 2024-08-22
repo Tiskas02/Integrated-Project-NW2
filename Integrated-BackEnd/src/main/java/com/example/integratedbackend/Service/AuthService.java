@@ -4,6 +4,7 @@ import com.example.integratedbackend.DTO.LoginRequest;
 import com.example.integratedbackend.DTO.LoginResponse;
 
 import com.example.integratedbackend.JWT.JwtUtil;
+import com.example.integratedbackend.Users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,8 +24,8 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(), loginRequest.getPassword(
                 )));
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        String userToken = jwtUtil.generateToken(user.getUsername());
+        User user = (User) authentication.getPrincipal();
+        String userToken = jwtUtil.generateToken(user);
         return new LoginResponse(userToken);
     }
 }
