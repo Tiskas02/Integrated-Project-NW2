@@ -1,7 +1,7 @@
 package com.example.integratedbackend.Controller;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.Entities.Status;
+import com.example.integratedbackend.Kradankanban.Status;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.StatusService;
 import jakarta.validation.Valid;

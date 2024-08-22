@@ -1,6 +1,6 @@
 package com.example.integratedbackend.DTO;
 
-import com.example.integratedbackend.Entities.Status;
+import com.example.integratedbackend.Kradankanban.Status;
 import lombok.Data;
 
 @Data
