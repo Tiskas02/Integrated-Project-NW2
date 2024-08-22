@@ -44,7 +44,7 @@ const parseJwt = (token) =>{
 
 async function userLogin(user) {
   try {
-    const res = await fetch(`${url}/v2/user`, {
+    const res = await fetch(`${url}/login`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
