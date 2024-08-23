@@ -1,7 +1,8 @@
 <script setup>
 import BaseBtn from "./BaseBtn.vue";
 import { useRoute } from "vue-router";
-import { ref,watch } from "vue";
+import { ref, watch } from "vue";
+import router from "@/router/router";
 import duration from "tailwindcss-animated/src/utilities/duration";
 const route = useRoute();
 const usePath = ref(false);
@@ -16,6 +17,15 @@ watch(
   },
   { immediate: true }
 );
+const userPayload = localStorage.getItem("userPayload")
+  ? JSON.parse(localStorage.getItem("userPayload"))
+  : null;
+
+const logout = () => {
+  localStorage.removeItem("userPayload");
+  userPayload.value = null;
+  router.push("/");
+};
 </script>
 
 <template>
@@ -30,40 +40,65 @@ watch(
             IT-Bangmod Kradan Kanban
           </div>
           <div class="w-32 px-7">
-            <div :style="{
-                    color: usePath ? 'slategray' : 'blue',
-                    boxShadow: usePath ? 'none' : '0 3px 0 0 blue',
-                    duration: '500ms',
-                    transition: 'all 0.3s ease-in-out',
-                  }">
+            <div
+              :style="{
+                color: usePath ? 'slategray' : 'blue',
+                boxShadow: usePath ? 'none' : '0 3px 0 0 blue',
+                duration: '500ms',
+                transition: 'all 0.3s ease-in-out',
+              }"
+            >
               <router-link :to="{ name: 'task' }" custom v-slot="{ navigate }">
-                <button @click="navigate" role="link" class="w-full py-4 justify-center">Tasks</button>
+                <button
+                  @click="navigate"
+                  role="link"
+                  class="w-full py-4 justify-center"
+                >
+                  Tasks
+                </button>
               </router-link>
             </div>
           </div>
           <div class="w-32 px-7">
-          <div :style="{
-                    color: !usePath ? 'slategray' : 'blue',
-                    boxShadow: !usePath ? 'none' : '0 3px 0 0 blue',
-                    duration: '500ms',
-                    transition: 'all 0.3s ease-in-out',
-                    
-                  }">
-              <router-link :to="{ name: 'status' }" custom v-slot="{ navigate }">
-                <button @click="navigate" role="link" class="w-full py-4 justify-center">Status</button>
+            <div
+              :style="{
+                color: !usePath ? 'slategray' : 'blue',
+                boxShadow: !usePath ? 'none' : '0 3px 0 0 blue',
+                duration: '500ms',
+                transition: 'all 0.3s ease-in-out',
+              }"
+            >
+              <router-link
+                :to="{ name: 'status' }"
+                custom
+                v-slot="{ navigate }"
+              >
+                <button
+                  @click="navigate"
+                  role="link"
+                  class="w-full py-4 justify-center"
+                >
+                  Status
+                </button>
               </router-link>
             </div>
+          </div>
         </div>
-      </div>
         <div class="flex-grow"></div>
         <div class="flex items-center">
-          <div class="px-4 cursor-pointer hover:text-blue-700">Login</div>
-          <div class="px-2 cursor-pointer">
-            <BaseBtn>
-              <template #default>
-                <slot name="default"> Sign Up </slot>
-              </template>
-            </BaseBtn>
+          <div v-if="userPayload" class="flex justify-center items-center">
+            <div class="px-2">{{ userPayload.name }}</div>
+            <div class="px-4 cursor-pointer btn btn-error" @click="logout">Logout</div>
+          </div>
+          <div v-else>
+            <div class="px-4 cursor-pointer hover:text-blue-700">Login</div>
+            <div class="px-2 cursor-pointer">
+              <BaseBtn>
+                <template #default>
+                  <slot name="default"> Sign Up </slot>
+                </template>
+              </BaseBtn>
+            </div>
           </div>
         </div>
       </div>

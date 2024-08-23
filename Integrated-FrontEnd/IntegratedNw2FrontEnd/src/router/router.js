@@ -21,21 +21,25 @@ const routes = [
     path: "/task",
     name: "task",
     component: TaskHome,
+    meta: { requiresAuth: true },
     children: [
       {
         path: ":id",
         name: "taskDetail",
         component: TaskModal,
+        meta: { requiresAuth: true },
       },
       {
         path: "add",
         name: "addTask",
         component: TaskAddEdit,
+        meta: { requiresAuth: true },
       },
       {
         path: ":id/edit",
         name: "editTask",
         component: TaskAddEdit,
+        meta: { requiresAuth: true },
       },
     ],
   },
@@ -43,21 +47,25 @@ const routes = [
     path: "/status",
     name: "status",
     component: TaskHome,
+    meta: { requiresAuth: true },
     children: [
       {
         path: ":id",
         name: "statusDetail",
         component: StatusTable,
+        meta: { requiresAuth: true },
       },
       {
         path: "add",
         name: "addStatus",
         component: StatusAddEdit,
+        meta: { requiresAuth: true },
       },
       {
         path: ":id/edit",
         name: "editStatus",
         component: StatusAddEdit,
+        meta: { requiresAuth: true },
       },
     ],
   },
@@ -73,6 +81,14 @@ const router = createRouter({
   routes,
   linkActiveClass: "text-[#2ff6da]",
   linkExactActiveClass: "hover:text-[#2ff6da] hover:text-[#2ff6da] p-2",
+});
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem("userPayload"); 
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next({ name: 'login' }); 
+  } else {
+    next(); 
+  }
 });
 
 export default router;

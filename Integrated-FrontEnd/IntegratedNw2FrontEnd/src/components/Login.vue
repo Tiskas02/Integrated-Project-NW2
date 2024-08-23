@@ -2,7 +2,7 @@
 import router from "@/router/router";
 import { ref, computed } from "vue";
 
-const url = import.meta.env.VITE_BASE_URL;
+const url = import.meta.env.VITE_BASE_URL_FOR_AUTH;
 const user = ref({
   username: "",
   password: "",
@@ -17,7 +17,6 @@ const validatePassword = computed(() => {
   return user.value.password.length <= 14;
 });
 
-// Computed property to determine if the form is valid
 const isFormValid = computed(() => {
   return (
     validateUsername.value &&
@@ -43,6 +42,7 @@ const parseJwt = (token) =>{
 }
 
 async function userLogin(user) {
+  console.log(user);
   try {
     const res = await fetch(`${url}/login`, {
       method: "POST",
@@ -58,8 +58,7 @@ async function userLogin(user) {
     }
 
     const data = await res.json();
-    const payload = parseJwt(data.token);
-    console.log("Token Payload:", payload);
+    const payload = parseJwt(data.access_token);
     localStorage.setItem("userPayload", JSON.stringify(payload));
     return payload;
   } catch (error) {
