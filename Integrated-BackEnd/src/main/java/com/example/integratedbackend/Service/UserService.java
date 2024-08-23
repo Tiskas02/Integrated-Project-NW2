@@ -16,10 +16,11 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     public boolean isValidUsername(String username){
-        return username != null && username.matches("^[a-zA-Z0-9._-]{3,20}$");
+        return username != null && username.matches("^[a-zA-Z0-9._-]{3,50}$");
     }
 
     public boolean isValidPassword(String rawPassword){
+
         return rawPassword != null && rawPassword.length() <= 14;
     }
 
@@ -29,14 +30,4 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-//    public boolean checkPassword(String username, String rawPassword) {
-//        if(!isValidUsername(username) || !isValidPassword(rawPassword)){
-//            return false;
-//        }
-//        User user = userRepository.findByUsername(username);
-//        if (user == null) {
-//            return false;
-//        }
-//        return passwordEncoder.matches(rawPassword, user.getPassword());
-//    }
 }
