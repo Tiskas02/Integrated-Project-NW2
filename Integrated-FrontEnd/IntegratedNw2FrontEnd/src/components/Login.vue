@@ -112,6 +112,7 @@ const submitForm = async () => {
               v-model="user.username"
               placeholder="Enter your Username"
               class="input input-bordered text-sm w-[20rem] bg-white"
+              :maxlength="50"
             />
             <div v-show="!validateUsername" class="label">
               <span class="label-text-alt text-red-500"
@@ -130,6 +131,7 @@ const submitForm = async () => {
               v-model="user.password"
               placeholder="Enter your password"
               class="input input-bordered text-sm w-[20rem] bg-white"
+              :maxlength="14"
             />
             <div v-show="!validatePassword" class="label">
               <span class="label-text-alt text-red-500"
