@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/login")
@@ -28,48 +29,25 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private UserService userService;
-
-//    @GetMapping("/check-password")
-//    public ResponseEntity<?> checkPassword(@RequestParam String password, @RequestParam String username) {
-//        if (username == null || username.isEmpty() || username.length() > 50 || password == null || password.isEmpty() || password.length() > 14) {
-//            // Return 400 Bad Request
-//            return ResponseEntity.badRequest().body("Username or Password is invalid");
-//        }
-//
-//        boolean isValid = userService.checkPassword(username, password);
-//        if (!isValid) {
-//            // Return 401 Unauthorized
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username or Password is incorrect");
-//        }
-//
-//        // Return 200 OK
-//        return ResponseEntity.ok(true);
-//    }
+//    @Autowired
+//    private UserService userService;
 
 //    @PostMapping
 //    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
 //        return ResponseEntity.ok(authService.authenticate(loginRequest));
 //    }
+
     @PostMapping
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
-
-        // Validate username and password
-        if (!userService.isValidUsername(loginRequest.getUsername()) || !userService.isValidPassword(loginRequest.getPassword())) {
-            // Return 400 Bad Request with a specific error message
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new LoginResponse("Username or Password is invalid"));
-        }
-
         try {
-            // Authenticate the user
             LoginResponse response = authService.authenticate(loginRequest);
             return ResponseEntity.ok(response);
+
         } catch (AuthenticationException ex) {
-            // Invalid credentials (401 Unauthorized)
+            // Handle authentication failures (e.g., bad credentials)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new LoginResponse("Username or Password is incorrect"));
+
         } catch (Exception ex) {
             // Handle unexpected exceptions (500 Internal Server Error)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
