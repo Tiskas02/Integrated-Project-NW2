@@ -2,7 +2,6 @@ package com.example.integratedbackend.Controller;
 
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.DTO.NewTaskReturnV2;
-import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskServiceV2;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -21,8 +20,7 @@ public class TaskControllerV2 {
     private TaskServiceV2 service;
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private ListMapper listMapper;
+
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTask(
