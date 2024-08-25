@@ -7,11 +7,11 @@ import lombok.Data;
 @Data
 public class LoginRequest {
 
-    @NotEmpty(message = "Username cannot be empty")
-    @Size(max = 50, message = "Username cannot be longer than 50 characters")
+//    @NotEmpty(message = "Username cannot be empty")
+//    @Size(max = 50, message = "Username cannot be longer than 50 characters")
     private String username;
 
-    @NotEmpty(message = "Password cannot be empty")
-    @Size(max = 14, message = "Password cannot be longer than 14 characters")
+//    @NotEmpty(message = "Password cannot be empty")
+//    @Size(max = 14, message = "Password cannot be longer than 14 characters")
     private String password;
 }
