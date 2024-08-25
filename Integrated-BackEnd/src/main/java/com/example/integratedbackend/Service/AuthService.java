@@ -49,7 +49,7 @@ public class AuthService {
         User user = matchUser(loginRequest);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(), loginRequest.getPassword(
+                        loginRequest.getUserName(), loginRequest.getPassword(
                 )));
         String userToken = jwtUtil.generateToken(user);
         return new LoginResponse(userToken);

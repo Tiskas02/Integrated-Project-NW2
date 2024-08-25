@@ -29,30 +29,13 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-//    @Autowired
-//    private UserService userService;
+    @Autowired
+    private UserService userService;
 
-//    @PostMapping
-//    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
-//        return ResponseEntity.ok(authService.authenticate(loginRequest));
-//    }
 
     @PostMapping
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
-        try {
-            LoginResponse response = authService.authenticate(loginRequest);
-            return ResponseEntity.ok(response);
-
-        } catch (AuthenticationException ex) {
-            // Handle authentication failures (e.g., bad credentials)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponse("Username or Password is incorrect"));
-
-        } catch (Exception ex) {
-            // Handle unexpected exceptions (500 Internal Server Error)
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new LoginResponse("There is a problem. Please try again later."));
-        }
+        return ResponseEntity.ok(authService.authenticate(loginRequest));
     }
 
 }
