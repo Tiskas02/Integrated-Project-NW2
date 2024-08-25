@@ -32,7 +32,7 @@ public class AuthService {
     }
 
     public User matchUser(LoginRequest loginRequest) throws ResponseStatusException {
-        User user = userRepository.findByUsername(loginRequest.getUsername());
+        User user = userRepository.findByUsername(loginRequest.getUserName());
 
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");

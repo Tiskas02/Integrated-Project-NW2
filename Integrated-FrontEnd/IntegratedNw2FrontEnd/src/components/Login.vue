@@ -4,13 +4,13 @@ import { ref, computed } from "vue";
 
 const url = import.meta.env.VITE_BASE_URL_FOR_AUTH;
 const user = ref({
-  username: "",
+  userName: "",
   password: "",
 });
 const showError = ref(false);
 
 const validateUsername = computed(() => {
-  return user.value.username.length <= 50;
+  return user.value.userName.length <= 50;
 });
 
 const validatePassword = computed(() => {
@@ -21,7 +21,7 @@ const isFormValid = computed(() => {
   return (
     validateUsername.value &&
     validatePassword.value &&
-    user.value.username.length > 0 &&
+    user.value.userName.length > 0 &&
     user.value.password.length > 0
   );
 });
@@ -42,7 +42,7 @@ const parseJwt = (token) =>{
 }
 
 async function userLogin(user) {
-  console.log(user);
+  console.log(`${url}/login`);
   try {
     const res = await fetch(`${url}/login`, {
       method: "POST",
@@ -58,6 +58,7 @@ async function userLogin(user) {
     }
 
     const data = await res.json();
+    console.log(data);
     const payload = parseJwt(data.access_token);
     localStorage.setItem("userPayload", JSON.stringify(payload));
     return payload;
@@ -102,16 +103,16 @@ const submitForm = async () => {
         </div>
         <div>
           <label class="form-control w-full max-w-xs">
-            <div class="itbkk-username label">
+            <div class=" label">
               <span class="label-text font-semibold text-slate-500"
                 >Username</span
               >
             </div>
             <input
               type="text"
-              v-model="user.username"
+              v-model="user.userName"
               placeholder="Enter your Username"
-              class="input input-bordered text-sm w-[20rem] bg-white"
+              class="itbkk-username input input-bordered text-sm w-[20rem] bg-white"
               :maxlength="50"
             />
             <div v-show="!validateUsername" class="label">
@@ -120,7 +121,7 @@ const submitForm = async () => {
               >
             </div>
           </label>
-          <label class="itbkk-password form-control w-full max-w-xs">
+          <label class="form-control w-full max-w-xs">
             <div class="label">
               <span class="label-text font-semibold text-slate-500"
                 >Password</span
@@ -130,7 +131,7 @@ const submitForm = async () => {
               type="password"
               v-model="user.password"
               placeholder="Enter your password"
-              class="input input-bordered text-sm w-[20rem] bg-white"
+              class="itbkk-password input input-bordered text-sm w-[20rem] bg-white"
               :maxlength="14"
             />
             <div v-show="!validatePassword" class="label">
@@ -140,7 +141,8 @@ const submitForm = async () => {
             </div>
           </label>
           <button
-            class="itbkk-button-signin w-[20rem] btn btn-primary text-white mt-6"
+            class="itbkk-button-signin  w-[20rem] btn btn-primary text-white mt-6"
+            :class="{ 'disabled': !isFormValid }"
             :disabled="!isFormValid"
             @click="submitForm"
           >
@@ -161,7 +163,7 @@ const submitForm = async () => {
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>Error! <br/>InValid Username and Password</span>
+              <span class="itbkk-message">Username or Password is incorrect</span>
             </div>
           </div>
         </div>

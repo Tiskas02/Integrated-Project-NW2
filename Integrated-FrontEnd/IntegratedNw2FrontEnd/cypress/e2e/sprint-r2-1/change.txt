@@ -1,0 +1,2 @@
+19 Aug 2024 v1    -- inital cypress release 2 sprint 1
+19 Aug 2024 v1.1  -- pbi15, pbi17 change cy.location() to cy.url()
