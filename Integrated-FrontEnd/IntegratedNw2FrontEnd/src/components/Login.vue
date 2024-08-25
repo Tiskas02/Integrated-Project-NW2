@@ -102,7 +102,7 @@ const submitForm = async () => {
         </div>
         <div>
           <label class="form-control w-full max-w-xs">
-            <div class="label">
+            <div class="itbkk-username label">
               <span class="label-text font-semibold text-slate-500"
                 >Username</span
               >
@@ -120,7 +120,7 @@ const submitForm = async () => {
               >
             </div>
           </label>
-          <label class="form-control w-full max-w-xs">
+          <label class="itbkk-password form-control w-full max-w-xs">
             <div class="label">
               <span class="label-text font-semibold text-slate-500"
                 >Password</span
@@ -140,13 +140,13 @@ const submitForm = async () => {
             </div>
           </label>
           <button
-            class="w-[20rem] btn btn-primary text-white mt-6"
+            class="itbkk-button-signin w-[20rem] btn btn-primary text-white mt-6"
             :disabled="!isFormValid"
             @click="submitForm"
           >
             Login
           </button>
-          <div v-show="showError" class="my-2">
+          <div v-show="showError" class="itbkk-message my-2">
             <div role="alert" class="alert alert-error">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
