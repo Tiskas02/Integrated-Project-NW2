@@ -1,7 +1,7 @@
 package com.example.integratedbackend.Controller;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.Entities.Status;
+import com.example.integratedbackend.Kradankanban.Status;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.StatusService;
 import jakarta.validation.Valid;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v2/statuses")
-@CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th"})
+@CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th","*"})
 public class StatusController {
     @Autowired
     StatusService statusService;

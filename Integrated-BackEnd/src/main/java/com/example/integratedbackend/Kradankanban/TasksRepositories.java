@@ -1,6 +1,5 @@
-package com.example.integratedbackend.Repositories;
+package com.example.integratedbackend.Kradankanban;
 
-import com.example.integratedbackend.Entities.Tasks;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TasksRepositories extends JpaRepository<Tasks, Integer> {

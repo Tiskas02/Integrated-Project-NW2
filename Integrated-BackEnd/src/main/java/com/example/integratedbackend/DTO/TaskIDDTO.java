@@ -1,6 +1,6 @@
 package com.example.integratedbackend.DTO;
 
-import com.example.integratedbackend.Entities.ResourceType;
+import com.example.integratedbackend.Kradankanban.ResourceType;
 import lombok.Getter;
 import lombok.Setter;
 

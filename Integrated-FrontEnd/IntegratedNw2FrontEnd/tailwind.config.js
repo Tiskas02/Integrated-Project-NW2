@@ -6,7 +6,10 @@ export default {
   ],
   theme: {
     extend: {
-
+      fontFamily: {
+        'rubik':[ 'Rubik', 'sans-serif'],
+        'chivo': ['Chivo', 'sans-serif']
+      },
     },
     screens: {
       'mobile':'320px',
