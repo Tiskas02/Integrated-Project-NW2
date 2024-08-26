@@ -26,12 +26,14 @@ import java.util.Objects;
 )
 public class KradanConfig {
 
+    @Primary
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.kradankanban")
     public DataSourceProperties kradanDataSourceProperties() {
         return new DataSourceProperties();
     }
 
+    @Primary
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.kradankanban.configuration")
     public DataSource kradankanBanDataSource() {
@@ -41,8 +43,8 @@ public class KradanConfig {
                 .build();
     }
 
-    @Bean(name = "kradankanbanEntityManager")
     @Primary
+    @Bean(name = "kradankanbanEntityManager")
     public LocalContainerEntityManagerFactoryBean kradankanbanEntityManager(
             EntityManagerFactoryBuilder builder
     ) {
@@ -52,6 +54,7 @@ public class KradanConfig {
                 .build();
     }
 
+    @Primary
     @Bean(name = "kradankanbanEntityTransactionManager")
     public PlatformTransactionManager kradankanbanTransactionManager(
             final @Qualifier("kradankanbanEntityManager")
