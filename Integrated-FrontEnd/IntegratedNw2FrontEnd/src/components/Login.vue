@@ -1,21 +1,21 @@
 <script setup>
-import router from "@/router/router";
-import { ref, computed } from "vue";
+import router from "@/router/router"
+import { ref, computed } from "vue"
 
-const url = import.meta.env.VITE_BASE_URL_FOR_AUTH;
+const url = import.meta.env.VITE_BASE_URL_FOR_AUTH
 const user = ref({
   userName: "",
   password: "",
-});
-const showError = ref(false);
+})
+const showError = ref(false)
 
 const validateUsername = computed(() => {
-  return user.value.userName.length <= 50;
-});
+  return user.value.userName.length <= 50
+})
 
 const validatePassword = computed(() => {
-  return user.value.password.length <= 14;
-});
+  return user.value.password.length <= 14
+})
 
 const isFormValid = computed(() => {
   return (
@@ -23,28 +23,28 @@ const isFormValid = computed(() => {
     validatePassword.value &&
     user.value.userName.length > 0 &&
     user.value.password.length > 0
-  );
-});
+  )
+})
 
-const parseJwt = (token) =>{
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1]
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
       .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
       })
       .join("")
-  );
+  )
 
-  return JSON.parse(jsonPayload);
+  return JSON.parse(jsonPayload)
 }
 
 async function userLogin(user) {
-  console.log(`${url}/login`);
+  console.log(`${url}/login`)
   try {
-    const res = await fetch(`${url}`, {
+    const res = await fetch(`${url}/login`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -52,33 +52,33 @@ async function userLogin(user) {
       body: JSON.stringify({
         ...user,
       }),
-    });
+    })
+    console.log(res)
     if (!res.ok) {
-      console.log("res");
-      throw new Error(`HTTP error! status: ${res.status}`);
+      throw new Error(`HTTP error! status: ${res.status}`)
     }
 
-    const data = await res.json();
-    console.log(data);
-    const payload = parseJwt(data.access_token);
-    localStorage.setItem("userPayload", JSON.stringify(payload));
-    return payload;
+    const data = await res.json()
+    console.log(data)
+    const payload = parseJwt(data.access_token)
+    localStorage.setItem("userPayload", JSON.stringify(payload))
+    return payload
   } catch (error) {
-    console.log(`error: ${error}`);
+    console.log(`error: ${error}`)
   }
 }
 
 const submitForm = async () => {
-  const payload = await userLogin(user.value);
+  const payload = await userLogin(user.value)
   if (payload) {
-    router.push("/task");
+    router.push("/task")
   } else {
-    showError.value = true;
+    showError.value = true
     setTimeout(() => {
-      showError.value = false;
-    }, 3000); 
+      showError.value = false
+    }, 3000)
   }
-};
+}
 </script>
 
 <template>
@@ -104,7 +104,7 @@ const submitForm = async () => {
         </div>
         <div>
           <label class="form-control w-full max-w-xs">
-            <div class=" label">
+            <div class="label">
               <span class="label-text font-semibold text-slate-500"
                 >Username</span
               >
@@ -142,8 +142,8 @@ const submitForm = async () => {
             </div>
           </label>
           <button
-            class="itbkk-button-signin  w-[20rem] btn btn-primary text-white mt-6"
-            :class="{ 'disabled': !isFormValid }"
+            class="itbkk-button-signin w-[20rem] btn btn-primary text-white mt-6"
+            :class="{ disabled: !isFormValid }"
             :disabled="!isFormValid"
             @click="submitForm"
           >
@@ -164,7 +164,9 @@ const submitForm = async () => {
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span class="itbkk-message">Username or Password is incorrect</span>
+              <span class="itbkk-message"
+                >Username or Password is incorrect</span
+              >
             </div>
           </div>
         </div>
