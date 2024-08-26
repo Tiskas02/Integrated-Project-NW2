@@ -7,8 +7,6 @@ import com.example.integratedbackend.Service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +16,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.authenticate(loginRequest));
     }
