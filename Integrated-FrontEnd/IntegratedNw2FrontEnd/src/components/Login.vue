@@ -44,7 +44,7 @@ const parseJwt = (token) =>{
 async function userLogin(user) {
   console.log(`${url}/login`);
   try {
-    const res = await fetch(`${url}/login`, {
+    const res = await fetch(`${url}`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -54,6 +54,7 @@ async function userLogin(user) {
       }),
     });
     if (!res.ok) {
+      console.log("res");
       throw new Error(`HTTP error! status: ${res.status}`);
     }
 
