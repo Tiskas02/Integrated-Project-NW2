@@ -6,6 +6,7 @@ import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
 import Login from "@/components/Login.vue";
+import BoardHome from "@/views/BoardHome.vue";
 const history = createWebHistory(import.meta.env.BASE_URL);
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: Login,
+  },
+  {
+    path:"/board",
+    name:"board",
+    component: BoardHome,
   },
   {
     path: "/task",

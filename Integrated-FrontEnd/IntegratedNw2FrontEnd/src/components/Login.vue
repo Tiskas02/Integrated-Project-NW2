@@ -83,8 +83,16 @@ const submitForm = async () => {
 
 <template>
   <div class="w-full h-screen flex justify-center items-center">
+    <div class="w-[65%] h-[80%] py-28" >
+      <div class="w-full flex justify-center my-4">
+      <img class="w-[30%]  " src="/icon.png" alt="icon" />
+      </div>
+      <div class="w-full flex justify-center"><div class="text-white font-rubik text-4xl font-bold text-center shadow-md ">IT-Bangmod<br/> Kradan Kanban</div></div>
+      
+      
+    </div>
     <div
-      class="w-[80%] h-[80%] bg-white rounded-xl shadow-xl flex justify-center items-center"
+      class="w-[35%] h-[80%] bg-white rounded-2xl shadow-xl flex justify-center items-center mx-32"
     >
       <div>
         <div
@@ -92,18 +100,8 @@ const submitForm = async () => {
         >
           Welcome
         </div>
-        <div class="flex items-center justify-center">
-          <div class="flex">
-            <div class="w-9"><img src="/icon.png" alt="icon" /></div>
-            <div
-              class="text-center font-chivo font-medium text-md text-blue-220 text-slate-700 cursor-pointer hover:text-black w-[14rem] pt-1"
-            >
-              IT-Bangmod Kradan Kanban
-            </div>
-          </div>
-        </div>
         <div>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full max-w-xs my-2">
             <div class="label">
               <span class="label-text font-semibold text-slate-500"
                 >Username</span
@@ -122,7 +120,7 @@ const submitForm = async () => {
               >
             </div>
           </label>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full max-w-xs my-2">
             <div class="label">
               <span class="label-text font-semibold text-slate-500"
                 >Password</span
@@ -142,12 +140,12 @@ const submitForm = async () => {
             </div>
           </label>
           <button
-            class="itbkk-button-signin w-[20rem] btn btn-primary text-white mt-6"
+            class="itbkk-button-signin w-[20rem] btn bg-gradient-to-r from-[#023E8A] to-[#3581B9] text-white mt-6"
             :class="{ disabled: !isFormValid }"
             :disabled="!isFormValid"
             @click="submitForm"
           >
-            Login
+            Sign In
           </button>
           <div v-show="showError" class="itbkk-message my-2">
             <div role="alert" class="alert alert-error">
