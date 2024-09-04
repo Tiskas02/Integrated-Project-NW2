@@ -53,13 +53,11 @@ async function userLogin(user) {
         ...user,
       }),
     })
-    console.log(res)
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`)
     }
 
     const data = await res.json()
-    console.log(data)
     const payload = parseJwt(data.access_token)
     localStorage.setItem("userPayload", JSON.stringify(payload))
     return payload
@@ -71,7 +69,7 @@ async function userLogin(user) {
 const submitForm = async () => {
   const payload = await userLogin(user.value)
   if (payload) {
-    router.push("/task")
+    router.push("/board")
   } else {
     showError.value = true
     setTimeout(() => {
