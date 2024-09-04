@@ -1,48 +1,48 @@
 <script setup>
-import router from "@/router/router";
-import { ref, computed } from "vue";
+import router from "@/router/router"
+import { ref, computed } from "vue"
 
-const url = import.meta.env.VITE_BASE_URL_FOR_AUTH;
+const url = import.meta.env.VITE_BASE_URL_FOR_AUTH
 const user = ref({
-  username: "",
+  userName: "",
   password: "",
-});
-const showError = ref(false);
+})
+const showError = ref(false)
 
 const validateUsername = computed(() => {
-  return user.value.username.length <= 50;
-});
+  return user.value.userName.length <= 50
+})
 
 const validatePassword = computed(() => {
-  return user.value.password.length <= 14;
-});
+  return user.value.password.length <= 14
+})
 
 const isFormValid = computed(() => {
   return (
     validateUsername.value &&
     validatePassword.value &&
-    user.value.username.length > 0 &&
+    user.value.userName.length > 0 &&
     user.value.password.length > 0
-  );
-});
+  )
+})
 
-const parseJwt = (token) =>{
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1]
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
       .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
       })
       .join("")
-  );
+  )
 
-  return JSON.parse(jsonPayload);
+  return JSON.parse(jsonPayload)
 }
 
 async function userLogin(user) {
-  console.log(user);
+  console.log(`${url}/login`)
   try {
     const res = await fetch(`${url}/login`, {
       method: "POST",
@@ -52,37 +52,45 @@ async function userLogin(user) {
       body: JSON.stringify({
         ...user,
       }),
-    });
+    })
     if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
+      throw new Error(`HTTP error! status: ${res.status}`)
     }
 
-    const data = await res.json();
-    const payload = parseJwt(data.access_token);
-    localStorage.setItem("userPayload", JSON.stringify(payload));
-    return payload;
+    const data = await res.json()
+    const payload = parseJwt(data.access_token)
+    localStorage.setItem("userPayload", JSON.stringify(payload))
+    return payload
   } catch (error) {
-    console.log(`error: ${error}`);
+    console.log(`error: ${error}`)
   }
 }
 
 const submitForm = async () => {
-  const payload = await userLogin(user.value);
+  const payload = await userLogin(user.value)
   if (payload) {
-    router.push("/task");
+    router.push("/board")
   } else {
-    showError.value = true;
+    showError.value = true
     setTimeout(() => {
-      showError.value = false;
-    }, 3000); 
+      showError.value = false
+    }, 3000)
   }
-};
+}
 </script>
 
 <template>
   <div class="w-full h-screen flex justify-center items-center">
+    <div class="w-[65%] h-[80%] py-28" >
+      <div class="w-full flex justify-center my-4">
+      <img class="w-[30%]  " src="/icon.png" alt="icon" />
+      </div>
+      <div class="w-full flex justify-center"><div class="text-white font-rubik text-4xl font-bold text-center shadow-md ">IT-Bangmod<br/> Kradan Kanban</div></div>
+      
+      
+    </div>
     <div
-      class="w-[80%] h-[80%] bg-white rounded-xl shadow-xl flex justify-center items-center"
+      class="w-[35%] h-[80%] bg-white rounded-2xl shadow-xl flex justify-center items-center mx-32"
     >
       <div>
         <div
@@ -90,18 +98,8 @@ const submitForm = async () => {
         >
           Welcome
         </div>
-        <div class="flex items-center justify-center">
-          <div class="flex">
-            <div class="w-9"><img src="/icon.png" alt="icon" /></div>
-            <div
-              class="text-center font-chivo font-medium text-md text-blue-220 text-slate-700 cursor-pointer hover:text-black w-[14rem] pt-1"
-            >
-              IT-Bangmod Kradan Kanban
-            </div>
-          </div>
-        </div>
         <div>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full max-w-xs my-2">
             <div class="label">
               <span class="label-text font-semibold text-slate-500"
                 >Username</span
@@ -109,9 +107,10 @@ const submitForm = async () => {
             </div>
             <input
               type="text"
-              v-model="user.username"
+              v-model="user.userName"
               placeholder="Enter your Username"
-              class="input input-bordered text-sm w-[20rem] bg-white"
+              class="itbkk-username input input-bordered text-sm w-[20rem] bg-white"
+              :maxlength="50"
             />
             <div v-show="!validateUsername" class="label">
               <span class="label-text-alt text-red-500"
@@ -119,7 +118,7 @@ const submitForm = async () => {
               >
             </div>
           </label>
-          <label class="form-control w-full max-w-xs">
+          <label class="form-control w-full max-w-xs my-2">
             <div class="label">
               <span class="label-text font-semibold text-slate-500"
                 >Password</span
@@ -129,7 +128,8 @@ const submitForm = async () => {
               type="password"
               v-model="user.password"
               placeholder="Enter your password"
-              class="input input-bordered text-sm w-[20rem] bg-white"
+              class="itbkk-password input input-bordered text-sm w-[20rem] bg-white"
+              :maxlength="14"
             />
             <div v-show="!validatePassword" class="label">
               <span class="label-text-alt text-red-500"
@@ -138,13 +138,14 @@ const submitForm = async () => {
             </div>
           </label>
           <button
-            class="w-[20rem] btn btn-primary text-white mt-6"
+            class="itbkk-button-signin w-[20rem] btn bg-gradient-to-r from-[#023E8A] to-[#3581B9] text-white mt-6"
+            :class="{ disabled: !isFormValid }"
             :disabled="!isFormValid"
             @click="submitForm"
           >
-            Login
+            Sign In
           </button>
-          <div v-show="showError" class="my-2">
+          <div v-show="showError" class="itbkk-message my-2">
             <div role="alert" class="alert alert-error">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -159,7 +160,9 @@ const submitForm = async () => {
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>Error! <br/>InValid Username and Password</span>
+              <span class="itbkk-message"
+                >Username or Password is incorrect</span
+              >
             </div>
           </div>
         </div>

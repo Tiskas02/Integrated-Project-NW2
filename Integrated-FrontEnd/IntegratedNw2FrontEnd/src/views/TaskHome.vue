@@ -20,7 +20,7 @@ watch(
 </script>
 <template>
   <div>
-    <NavBar />
+    <!-- <NavBar /> -->
     <div class="w-full h-screen flex justify-center items-center">
       <div class="w-[95%] h-[90%]">
         <div class="w-full bg-white h-full rounded-2xl shadow-inner">

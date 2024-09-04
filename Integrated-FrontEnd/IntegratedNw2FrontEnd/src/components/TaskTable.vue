@@ -200,62 +200,6 @@ const ClearStatuses = () => {
 
 <template>
   <div>
-    <!-- <div class="dropdown opacity-90 flex">
-      <div class="relative">
-        <input
-          type="text"
-          v-model="searchQuery"
-          @input="searchMovies"
-          placeholder="Search Movie here..."
-          class="w-full pl-10 pr-4 py-2 rounded-2xl text-black border border-blue-700 opacity-50 bg-slate-100 shadow-inner"
-        />
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="#4338ca"
-            class="w-6 h-6"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </div>
-      </div>
-      <ul
-        tabindex="0"
-        class="dropdown-content flex flex-row z-[1] menu p-2 shadow rounded-box mt-12 overflow-y-auto max-h-96 bg-black"
-      >
-        <li
-          v-if="
-            movieSearched &&
-            movieSearched.results &&
-            movieSearched.results.length > 0
-          "
-          v-for="movie in movieSearched.results"
-          :key="movie.id"
-          class="w-60 hover:text-red-500"
-          @click="refreshPage"
-        >
-          <router-link :to="'/movie/' + movie.id">
-            <img
-              class="w-[70px] h-[100px] rounded-[5px]"
-              :src="
-                movie.poster_path
-                  ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path
-                  : '../icons/noimageavailable.png'
-              "
-            />
-            <h2>{{ movie.title }}</h2>
-          </router-link>
-        </li>
-        <li v-else class="w-60">
-          <h3>No result found</h3>
-        </li>
-      </ul>
-    </div> -->
     <div class="w-full flex justify-center my-3">
       <div
         class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"

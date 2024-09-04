@@ -1,43 +1,41 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 * {
-    padding: 0;
-    margin: 0;
-    
+  padding: 0;
+  margin: 0;
 }
 
-body {    
-    font-family: "Poppins", sans-serif;
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    background-color: rgb(241 245 249);
-    /* background: url('/images/background.png'); */
-    background-size: cover;
+body {
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  /* background-color: rgb(241 245 249);*/
+  /* Laptop - 1 */
+  background: linear-gradient(90deg, #34383e 0%, #1d2024 69.5%);
+  /* background: url('/images/background.png'); */
+  background-size: cover;
 }
-
 
 ::-webkit-scrollbar {
-    width: 0.5em;
-    height: 0.25em;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: black;
-    border-radius: 100vw;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: grey;
-    border-radius: 100vw;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #1e6f64;
-  }
+  width: 0.5em;
+  height: 0.25em;
+}
 
+::-webkit-scrollbar-track {
+  background: black;
+  border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb {
+  background: grey;
+  border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1e6f64;
+}

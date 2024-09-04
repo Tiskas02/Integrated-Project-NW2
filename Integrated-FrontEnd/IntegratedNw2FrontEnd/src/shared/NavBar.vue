@@ -87,7 +87,7 @@ const logout = () => {
         <div class="flex-grow"></div>
         <div class="flex items-center">
           <div v-if="userPayload" class="flex justify-center items-center">
-            <div class="px-2">{{ userPayload.name }}</div>
+            <div class="itbkk-fullname px-2">{{ userPayload.name }}</div>
             <div class="px-4 cursor-pointer btn btn-error" @click="logout">Logout</div>
           </div>
           <div v-else>

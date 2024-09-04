@@ -2,7 +2,6 @@ package com.example.integratedbackend.Controller;
 
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.DTO.NewTaskReturnV2;
-import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.TaskServiceV2;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -14,15 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v2/tasks")
+@RequestMapping("/v2/tasks")
 @CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th","*"})
 public class TaskControllerV2 {
     @Autowired
     private TaskServiceV2 service;
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private ListMapper listMapper;
+
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTask(
