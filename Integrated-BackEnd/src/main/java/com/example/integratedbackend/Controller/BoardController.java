@@ -64,5 +64,5 @@ public class BoardController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
         }
     }
-    
+
 }

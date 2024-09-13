@@ -10,11 +10,9 @@ import io.viascom.nanoid.NanoId;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-
-import java.util.List;
 
 @Service
 public class BoardService {
@@ -32,11 +30,11 @@ public class BoardService {
     public DetailBoardDTO getBoardByUserId(String userId) {
         Board board = boardRepositories.getReferenceById(userId);
         if (board == null) {
-            throw new ItemNotFoundException("Board with id " + userId + " not found");
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with id " + userId + " not found");
         }
         DetailBoardDTO.OwnerDTO ownerDTO = new DetailBoardDTO.OwnerDTO();
         ownerDTO.setOid(Integer.valueOf(board.getUserId()));
-        ownerDTO.setName(userRepository.findById(board.getUserId()).orElseThrow(() -> new ItemNotFoundException("User with id " + board.getUserId() + " not found")).getName());
+        ownerDTO.setName(userRepository.findById(board.getUserId()).orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with id " + board.getUserId() + " not found")).getName());
 
         DetailBoardDTO boardDTO = modelMapper.map(board, DetailBoardDTO.class);
         boardDTO.setId(Integer.valueOf(board.getBoardId()));
@@ -47,10 +45,10 @@ public class BoardService {
     }
 
     public DetailBoardDTO getBoardById(String boardId) {
-        Board board = boardRepositories.findById(boardId).orElseThrow(() -> new ItemNotFoundException("Board with id " + boardId + " not found"));
+        Board board = boardRepositories.findById(boardId).orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with id " + boardId + " not found"));
         DetailBoardDTO.OwnerDTO ownerDTO = new DetailBoardDTO.OwnerDTO();
         ownerDTO.setOid(Integer.valueOf(board.getUserId()));
-        ownerDTO.setName(userRepository.findById(board.getUserId()).orElseThrow(() -> new ItemNotFoundException("User with id " + board.getUserId() + " not found")).getName());
+        ownerDTO.setName(userRepository.findById(board.getUserId()).orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with id " + board.getUserId() + " not found")).getName());
 
         DetailBoardDTO boardDTO = modelMapper.map(board, DetailBoardDTO.class);
         boardDTO.setId(Integer.valueOf(board.getBoardId()));
@@ -75,7 +73,7 @@ public class BoardService {
 
         DetailBoardDTO.OwnerDTO ownerDTO = new DetailBoardDTO.OwnerDTO();
         ownerDTO.setOid(Integer.valueOf(userId));
-        ownerDTO.setName(userRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException("User with id " + userId + " not found")).getName());
+        ownerDTO.setName(userRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with id " + userId + " not found")).getName());
 
         DetailBoardDTO boardDTO = modelMapper.map(existBoard, DetailBoardDTO.class);
         boardDTO.setId(Integer.valueOf(newBoard.getBoardId()));
