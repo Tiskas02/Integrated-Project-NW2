@@ -69,6 +69,7 @@
 <!--            <artifactId>jjwt</artifactId>-->
 <!--            <version>0.9.1</version>-->
 <!--        </dependency>-->
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
@@ -99,7 +100,11 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.viascom.nanoid</groupId>
+            <artifactId>nanoid</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

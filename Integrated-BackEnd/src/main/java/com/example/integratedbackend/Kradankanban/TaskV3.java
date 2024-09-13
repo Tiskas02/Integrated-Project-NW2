@@ -42,6 +42,6 @@ public class TaskV3 {
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name = "taskStatusId", referencedColumnName = "statusId")
+    @JoinColumn(name = "taskStatusId", referencedColumnName = "statuses_id")
     private StatusV3 status;
 }

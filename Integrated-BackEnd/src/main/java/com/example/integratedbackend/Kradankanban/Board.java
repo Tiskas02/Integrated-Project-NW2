@@ -15,4 +15,7 @@ public class Board {
     @Column(name = "boards_name", nullable = false)
     private String boardName;
 
+    @Column(name = "user_id", nullable = true)
+    private String userId;
+
 }
