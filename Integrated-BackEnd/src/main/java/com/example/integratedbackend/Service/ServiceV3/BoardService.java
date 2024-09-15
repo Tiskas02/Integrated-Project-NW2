@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Service.ServiceV3;
 
+import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
@@ -35,12 +36,12 @@ public class BoardService {
         }
         return boards;
     }
-    public Boards createBoard(String userName, String boardName){
+    public Boards createBoard(String userName, NewBoardDTO boardDTO){
         List<Users> listUsers = usersRepositoriesV3.findAllByUsername(userName);
         Users user = listUsers.get(0);
         Users users = usersRepositoriesV3.findById(user.getOid()).orElseThrow(() ->
             new ItemNotFoundException("User with ID " + user + " not found"));
-        if(boardsRepositoriesV3.existsBoardsByNameIgnoreCaseAndUsers(boardName,users)){
+        if(boardsRepositoriesV3.existsBoardsByNameIgnoreCaseAndUsers(boardDTO.getName(), users)){
             throw new TaskNameDuplicatedException("must be unique");
         }
 //        if (getBoardByUserId(userName) != null){
@@ -49,7 +50,7 @@ public class BoardService {
         String boardId = NanoId.generate(10);
         Boards newBoard = modelMapper.map(new Boards(), Boards.class);
         newBoard.setBoardId(boardId);
-        newBoard.setName(boardName);
+        newBoard.setName(boardDTO.getName());
         newBoard.setUsers(user);
         Boards savedBoard = boardsRepositoriesV3.save(newBoard);
         return savedBoard;

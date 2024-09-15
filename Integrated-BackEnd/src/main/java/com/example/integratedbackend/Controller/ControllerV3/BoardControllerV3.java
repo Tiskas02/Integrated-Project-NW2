@@ -46,7 +46,7 @@ public class BoardControllerV3 {
         }
 
         @PostMapping("")
-        public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authHeader,@Valid @RequestBody String newBoard) {
+        public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authHeader,@Valid @RequestBody NewBoardDTO newBoard) {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String jwt = authHeader.substring(7);
                 String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
