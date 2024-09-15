@@ -1,11 +1,16 @@
 package com.example.integratedbackend.Controller.ControllerV3;
 
 import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
+import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.NewTaskDTOV2;
 import com.example.integratedbackend.DTO.NewTaskReturnV2;
+import com.example.integratedbackend.DTO.StatusDTO;
 import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
+import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.BoardService;
+import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
 import com.example.integratedbackend.Service.ServiceV3.UserServiceV3;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
@@ -18,6 +23,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
 @RequestMapping("/board")
 @CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th","*"})
@@ -27,11 +34,15 @@ public class BoardControllerV3 {
     @Autowired
     private UserServiceV3 UserService;
     @Autowired
+    private StatusServiceV3 statusServiceV3;
+    @Autowired
     private JwtUtil jwtUtil;
     @Autowired
-    private ModelMapper modelMapper;
+    ModelMapper modelMapper;
+    @Autowired
+    private ListMapper listMapper;
 
-
+// ================================Board=====================================
         @GetMapping("")
         public ResponseEntity<Object> getBoardByUserId(@RequestHeader("Authorization") String authHeader) {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -58,5 +69,22 @@ public class BoardControllerV3 {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
 
         }
+    // ================================statuses=====================================
+    @GetMapping("{boardId}/statuses")
+    public ResponseEntity<Object> getAllStatus(@PathVariable String boardId) {
+        return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+    }
+    @GetMapping("{boardId}/statuses/{statusId}")
+    public ResponseEntity<Object> findStatusById( @PathVariable String boardId, @PathVariable Integer statusId) {
+        return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
+    }
+
+//    @PostMapping("/{boardId}/statuses")
+//    public ResponseEntity<Object> createStatus(@Valid @RequestBody StatusV3 statusV3, String boardId) {
+////        return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(statusServiceV3.createStatus(newStatus, boardId), StatusDTO.class));
+//        StatusV3 createdStatus = statusServiceV3.createStatus(statusV3, boardId);
+//        StatusDTO statusDTO = modelMapper.map(createdStatus, StatusDTO.class);
+//        return new ResponseEntity<> (statusDTO , HttpStatus.CREATED);
+//    }
     }
 

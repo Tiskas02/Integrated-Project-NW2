@@ -10,7 +10,7 @@ public class StatusV3 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "statusId", nullable = false)
-    private int statusId;
+    private Integer statusId;
 
     @Column(name = "statusName", nullable = false)
     private String statusName;
@@ -20,5 +20,5 @@ public class StatusV3 {
 
     @ManyToOne
     @JoinColumn(name = "boardId", referencedColumnName = "boardId")
-    private Boards boardId;
+    private Boards board;
 }

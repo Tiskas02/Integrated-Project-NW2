@@ -11,5 +11,6 @@ public interface BoardsRepositoriesV3 extends JpaRepository<Boards, String> {
 //    List<Boards> findAllByUser(Users user);
     List<Boards> findBoardsByUsersOid(String oid);
     boolean existsBoardsByNameIgnoreCaseAndUsers(String name, Users user);
+//    Optional<Boards> findByBoardId(String boardId);
 //    Boards existsByNameIgnoreCaseAndOid(String name, String oid);
 }
