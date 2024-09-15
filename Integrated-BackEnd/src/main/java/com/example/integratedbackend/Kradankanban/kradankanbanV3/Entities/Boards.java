@@ -12,7 +12,6 @@ import java.time.ZonedDateTime;
 @Data
 @Table(name = "board", schema = "kradankanbanV3")
 public class Boards {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "boardId", nullable = false)
     private String boardId;
@@ -32,6 +31,6 @@ public class Boards {
 
     @ManyToOne
     @JoinColumn(name = "oid", referencedColumnName = "oid")
-    private Users oid;
+    private Users users;
 
 }

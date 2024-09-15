@@ -99,6 +99,11 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.viascom.nanoid</groupId>
+            <artifactId>nanoid</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 
     </dependencies>
 
