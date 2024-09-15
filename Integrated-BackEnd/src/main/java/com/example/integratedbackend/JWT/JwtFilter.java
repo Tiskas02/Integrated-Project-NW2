@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String username = null;
         String jwt = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer")) {
             jwt = authHeader.substring(7);
             username = jwtUtil.extractUsername(jwt);
         }
@@ -45,7 +45,13 @@ public class JwtFilter extends OncePerRequestFilter {
                         user.getUsername(), user, null);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            }else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token");
+                return;
             }
+        }else if (username != null ) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization header is missing or invalid");
+            return;
         }
         filterChain.doFilter(request, response);
     }

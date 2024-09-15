@@ -1,9 +1,7 @@
-package com.example.integratedbackend.Kradankanban;
+package com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,27 +9,16 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "task", schema = "kradanitbangmod")
-@Getter
-@Setter
-public class Tasks {
-    @Id
+@Data
+@Table(name = "board", schema = "kradankanbanV3")
+public class Boards {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "taskId")
-    private Integer taskId;
+    @Id
+    @Column(name = "boardId", nullable = false)
+    private String boardId;
 
-    @Column(name = "taskTitle")
-    private String taskTitle;
-
-    @Column(name = "taskDescription")
-    private String taskDescription;
-
-    @Column(name = "taskAssignees")
-    private String taskAssignees;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "taskStatus")
-    private ResourceType taskStatus;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
@@ -42,4 +29,9 @@ public class Tasks {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updatedOn", insertable = false, updatable = false)
     private ZonedDateTime updatedOn;
+
+    @ManyToOne
+    @JoinColumn(name = "oid", referencedColumnName = "oid")
+    private Users oid;
+
 }
