@@ -19,65 +19,62 @@ const routes = [
     component: Login,
   },
   {
-    path: "/board",
-    name: "board",
+    path:"/board",
+    name:"board",
     component: BoardHome,
+  },
+  {
+    path: "/board/:id/task",
+    name: "Task",
+    component: TaskHome,
     meta: { requiresAuth: true },
     children: [
       {
         path: ":id",
-        name: "Task",
-        component: TaskHome, 
-        children: [
-          {
-            path: "task/:id",
-            name: "taskDetail",
-            component: TaskModal,
-            meta: { requiresAuth: true },
-          },
-          {
-            path: "add",
-            name: "addTask",
-            component: TaskAddEdit,
-            meta: { requiresAuth: true },
-          },
-          {
-            path: ":taskId/edit",
-            name: "editTask",
-            component: TaskAddEdit,
-            meta: { requiresAuth: true },
-          },
-        ],
+        name: "taskDetail",
+        component: TaskModal,
+        meta: { requiresAuth: true },
       },
       {
-        path: ":boardId/status",
-        name: "status",
-        component: TaskHome,
+        path: "add",
+        name: "addTask",
+        component: TaskAddEdit,
         meta: { requiresAuth: true },
-        children: [
-          {
-            path: ":id",
-            name: "statusDetail",
-            component: StatusTable,
-            meta: { requiresAuth: true },
-          },
-          {
-            path: "add",
-            name: "addStatus",
-            component: StatusAddEdit,
-            meta: { requiresAuth: true },
-          },
-          {
-            path: ":id/edit",
-            name: "editStatus",
-            component: StatusAddEdit,
-            meta: { requiresAuth: true },
-          },
-        ],
+      },
+      {
+        path: ":id/edit",
+        name: "editTask",
+        component: TaskAddEdit,
+        meta: { requiresAuth: true },
       },
     ],
   },
-  
+  {
+    path: "/status",
+    name: "status",
+    component: TaskHome,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: ":id",
+        name: "statusDetail",
+        component: StatusTable,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "add",
+        name: "addStatus",
+        component: StatusAddEdit,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: ":id/edit",
+        name: "editStatus",
+        component: StatusAddEdit,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
   {
     path: "/:notfoundpath(.*)",
     name: "NotFound",
