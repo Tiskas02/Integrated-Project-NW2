@@ -88,7 +88,10 @@ public class TaskServiceV3 {
     }
 
     @Transactional
-    public TaskDTOV3 deleteTask(Integer id) throws ItemNotFoundException {
+    public TaskDTOV3 deleteTask(Integer id, String boardId) throws ItemNotFoundException {
+        Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(
+                () -> new ItemNotFoundException(
+                        "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         TaskV3 taskToDelete = tasksRepositoriesV3.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("NOT FOUND"));
         tasksRepositoriesV3.delete(taskToDelete);
@@ -97,7 +100,10 @@ public class TaskServiceV3 {
 
 
     @Transactional
-    public TaskV3 updateTask(NewTaskDTOV3 editTask, Integer id) {
+    public TaskV3 updateTask(NewTaskDTOV3 editTask, Integer id, String boardId) throws ItemNotFoundException {
+        Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(
+                () -> new ItemNotFoundException(
+                        "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         TaskV3 existingTask = tasksRepositoriesV3.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
         existingTask.setTitle(editTask.getTitle());
