@@ -15,16 +15,15 @@ export const useStoreStatus = defineStore("status", () => {
       statuses.value = [];
       const statusData = await getStatusData(id);
       statuses.value = statusData ?? [];
-      console.log(statuses.value);
       return statuses.value;
     } catch (error) {
       console.error("Error fetching data:", error);
       console.log(error);
     }
   }
-  async function createStatus(newStatus) {
+  async function createStatus(newStatus,id) {
     try {
-      const addedStatus = await addStatus(newStatus);
+      const addedStatus = await addStatus(newStatus,id);
       if (addedStatus.status === undefined) {
         statuses.value.push(addedStatus);
       }
@@ -34,14 +33,16 @@ export const useStoreStatus = defineStore("status", () => {
     }
   }
 
-  async function updateStatus(id, status) {
-    console.log(status);
+  async function updateStatus(id, status,routeId) {
     try {
-      const updatedStatus = await editStatus(id, status); 
+      const updatedStatus = await editStatus(id, status,routeId);
       const statusIndex = statuses.value.findIndex(
         (status) => status.id === id
       );
-      statuses.value.splice(statusIndex, 1, updatedStatus);
+      // statuses.value.splice(statusIndex, 1, updatedStatus);
+      console.log(statuses.value[statusIndex]);
+      console.log(updatedStatus);
+      statuses.value[statusIndex] = updatedStatus;
       return updatedStatus;
     } catch (error) {
       throw new Error(error.message);

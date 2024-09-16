@@ -31,9 +31,9 @@ export const useStoreTasks = defineStore("tasks", () => {
     }
   }
 
-  async function deleteTask(id) {
+  async function deleteTask(routeId,id) {
     try {
-      const res = await deleteItemById(id);
+      const res = await deleteItemById(routeId,id);
       tasks.value.splice(
         tasks.value.findIndex((task) => task.id === id),
         1

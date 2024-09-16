@@ -16,7 +16,8 @@ const sentclose = (value) => {
   emit("close", value);
   sentTask.value = {};
 };
-const sentSaveDelete = (value) => {
+const sentDelete = (value) => {
+  console.log(value);
   emit("saveDelete", value);
 };
 const sentNewTask = (value) => {
@@ -49,7 +50,7 @@ const sentNewTask = (value) => {
         @close="sentclose"
         :task="sentTask"
         :index="sentIndex"
-        @saveDelete="sentSaveDelete"
+        @savedDelete="sentDelete"
       />
     </div>
   </div>

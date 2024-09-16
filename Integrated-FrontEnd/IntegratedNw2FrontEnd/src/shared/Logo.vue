@@ -1,11 +1,26 @@
 <script setup>
 import BaseBtn from "./BaseBtn.vue";
-import { defineProps, } from "vue";
+import { defineProps } from "vue";
 import router from "@/router/router.js";
 const props = defineProps({
   userPayload: String,
 });
-
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
+};
+const userPayload = localStorage.getItem("token")
+  ? parseJwt(localStorage.getItem("token"))
+  : null;
 const logout = () => {
   localStorage.removeItem("token");
   router.push("/");
@@ -14,18 +29,22 @@ const logout = () => {
 
 <template>
   <div class="w-full flex items-center">
-    <slot name="image"><img src="/icon.png" class="w-[5%]" /></slot>
+    <router-link :to="{ name: 'board' }">
+      <div class="flex items-center">
+      <slot name="image"><img src="/icon.png" class="w-[10%] m-2" /></slot
+    >
     <slot name="text">
       <div
-        class="text-center font-chivo font-medium text-md text-blue-220 text-slate-700"
+        class="text-center font-chivo font-medium text-md text-blue-220 text-white"
       >
         IT-Bangmod Kradan Kanban
       </div>
-    </slot>
+    </slot></div>
+  </router-link>
     <div class="grow"></div>
     <div class="mx-4">
-      <div class="flex items-center ">
-        <div class="mx-2 ">
+      <div class="flex items-center">
+        <div class="mx-2">
           <svg
             width="20"
             height="20"

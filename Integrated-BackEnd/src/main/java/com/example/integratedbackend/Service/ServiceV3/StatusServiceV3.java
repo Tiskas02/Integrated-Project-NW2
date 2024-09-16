@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Service.ServiceV3;
 
+import com.example.integratedbackend.DTO.DTOV3.NewStatusIDDTO;
 import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.StatusDTO;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
@@ -85,7 +86,7 @@ public class StatusServiceV3 {
 
 
     @Transactional
-    public StatusV3 updateStatus(Integer statusId,NewStatusDTO status) {
+    public NewStatusIDDTO updateStatus(Integer statusId, NewStatusDTO status) {
         StatusV3 oldStatusV3 = statusRepositoriesV3.findById(statusId).
                 orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:" + statusId));
         StatusV3 statusDuplicate = statusRepositoriesV3.findByStatusNameIgnoreCaseAndBoard(status.getName(),oldStatusV3.getBoard());
@@ -98,7 +99,7 @@ public class StatusServiceV3 {
         StatusV3 updatedStatus = mapper.map(status, StatusV3.class);
         updatedStatus.setStatusId(statusId);
         updatedStatus.setBoard(oldStatusV3.getBoard());
-        return mapper.map(statusRepositoriesV3.save(updatedStatus), StatusV3.class);
+        return mapper.map(statusRepositoriesV3.save(updatedStatus), NewStatusIDDTO.class);
     }
     @Transactional
     public StatusV3 deleteStatus(Integer id) throws ItemNotFoundException{

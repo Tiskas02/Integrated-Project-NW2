@@ -1,10 +1,16 @@
 <script setup>
-import { defineProps, defineEmits} from "vue";
-const emit = defineEmits(["close", "saveDelete"]);
+import { defineProps, defineEmits,ref} from "vue";
+const emit = defineEmits(["close", "savedDelete"]);
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
+const routerId = ref(route.params.id);
 const props = defineProps({
   task: Object,
   index: Number,
 });
+
+
 </script>
 
 <template>
@@ -33,7 +39,7 @@ const props = defineProps({
               @click="
                 () => {
                     $emit('close', false),
-                    $emit('saveDelete', task?.id);
+                    $emit('savedDelete', task?.id);
                 }
               "
               class="itbkk-button-confirm btn btn-success text-white"

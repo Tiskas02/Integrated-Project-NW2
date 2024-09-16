@@ -42,7 +42,7 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: ":id/edit",
+        path: ":editid/edit",
         name: "editTask",
         component: TaskAddEdit,
         meta: { requiresAuth: true },
@@ -50,7 +50,7 @@ const routes = [
     ],
   },
   {
-    path: "/status",
+    path: "/board/:id/status",
     name: "status",
     component: TaskHome,
     meta: { requiresAuth: true },
@@ -68,7 +68,7 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: ":id/edit",
+        path: ":editid/edit",
         name: "editStatus",
         component: StatusAddEdit,
         meta: { requiresAuth: true },

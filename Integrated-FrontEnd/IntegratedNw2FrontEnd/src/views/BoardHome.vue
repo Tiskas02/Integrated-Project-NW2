@@ -66,9 +66,9 @@ const navigateToBoardTasks = (boardId) => {
 <template>
   <div>
     <LoadingScreen v-if="!dataLoaded" />
-    <Logo :userPayload="userPayload">
+    <Logo>
       <template #image>
-        <img src="/icon.png" alt="icon" class="w-[4%] m-2" />
+        <img src="/icon.png" alt="icon" class="w-[10%] m-2" />
       </template>
       <template #text>
         <div class="font-chivo font-medium text-xl text-white mx-1">

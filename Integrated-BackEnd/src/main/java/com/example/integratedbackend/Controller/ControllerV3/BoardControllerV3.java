@@ -102,9 +102,9 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> transferStatus(@PathVariable Integer statusId, @PathVariable Integer newId) throws BadRequestException {
         return new ResponseEntity<>(statusServiceV3.transferStatus(statusId, newId), HttpStatus.OK);
     }
-    @GetMapping("/statuses/{id}/indicator")
-    public ResponseEntity<Boolean> checkDeleteOrTransfer(@PathVariable Integer id) {
-        return ResponseEntity.ok(statusServiceV3.deleteOrTransfer(id));
+    @GetMapping("/statuses/{statusId}/indicator")
+    public ResponseEntity<Boolean> checkDeleteOrTransfer(@PathVariable Integer statusId) {
+        return ResponseEntity.ok(statusServiceV3.deleteOrTransfer(statusId));
     }
     // ================================Task=====================================
     @GetMapping("{boardId}/tasks")

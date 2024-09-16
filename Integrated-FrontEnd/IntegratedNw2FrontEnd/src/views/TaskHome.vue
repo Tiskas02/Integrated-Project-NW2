@@ -3,13 +3,13 @@ import { ref, watch } from "vue";
 import TaskTable from "../components/TaskTable.vue";
 import StatusTable from "../components/StatusTable.vue";
 import { useRoute } from "vue-router";
-import NavBar from "@/shared/NavBar.vue";
+import Logo from "@/shared/Logo.vue";
 const route = useRoute();
 const usePath = ref(false);
 watch(
   () => route.path,
   () => {
-    if (route.path.endsWith("/status")) {
+    if (route.path.includes("/status")) {
       usePath.value = true;
     } else {
       usePath.value = false;
@@ -21,6 +21,7 @@ watch(
 <template>
   <div>
     <!-- <NavBar /> -->
+     <Logo />
     <div class="w-full h-screen flex justify-center items-center">
       <div class="w-[95%] h-[90%]">
         <div class="w-full bg-white h-full rounded-2xl shadow-inner">

@@ -41,7 +41,7 @@ const fetchDataById = async (routerId,id, mode) => {
     storeMode.value === "edit"
   ) {
     showDetail.value = true;
-    router.push({ name: "editTask", params: { id: id } });
+    router.push({ name: "editTask", params: { editid: id } });
   } else if (
     Object.keys(storeTask.value).length > 0 &&
     storeMode.value === "view"
@@ -65,7 +65,7 @@ if (route.params.id) {
 }
 
 const removeTask = async (id) => {
-  const res = await tasksStore.deleteTask(id);
+  const res = await tasksStore.deleteTask(routerId.value,id);
   if (res !== 404) {
     toasterStore.success({ text: "Task deleted successfully!" });
   } else if (res === 404) {
@@ -117,7 +117,7 @@ const addEditTask = async (newTask) => {
         assignees: newTask.assignees,
         statusId: newTask.status,
         title: newTask.title.trim(),
-        description: newTask.description
+        description: newTask.descriptio
           ? newTask.description.trim()
           : newTask.description,
       });
@@ -162,7 +162,6 @@ const setDetail = (value, id, mode) => {
 
 const setClose = (value) => {
   showDetail.value = value;
-  router.push({ name: "task" });
 };
 
 const SortOrder = async () => {
@@ -201,6 +200,9 @@ const ClearStatuses = () => {
 
 <template>
   <div>
+    <router-link :to="{ name: 'board' }">
+    
+  </router-link>
     <div class="w-full flex justify-center my-3">
       <div
         class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"

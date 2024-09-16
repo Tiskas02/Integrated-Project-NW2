@@ -6,6 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useToasterStore } from "@/stores/notificationStores";
+import Logo from "@/shared/Logo.vue";
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
@@ -14,8 +15,9 @@ const statusStore = useStoreStatus();
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
 const toasterStore = useToasterStore();
+const routeId =ref(route.params.id);
 onMounted(async () => {
-  await statusStore.fetchStatus();
+  await statusStore.fetchStatus(routeId.value);
 });
 const addOrEditStatus = async (newStatus) => {
   try {
@@ -27,7 +29,7 @@ const addOrEditStatus = async (newStatus) => {
       const check = await statusStore.createStatus({
         name,
         description,
-      });
+      },routeId.value);
       if (check.id !== undefined) {
         toasterStore.success({ text: "Status added successfully!" });
       } else if (check.errors[0].message) {
@@ -43,7 +45,7 @@ const addOrEditStatus = async (newStatus) => {
       const check = await statusStore.updateStatus(newStatus.id, {
         name,
         description,
-      });
+      },routeId.value);
       if (check.id !== undefined) {
         toasterStore.success({ text: "Status edit successfully!" });
       } else if (check.status === 400) {
@@ -59,6 +61,8 @@ const addOrEditStatus = async (newStatus) => {
 
 const deleteOne = async (id) => {
   const status = await statusStore.deleteStatus(id);
+  console.log(status);
+  
   if (status === 200) {
     toasterStore.success({ text: "Status deleted successfully!" });
   } else {
@@ -82,7 +86,7 @@ const setModal = async (value, mode, id) => {
   if (storeMode.value === "add") {
     router.push({ name: "addStatus" });
   } else if (storeMode.value === "edit" && id !== null) {
-    router.push({ name: "editStatus", params: { id: id } });
+    router.push({ name: "editStatus", params: { editid: id } });
   } else {
     dataById.value = statusStore.statuses.find((status) => status.id === id);
   }
@@ -92,10 +96,10 @@ const fetchById = async (id, mode) => {
   if (!id) {
     return alert("No id provided");
   }
-  dataById.value = await getStatusDataById(id);
+  dataById.value = await getStatusDataById(routeId.value,id);
   storeMode.value = mode;
   if (storeMode.value === "edit" && id !== null) {
-    router.push({ name: "editStatus", params: { id: id } });
+    router.push({ name: "editStatus", params: { editid: id } });
   }
   if (dataById.value.status == "404") {
     alert("The requested status does not exist");
@@ -107,13 +111,12 @@ const fetchById = async (id, mode) => {
   showModal.value = true;
 };
 
-if (route.params.id) {
-  fetchById(route.params.id, "view");
-}
+// if (route.params.id) {
+//   fetchById(route.params.id, "view");
+// }
 
 const setClose = (value) => {
   showModal.value = value;
-  router.push({ name: "status" });
 };
 </script>
 
