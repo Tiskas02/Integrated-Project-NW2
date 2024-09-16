@@ -131,18 +131,42 @@ public class BoardControllerV3 {
     }
     @GetMapping("{boardId}/task/{id}")
     public ResponseEntity<Object> findTaskByBoardIdAndId(
+            @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id,
             @PathVariable String boardId) {
 
-            TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
-        return ResponseEntity.ok(modelMapper.map(task, TaskIDDTOV2.class));
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+                return ResponseEntity.ok(task);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//            TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+//        return ResponseEntity.ok(modelMapper.map(task, TaskIDDTOV2.class));
     }
+
     @PostMapping("/{boardId}/task")
-    public ResponseEntity<Object> createTask(@Valid @RequestBody NewTaskDTOV3 newTask, @PathVariable String boardId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(taskServiceV3.createTask(newTask,boardId), NewTaskReturnV2.class));
+    public ResponseEntity<Object> createTask(
+            @Valid @RequestBody NewTaskDTOV3 newTask,
+            @PathVariable String boardId,
+            @RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(taskServiceV3.createTask(newTask,boardId), NewTaskReturnV2.class));
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
     @DeleteMapping("/{boardId}/task/{id}")
-    public TaskDTOV3 deleteTask(@PathVariable Integer id) {
+    public TaskDTOV3 deleteTask(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Integer id,
+            @PathVariable String boardId) {
         return taskServiceV3.deleteTask(id);
     }
     @PutMapping("/{boardId}/task/{id}")
