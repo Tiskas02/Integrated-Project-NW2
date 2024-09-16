@@ -4,9 +4,11 @@ import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
 import com.example.integratedbackend.DTO.DTOV3.NewTaskDTOV3;
 import com.example.integratedbackend.DTO.DTOV3.TaskDTOV3;
+import com.example.integratedbackend.DTO.DTOV3.TaskV3DTO;
 import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.BoardService;
 import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
@@ -17,6 +19,7 @@ import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -105,18 +108,34 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(statusServiceV3.deleteOrTransfer(id));
     }
     // ================================Task=====================================
-    @GetMapping("{nanoId}/tasks")
+    @GetMapping("{boardId}/tasks")
     public ResponseEntity<Object> getAllTaskByBoardId(
-            @PathVariable String nanoId,
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
             @RequestParam(required = false) List<String> filterStatuses,
             @RequestParam(required = false, defaultValue = "") String[] sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection
     ) {
-        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection,nanoId));
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+//                List<Boards> boards = boardService.getBoardByUserId(userId);
+//                return ResponseEntity.ok(boards);
+                List<TaskV3DTO> tasks = taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId);
+                return ResponseEntity.ok(tasks);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection,boardId));
     }
-    @GetMapping("/task/{id}")
-    public ResponseEntity<Object> findTaskById(@PathVariable Integer id) {
-        return ResponseEntity.ok(modelMapper.map(taskServiceV3.findByID(id), TaskIDDTOV2.class));
+    @GetMapping("{boardId}/task/{id}")
+    public ResponseEntity<Object> findTaskByBoardIdAndId(
+            @PathVariable Integer id,
+            @PathVariable String boardId) {
+
+            TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+        return ResponseEntity.ok(modelMapper.map(task, TaskIDDTOV2.class));
     }
     @PostMapping("/{boardId}/task")
     public ResponseEntity<Object> createTask(@Valid @RequestBody NewTaskDTOV3 newTask, @PathVariable String boardId) {

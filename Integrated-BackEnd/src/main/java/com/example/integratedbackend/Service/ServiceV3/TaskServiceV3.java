@@ -2,6 +2,7 @@ package com.example.integratedbackend.Service.ServiceV3;
 
 import com.example.integratedbackend.DTO.DTOV3.NewTaskDTOV3;
 import com.example.integratedbackend.DTO.DTOV3.TaskDTOV3;
+import com.example.integratedbackend.DTO.DTOV3.TaskV3DTO;
 import com.example.integratedbackend.DTO.NewTaskDTOV2;
 import com.example.integratedbackend.DTO.TaskDTOV2;
 import com.example.integratedbackend.DTO.TaskIDDTOV2;
@@ -40,7 +41,7 @@ public class TaskServiceV3 {
     ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
-    public List<TaskDTOV3> getAllTasksByBoardId(List<String> statusNames, String[] sortBy, String[] direction,String nanoId) {
+    public List<TaskV3DTO> getAllTasksByBoardId(List<String> statusNames, String[] sortBy, String[] direction, String nanoId) {
         Boards boards = boardsRepositoriesV3.findById(nanoId).orElseThrow(
                 () -> new ItemNotFoundException(
                         "board" + " " + nanoId + " " + "doesn't exist !!!")
@@ -58,13 +59,15 @@ public class TaskServiceV3 {
         }
         if (statusNames != null) {
             List<StatusV3> statuses = statusNames.stream().map((nameStatus) -> statusRepositoriesV3.findByStatusName(nameStatus.replace("_"," "))).toList();
-            return listMapper.mapList(tasksRepositoriesV3.findByStatusInAndAndBoard(statuses,boards, Sort.by(orders)), TaskDTOV3.class, modelMapper);
+            return listMapper.mapList(tasksRepositoriesV3.findByStatusInAndAndBoard(statuses,boards, Sort.by(orders)), TaskV3DTO.class, modelMapper);
         }
-        List<TaskV3> tasks = tasksRepositoriesV3.findAll(Sort.by(orders));
-        return listMapper.mapList(tasks, TaskDTOV3.class, modelMapper);
+        List<TaskV3> tasks = tasksRepositoriesV3.findAllByBoard(boards.getBoardId(), Sort.by(orders));
+        return listMapper.mapList(tasks, TaskV3DTO.class, modelMapper);
     }
 
-    public TaskV3 findByID(Integer id) throws ItemNotFoundException {
+    public TaskV3 findTaskByBoardIdAndId(Integer id, String boardId) throws ItemNotFoundException {
+        Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() -> new ItemNotFoundException(
+                "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         return tasksRepositoriesV3.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
                         "Task" + " " + id + " " + "doesn't exist !!!"));
