@@ -166,11 +166,33 @@ public class BoardControllerV3 {
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id,
             @PathVariable String boardId) {
-        return taskServiceV3.deleteTask(id);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                TaskDTOV3 taskToDelete = taskServiceV3.deleteTask(id, boardId);
+                return taskToDelete;
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//        return taskServiceV3.deleteTask(id);
     }
     @PutMapping("/{boardId}/task/{id}")
-    public ResponseEntity<Object> updateTask(@Valid @RequestBody NewTaskDTOV3 editTask, @PathVariable Integer id) {
-        return ResponseEntity.ok(modelMapper.map(taskServiceV3.updateTask(editTask, id), TaskIDDTOV2.class));
+    public ResponseEntity<Object> updateTask(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody NewTaskDTOV3 editTask,
+            @PathVariable String boardId,
+            @PathVariable Integer id) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                TaskV3 editedTask = taskServiceV3.updateTask(editTask, id, boardId);
+                return ResponseEntity.ok(editedTask);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//        return ResponseEntity.ok(modelMapper.map(taskServiceV3.updateTask(editTask, id), TaskIDDTOV2.class));
     }
 }
 
