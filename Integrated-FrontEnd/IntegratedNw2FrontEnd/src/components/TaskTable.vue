@@ -7,6 +7,7 @@ import { useStoreStatus } from "../stores/statusStores.js";
 import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
 import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
 import TaskModal from "../components/TaskModal.vue";
+import BaseBtn from "@/shared/BaseBtn.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 const route = useRoute();
 const router = useRouter();
@@ -200,9 +201,15 @@ const ClearStatuses = () => {
 
 <template>
   <div>
-    <router-link :to="{ name: 'board' }">
-    
-  </router-link>
+    <div class="flex justify-end m-10">
+    <BaseBtn >
+      <router-link :to="{ name: 'status' }">
+      <template #default>
+        <button class="p-4">Manage Status</button>
+      </template>
+    </router-link>
+    </BaseBtn>
+</div>
     <div class="w-full flex justify-center my-3">
       <div
         class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"

@@ -6,7 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useToasterStore } from "@/stores/notificationStores";
-import Logo from "@/shared/Logo.vue";
+import BaseBtn from "@/shared/BaseBtn.vue";
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
@@ -121,6 +121,15 @@ const setClose = (value) => {
 </script>
 
 <template>
+  <div class="flex justify-end m-10">
+    <BaseBtn >
+      <router-link :to="{ name: 'Task' }">
+      <template #default>
+        <button class="p-4">Manage Task</button>
+      </template>
+    </router-link>
+    </BaseBtn>
+</div>
   <div>
     <div class="w-full flex justify-center my-3">
       <div
