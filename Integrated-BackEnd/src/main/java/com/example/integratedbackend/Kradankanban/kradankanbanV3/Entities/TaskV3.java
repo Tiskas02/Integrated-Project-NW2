@@ -38,9 +38,9 @@ public class TaskV3 {
 
     @ManyToOne
     @JoinColumn(name = "statusId", referencedColumnName = "statusId")
-    private StatusV3 statusId;
+    private StatusV3 status;
 
     @ManyToOne
     @JoinColumn(name = "boardId", referencedColumnName = "boardId")
-    private Boards boardId;
+    private Boards board;
 }

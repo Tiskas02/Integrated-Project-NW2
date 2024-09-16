@@ -6,12 +6,16 @@ import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
 import com.example.integratedbackend.Kradankanban.Status;
+import com.example.integratedbackend.Kradankanban.Taskv2;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.StatusRepositoriesV3;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.TasksRepositoriesV3;
 import com.example.integratedbackend.Service.ListMapper;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,8 @@ public class StatusServiceV3 {
     private StatusRepositoriesV3 statusRepositoriesV3;
     @Autowired
     private BoardsRepositoriesV3 boardsRepositoriesV3;
+    @Autowired
+    private TasksRepositoriesV3 tasksRepositoriesV3;
     @Autowired
     ModelMapper mapper;
     @Autowired
@@ -44,38 +50,86 @@ public class StatusServiceV3 {
     }
 
 
-//    @Transactional
-//    public StatusV3 createStatus(StatusV3 status, String boardId) {
-//        List<StatusV3> statusList = statusRepositoriesV3.findAllByStatusNameIgnoreCase(status.getStatusName());
-//        if (!statusList.isEmpty()) {
-//            throw new TaskNameDuplicatedException("Status name must be unique");
-//        }
-//        Boards boards = boardsRepositoriesV3.findByBoardId(boardId)
-//                .orElseThrow(() -> new ItemNotFoundException("Board with ID " + boardId + " not found"));
-//
-//        StatusV3 statusV3 = mapper.map(status, StatusV3.class);
-//        statusV3.setBoard(boards);
-//
-//        return statusRepositoriesV3.saveAndFlush(statusV3);
-//    }
+    @Transactional
+    public StatusV3 createStatus(NewStatusDTO status, String boardId) {
+        Boards boards = boardsRepositoriesV3.findById(boardId)
+                .orElseThrow(() -> new ItemNotFoundException("Board with ID " + boardId + " not found"));
+        StatusV3 oldStatus = statusRepositoriesV3.findByStatusNameIgnoreCaseAndBoard(status.getName(),boards);
+        if (oldStatus != null){
+            throw new TaskNameDuplicatedException("must be unique");
+        }
+        StatusV3 statusV3 = new StatusV3();
+        statusV3.setStatusName(status.getName());
+        statusV3.setStatusDescription(status.getDescription());
+        statusV3.setBoard(boards);
+        return statusRepositoriesV3.saveAndFlush(statusV3);
+    }
 
 
 
-//    @Transactional
-//    public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {
-//        StatusV3 status = statusRepositoriesV3.findById(id).
-//                orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:" + id));
-//        List<StatusV3> statusList = StatusRepositoriesV3.findAllByNameIgnoreCase(inputStatus.getName());
-//        for (StatusV3 s : statusList) {
-//            if (!id.equals(s.getStatusId()) && inputStatus.getName().equalsIgnoreCase(s.getStatusName())) {
-//                throw new TaskNameDuplicatedException("must be unique");
-//            }
-//        }
-//        if (status.getStatusName().equalsIgnoreCase("No Status") || status.getStatusName().equalsIgnoreCase("Done")) {
-//            throw new ItemErrorNotFoundException("No Status cannot be deleted and Done cannot be deleted respectively");
-//        }
-//        Status updatedStatus = mapper.map(inputStatus, Status.class);
-//        updatedStatus.setId(id);
-//        return mapper.map(statusRepositoriesV3.save(updatedStatus), StatusDTO.class);
-//    }
+    @Transactional
+    public StatusV3 updateStatus(Integer statusId,NewStatusDTO status) {
+        StatusV3 oldStatusV3 = statusRepositoriesV3.findById(statusId).
+                orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:" + statusId));
+        StatusV3 statusDuplicate = statusRepositoriesV3.findByStatusNameIgnoreCaseAndBoard(status.getName(),oldStatusV3.getBoard());
+        if (statusDuplicate != null && !oldStatusV3.getStatusName().equalsIgnoreCase(status.getName())){
+                throw new TaskNameDuplicatedException("must be unique");
+        }
+        if (status.getName().equalsIgnoreCase("No Status") || status.getName().equalsIgnoreCase("Done")) {
+            throw new ItemErrorNotFoundException("No Status cannot be deleted and Done cannot be deleted respectively");
+        }
+        StatusV3 updatedStatus = mapper.map(status, StatusV3.class);
+        updatedStatus.setStatusId(statusId);
+        updatedStatus.setBoard(oldStatusV3.getBoard());
+        return mapper.map(statusRepositoriesV3.save(updatedStatus), StatusV3.class);
+    }
+    @Transactional
+    public StatusV3 deleteStatus(Integer id) throws ItemNotFoundException{
+        StatusV3 statusToDelete = statusRepositoriesV3.findById(id)
+                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id + "NOT FOUND"));
+        if (statusToDelete.getStatusName().equalsIgnoreCase("No Status") || statusToDelete.getStatusName().equalsIgnoreCase("Done")) {
+            throw new ItemErrorNotFoundException(statusToDelete.getStatusName() + " cannot be deleted");
+        }
+        if (statusToDelete.getTasks().size() != 0) {
+            throw new ItemErrorNotFoundException("Destination status for task transfer not specified.");
+        }
+        try {
+            statusRepositoriesV3.delete(statusToDelete);
+            return statusToDelete;
+        } catch (Exception e) {
+            throw new ItemErrorNotFoundException(statusToDelete.getStatusName() + " cannot be deleted");
+        }
+    }
+    @Transactional
+    public int transferStatus(Integer oldId, Integer newId) throws BadRequestException {
+        if (oldId == newId) {
+            throw new ItemErrorNotFoundException("destination status for task transfer must be different from current status.");
+        }
+        if (!statusRepositoriesV3.existsById(oldId)) {
+            throw new ItemNotFoundException("Not Found Status Id:" + oldId);
+        }
+        if (!statusRepositoriesV3.existsById(newId)) {
+            throw new ItemErrorNotFoundException("the specified status for task transfer does not exist.");
+        }
+        StatusV3 oldStatus = statusRepositoriesV3.findById(oldId)
+                .orElseThrow(() -> new ItemNotFoundException("StatusEntity not found with id: " + oldId));
+        StatusV3 newStatus = statusRepositoriesV3.findById(newId)
+                .orElseThrow(() -> new ItemErrorNotFoundException("the specified status for task transfer does not exist."));
+        try {
+            oldStatus.setStatusName(newStatus.getStatusName());
+            int taskCount = oldStatus.getTasks().size();
+            tasksRepositoriesV3.updateTaskStatus(oldStatus, newStatus);
+            statusRepositoriesV3.delete(oldStatus);
+            return taskCount;
+        } catch (Exception e) {
+            throw new ItemNotFoundException("Error transferring status: " + e.getMessage());
+        }
+    }
+    @Transactional
+    public Boolean deleteOrTransfer(Integer id) {
+        StatusV3 status = statusRepositoriesV3.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Not Found"));
+        List<TaskV3> tasks = tasksRepositoriesV3.findAllByStatus(status);
+        return !tasks.isEmpty();
+    }
 }
