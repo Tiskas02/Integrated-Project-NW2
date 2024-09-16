@@ -73,7 +73,6 @@ public class BoardControllerV3 {
                 }
             }
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
-
         }
     // ================================statuses=====================================
     @GetMapping("{boardId}/statuses")
