@@ -7,7 +7,7 @@ const props = defineProps({
 });
 
 const logout = () => {
-  localStorage.removeItem("userPayload");
+  localStorage.removeItem("token");
   router.push("/");
 };
 </script>

@@ -9,7 +9,7 @@ const usePath = ref(false);
 watch(
   () => route.path,
   () => {
-    if (route.path.startsWith("/status")) {
+    if (route.path.endsWith("/status")) {
       usePath.value = true;
     } else {
       usePath.value = false;

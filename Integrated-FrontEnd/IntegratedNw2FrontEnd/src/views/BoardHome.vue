@@ -4,22 +4,63 @@ import { useStoreBoard } from "@/stores/boardStore";
 import LoadingScreen from "@/shared/LoadingScreen.vue";
 import Logo from "@/shared/Logo.vue";
 import BaseBtn from "@/shared/BaseBtn.vue";
+import { storeToRefs } from "pinia";
+import BoardModal from "@/components/BoardModal.vue";
+import { useToasterStore } from "@/stores/notificationStores";
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
 const dataLoaded = ref(true);
 const boardStore = useStoreBoard();
-const storeBoards = ref([]);
-
-// onMounted(async () => {
-//   const data = await boardStore.fetchBoards();
-//   storeBoards.value = data;
-//   if (storeBoards.value.length > 0) {
-//     dataLoaded.value = true;
-//   } else {
-//     dataLoaded.value = false;
-//   }
-// });
-const userPayload = localStorage.getItem("userPayload")
-  ? JSON.parse(localStorage.getItem("userPayload"))
+const toasterStore = useToasterStore();
+const { boards } = storeToRefs(boardStore);
+const showModal = ref(false);
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
+};
+const userPayload = localStorage.getItem("token")
+  ? parseJwt(localStorage.getItem("token"))
   : null;
+onMounted(async () => {
+  const data = await boardStore.fetchBoards();
+  if (boardStore.boards.length > 0 || data) {
+    dataLoaded.value = true;
+  } else {
+    dataLoaded.value = false;
+  }
+});
+const setModal = () => {
+  showModal.value = true;
+};
+const setClose = () => {
+  showModal.value = false;
+};
+
+const addBoard = async (newBoard) =>{
+  const data = await boardStore.createBoard({
+    name: newBoard.name,
+  })
+  if(data){
+    toasterStore.success({ text: "Board added successfully!" });
+  }else{  
+    toasterStore.error({
+      text: "An error occurred while adding the board.",
+    });
+  }
+}
+const navigateToBoardTasks = (boardId) => {
+      router.push({ name: "Task", params: { id: boardId } })
+    }
 </script>
 
 <template>
@@ -35,16 +76,18 @@ const userPayload = localStorage.getItem("userPayload")
         </div>
       </template>
     </Logo>
-    <div class="w-full font-rubik font-medium text-4xl text-white text-center my-6">
+    <div
+      class="w-full font-rubik font-medium text-4xl text-white text-center my-6"
+    >
       Board List
     </div>
-    <div class="flex justify-end mx-10">
-    <BaseBtn>
-          <template #default >
-            <button class="p-4">Create personal board</button>
-          </template>
-        </BaseBtn>
-      </div>
+    <div class="flex justify-end mx-10" @click="setModal">
+      <BaseBtn>
+        <template #default>
+          <button class="p-4">Create personal board</button>
+        </template>
+      </BaseBtn>
+    </div>
     <div class="w-full flex justify-center mt-6">
       <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/30">
         <div class="min-w-full divide-y divide-gray-200 overflow-auto">
@@ -57,7 +100,6 @@ const userPayload = localStorage.getItem("userPayload")
             >
               <div class="w-full">No</div>
             </div>
-
             <div
               class="w-[22%] h-14 text-md font-bold text-white uppercase flex justify-center items-center"
             >
@@ -65,15 +107,17 @@ const userPayload = localStorage.getItem("userPayload")
             </div>
             <div
               class="w-[22%] h-14 text-center text-md font-bold text-white uppercase flex justify-center items-center"
-            >
-            </div>
+            ></div>
             <div
               class="w-[22%] h-14 text-left text-md font-bold text-white uppercase flex justify-center items-center"
             >
               <div class="w-full">Action</div>
             </div>
           </div>
-          <div v-if="storeBoards.length <= 0" class="w-full border bg-white h-[60lvh] rounded-b-box">
+          <div
+            v-if="boardStore.length <= 0"
+            class="w-full border bg-white h-[60lvh] rounded-b-box"
+          >
             <div class="flex justify-center items-center h-full">
               <p class="text-xl font-bold animate-bounce text-slate-500">
                 Board is empty
@@ -81,37 +125,30 @@ const userPayload = localStorage.getItem("userPayload")
             </div>
           </div>
           <div v-else class="w-full h-[500px] overflow-auto rounded-b-box">
-            <div>
-              <div class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner">
+            <div v-for="(board, index) in boards" :key="board.boardId">
+              <div
+                class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+              >
                 <div
                   class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
-                      class="w-[10%] px-6 py-4 whitespace-nowrap"
-                      @click=""
+                      class="w-[30%] px-6 py-4 whitespace-nowrap text-center"
+                      @click="navigateToBoardTasks(board.boardId)"
                     >
+                      {{ index + 1 }}
                     </div>
                     <div
-                      class="itbkk-title w-[45%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click=""
+                      class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
+                      @click="navigateToBoardTasks(board.boardId)"
                     >
-                      {{ task.title }}
+                      {{ board.name }}
                     </div>
                     <div
-                      class="itbkk-assignees w-[45%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click=""
-                    >
-                    </div>
-                    <div
-                      class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
-                      @click=""
-                    >
-                      <div
-                        class="itbkk-status btn btn-outline shadow overflow-x-auto"
-                      >
-                      </div>
-                    </div>
+                      class="itbkk-assignees w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
+                      @click="navigateToBoardTasks(board.boardId)"
+                    ></div>
                     <div
                       class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
                     >
@@ -123,8 +160,7 @@ const userPayload = localStorage.getItem("userPayload")
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
-                        @click="
-                        "
+                        @click=""
                       >
                         Delete
                       </div>
@@ -137,6 +173,9 @@ const userPayload = localStorage.getItem("userPayload")
         </div>
       </div>
     </div>
+    <teleport to="#body">
+      <BoardModal v-if="showModal" @close="setClose" @newBoard="addBoard"/>
+    </teleport>
   </div>
 </template>
 

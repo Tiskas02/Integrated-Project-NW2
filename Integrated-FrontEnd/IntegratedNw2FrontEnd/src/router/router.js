@@ -19,62 +19,65 @@ const routes = [
     component: Login,
   },
   {
-    path:"/board",
-    name:"board",
+    path: "/board",
+    name: "board",
     component: BoardHome,
-  },
-  {
-    path: "/task",
-    name: "task",
-    component: TaskHome,
     meta: { requiresAuth: true },
     children: [
       {
         path: ":id",
-        name: "taskDetail",
-        component: TaskModal,
-        meta: { requiresAuth: true },
+        name: "Task",
+        component: TaskHome, 
+        children: [
+          {
+            path: "task/:id",
+            name: "taskDetail",
+            component: TaskModal,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: "add",
+            name: "addTask",
+            component: TaskAddEdit,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":taskId/edit",
+            name: "editTask",
+            component: TaskAddEdit,
+            meta: { requiresAuth: true },
+          },
+        ],
       },
       {
-        path: "add",
-        name: "addTask",
-        component: TaskAddEdit,
+        path: ":boardId/status",
+        name: "status",
+        component: TaskHome,
         meta: { requiresAuth: true },
-      },
-      {
-        path: ":id/edit",
-        name: "editTask",
-        component: TaskAddEdit,
-        meta: { requiresAuth: true },
+        children: [
+          {
+            path: ":id",
+            name: "statusDetail",
+            component: StatusTable,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: "add",
+            name: "addStatus",
+            component: StatusAddEdit,
+            meta: { requiresAuth: true },
+          },
+          {
+            path: ":id/edit",
+            name: "editStatus",
+            component: StatusAddEdit,
+            meta: { requiresAuth: true },
+          },
+        ],
       },
     ],
   },
-  {
-    path: "/status",
-    name: "status",
-    component: TaskHome,
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: ":id",
-        name: "statusDetail",
-        component: StatusTable,
-        meta: { requiresAuth: true },
-      },
-      {
-        path: "add",
-        name: "addStatus",
-        component: StatusAddEdit,
-        meta: { requiresAuth: true },
-      },
-      {
-        path: ":id/edit",
-        name: "editStatus",
-        component: StatusAddEdit,
-        meta: { requiresAuth: true },
-      },
-    ],
-  },
+  
   {
     path: "/:notfoundpath(.*)",
     name: "NotFound",
@@ -89,7 +92,7 @@ const router = createRouter({
   linkExactActiveClass: "hover:text-[#2ff6da] hover:text-[#2ff6da] p-2",
 });
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem("userPayload"); 
+  const isAuthenticated = !!localStorage.getItem("token"); 
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'login' }); 
   } else {

@@ -1,10 +1,14 @@
 const url = import.meta.env.VITE_BASE_URL;
+function getToken() {
+    return localStorage.getItem('token');
+}
 
 async function getBoardData() {
     try {
         const token = getToken();
+        console.log(`Bearer ${token}`);
         const res = await fetch(
-            `${url}/v3/boards`,{
+            `${url}/v3/board`,{
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -17,4 +21,23 @@ async function getBoardData() {
         return null;
     }
 }
-export { getBoardData };
+async function addBoard(newBoard) {
+    try {
+        const token = getToken();
+      const res = await fetch(`${url}/v3/board`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...newBoard,
+        }),
+      });
+      const addedTask = await res.json();
+      return addedTask;
+    } catch (error) {
+      console.log(`error: ${error}`);
+    }
+  }
+export { getBoardData, addBoard };

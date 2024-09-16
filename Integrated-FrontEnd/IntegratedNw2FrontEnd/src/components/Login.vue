@@ -58,9 +58,9 @@ async function userLogin(user) {
     }
 
     const data = await res.json()
-    const payload = parseJwt(data.access_token)
-    localStorage.setItem("userPayload", JSON.stringify(payload))
-    return payload
+    // const payload = parseJwt(data.access_token)
+    localStorage.setItem("token", data.access_token)
+    return data
   } catch (error) {
     console.log(`error: ${error}`)
   }
