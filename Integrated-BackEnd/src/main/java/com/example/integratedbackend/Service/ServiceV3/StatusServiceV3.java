@@ -64,7 +64,24 @@ public class StatusServiceV3 {
         statusV3.setBoard(boards);
         return statusRepositoriesV3.saveAndFlush(statusV3);
     }
+    @Transactional
+    public void createDefaultStatus(String boardId) {
+        saveNewStatus("No Status", "The default status", boardId);
+        saveNewStatus("Done", "", boardId);
+        saveNewStatus("To Do", "", boardId);
+        saveNewStatus("Doing", "", boardId);
+    }
 
+    private void saveNewStatus(String name, String description, String boardId) {
+        NewStatusDTO newStatusDTO = new NewStatusDTO();
+        newStatusDTO.setName(name);
+        newStatusDTO.setDescription(description);
+        StatusV3 status = mapper.map(newStatusDTO, StatusV3.class);
+        Boards boards = boardsRepositoriesV3.findById(boardId)
+                .orElseThrow(() -> new ItemNotFoundException("Board with ID " + boardId + " not found"));
+        status.setBoard(boards);
+        statusRepositoriesV3.save(status);
+    }
 
 
     @Transactional

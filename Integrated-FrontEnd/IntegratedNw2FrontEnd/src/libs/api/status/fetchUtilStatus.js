@@ -1,9 +1,17 @@
 const url = import.meta.env.VITE_BASE_URL;
-
-async function getStatusData() {
+function getToken() {
+  return localStorage.getItem("token");
+}
+async function getStatusData(id) {
   try {
-    const res = await fetch(`${url}/v2/statuses`);
+    const token = getToken();
+    const res = await fetch(`${url}/v3/board/${id}/statuses`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = await res.json();
+    console.log(data);
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);

@@ -1,8 +1,15 @@
 const url = import.meta.env.VITE_BASE_URL;
-
-async function getTaskData() {
+function getToken() {
+  return localStorage.getItem("token");
+}
+async function getTaskDataInBoardId(id) {
   try {
-    const res = await fetch(`${url}/v2/tasks`);
+    const token = getToken();
+    const res = await fetch(`${url}/v3/board/${id}/tasks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = await res.json();
     return data;
   } catch (error) {
@@ -11,9 +18,9 @@ async function getTaskData() {
   }
 }
 
-async function getTaskById(id) {
+async function getTaskById(routeId,id) {
   try {
-    const res = await fetch(`${url}/v2/tasks/${id}`);
+    const res = await fetch(`${url}/v3/board/${routeId}/task/${id}`);
     if (!res.ok) {
       alert("The requested task does not exist");
       history.back();
@@ -27,12 +34,14 @@ async function getTaskById(id) {
   }
 }
 
-async function addTask(newTask) {
+async function addTask(newTask,id) {
   try {
-    const res = await fetch(`${url}/v2/tasks`, {
+    const token = getToken();
+    const res = await fetch(`${url}/v3/board/${id}/task`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ...newTask,
@@ -75,4 +84,4 @@ async function editTask(id, editTask) {
   }
 }
 
-export { getTaskData, getTaskById, addTask, deleteItemById, editTask };
+export { getTaskDataInBoardId, getTaskById, addTask, deleteItemById, editTask };

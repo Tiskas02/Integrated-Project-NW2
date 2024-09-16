@@ -1,29 +1,30 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
-  getTaskData,
   addTask,
   deleteItemById,
   editTask,
+  getTaskDataInBoardId,
 } from "../libs/api/task/fetchUtilTask.js";
 
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
-  async function fetchTasks() {
+  async function fetchTasks(id) {
     try {
       tasks.value = [];
-      const taskData = await getTaskData();
+      const taskData = await getTaskDataInBoardId(id);
       taskData.forEach((task) => {
         tasks.value.push(task);
       });
+      console.log(tasks.value);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   }
 
-  async function createTask(task) {
+  async function createTask(task,id) {
     try {
-      const addedTask = await addTask(task);
+      const addedTask = await addTask(task,id);
       tasks.value.push(addedTask);
       return addedTask;
     } catch (error) {

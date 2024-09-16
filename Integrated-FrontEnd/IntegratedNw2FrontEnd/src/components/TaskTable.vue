@@ -1,4 +1,4 @@
-createTask<script setup>
+<script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
@@ -21,17 +21,18 @@ const storeTasks = ref({});
 const storeIndex = ref(0);
 const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
-onMounted(async () => {
-  const data = await tasksStore.fetchTasks();
+const routerId = ref(route.params.id);
+onMounted(async () => { 
+  const data = await tasksStore.fetchTasks(routerId.value);
   storeTasks.value = data;
 });
 onMounted(async () => {
-  await statusStore.fetchStatus();
+  await statusStore.fetchStatus(routerId.value);
 });
 const fetchDataById = async (id, mode) => {
   storeMode.value = mode;
-  storeTask.value = await getTaskById(id);
-  statusStore.value = await getStatusData();
+  // storeTask.value = await getTaskById(id);
+  statusStore.value = await getStatusData(routerId.value);
   if (storeMode.value === "add") {
     showDetail.value = true;
     router.push({ name: "addTask" });
@@ -60,7 +61,7 @@ const fetchDataById = async (id, mode) => {
 };
 
 if (route.params.id) {
-  fetchDataById(route.params.id, "view");
+  // fetchDataById(route.params.id, "view");
 }
 
 const removeTask = async (id) => {
@@ -84,7 +85,7 @@ const addEditTask = async (newTask) => {
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
-      });
+      },routerId.value);
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -100,7 +101,7 @@ const addEditTask = async (newTask) => {
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
-      });
+      },routerId.value);
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -188,7 +189,7 @@ const updateFilterList = (filterName) => {
 const getFilterTask = computed(() => {
   return selectFilter.value.length > 0
     ? tasks.value.filter((task) =>
-        selectFilter.value.includes(task.status.name)
+        selectFilter.value.includes(task.status.statusName)
       )
     : tasks.value;
 });
@@ -447,7 +448,7 @@ const ClearStatuses = () => {
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ task?.status.name }}
+                        {{ task?.status.statusName }}
                       </div>
                     </div>
                     <div

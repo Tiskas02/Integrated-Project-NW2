@@ -22,6 +22,8 @@ public class BoardService {
     @Autowired
     private UsersRepositoriesV3 usersRepositoriesV3;
     @Autowired
+    private StatusServiceV3 statusServiceV3;
+    @Autowired
     ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
@@ -53,6 +55,7 @@ public class BoardService {
         newBoard.setName(boardDTO.getName());
         newBoard.setUsers(user);
         Boards savedBoard = boardsRepositoriesV3.save(newBoard);
+        statusServiceV3.createDefaultStatus(savedBoard.getBoardId());
         return savedBoard;
     }
 

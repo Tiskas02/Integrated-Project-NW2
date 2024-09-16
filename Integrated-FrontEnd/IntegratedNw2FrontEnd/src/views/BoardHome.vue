@@ -7,7 +7,7 @@ import BaseBtn from "@/shared/BaseBtn.vue";
 import { storeToRefs } from "pinia";
 import BoardModal from "@/components/BoardModal.vue";
 import { useToasterStore } from "@/stores/notificationStores";
-import { RouterView, useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const router = useRouter();
 const dataLoaded = ref(true);

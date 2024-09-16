@@ -1,11 +1,15 @@
 <script setup>
 import { defineProps, defineEmits, ref, computed, onMounted } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
 const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
+const routerId = ref(route.params.id);
 onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus();
+  allStatus.value = await statusStore.fetchStatus(routerId.value);
 });
 const props = defineProps({
   mode: String,
@@ -30,6 +34,8 @@ const newTask = ref({
   ...props.task,
   status: props.task.status.id ? props.task.status.id : 1,
 });
+
+
 const titleCharCount = computed(() =>
   newTask.value.title ? newTask.value.title.length : 0
 );
@@ -184,6 +190,7 @@ computed(newTask.value, () => {
                     class="itbkk-button-confirm disabled btn btn-info text-white"
                     @click="
                       () => {
+                        $router.go(-1);
                         emit('sentData', newTask);
                         emit('close', false);
                       }
@@ -206,6 +213,7 @@ computed(newTask.value, () => {
                   class="itbkk-button-cancel btn btn-error text-white"
                   @click="
                     () => {
+                      $router.go(-1)
                       emit('close', false);
                     }
                   "

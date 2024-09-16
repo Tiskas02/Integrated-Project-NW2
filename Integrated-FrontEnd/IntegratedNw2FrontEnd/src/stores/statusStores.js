@@ -10,11 +10,12 @@ import {
 
 export const useStoreStatus = defineStore("status", () => {
   const statuses = ref([]);
-  async function fetchStatus() {
+  async function fetchStatus(id) {
     try {
       statuses.value = [];
-      const statusData = await getStatusData();
+      const statusData = await getStatusData(id);
       statuses.value = statusData ?? [];
+      console.log(statuses.value);
       return statuses.value;
     } catch (error) {
       console.error("Error fetching data:", error);

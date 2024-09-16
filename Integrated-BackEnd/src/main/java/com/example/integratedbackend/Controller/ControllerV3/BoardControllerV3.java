@@ -129,7 +129,7 @@ public class BoardControllerV3 {
 //        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection,boardId));
     }
     @GetMapping("{boardId}/task/{id}")
-    public ResponseEntity<Object> findTaskByBoardIdAndId(
+    public ResponseEntity<Object> findTaskByBoardId(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id,
             @PathVariable String boardId) {

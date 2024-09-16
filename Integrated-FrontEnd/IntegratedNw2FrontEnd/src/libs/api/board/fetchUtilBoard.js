@@ -6,7 +6,6 @@ function getToken() {
 async function getBoardData() {
     try {
         const token = getToken();
-        console.log(`Bearer ${token}`);
         const res = await fetch(
             `${url}/v3/board`,{
                 headers: {
