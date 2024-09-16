@@ -11,5 +11,5 @@ public class TaskDTOV3 {
     private String Title;
     private String Assignees;
     private StatusV3 status;
-    private Integer boardsId;
+    private String boardId;
 }

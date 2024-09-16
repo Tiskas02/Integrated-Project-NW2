@@ -41,7 +41,7 @@ public class TaskServiceV3 {
     ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
-    public List<TaskV3DTO> getAllTasksByBoardId(List<String> statusNames, String[] sortBy, String[] direction, String nanoId) {
+    public List<TaskDTOV3> getAllTasksByBoardId(List<String> statusNames, String[] sortBy, String[] direction, String nanoId) {
         Boards boards = boardsRepositoriesV3.findById(nanoId).orElseThrow(
                 () -> new ItemNotFoundException(
                         "board" + " " + nanoId + " " + "doesn't exist !!!")
@@ -59,10 +59,10 @@ public class TaskServiceV3 {
         }
         if (statusNames != null) {
             List<StatusV3> statuses = statusNames.stream().map((nameStatus) -> statusRepositoriesV3.findByStatusName(nameStatus.replace("_"," "))).toList();
-            return listMapper.mapList(tasksRepositoriesV3.findByStatusInAndAndBoard(statuses,boards, Sort.by(orders)), TaskV3DTO.class, modelMapper);
+            return listMapper.mapList(tasksRepositoriesV3.findByStatusInAndBoard(statuses,boards, Sort.by(orders)), TaskDTOV3.class, modelMapper);
         }
-        List<TaskV3> tasks = tasksRepositoriesV3.findAllByBoard(boards.getBoardId(), Sort.by(orders));
-        return listMapper.mapList(tasks, TaskV3DTO.class, modelMapper);
+        List<TaskV3> tasks = tasksRepositoriesV3.findTasksByBoard_BoardId(boards.getBoardId(), Sort.by(orders));
+        return listMapper.mapList(tasks, TaskDTOV3.class, modelMapper);
     }
 
     public TaskV3 findTaskByBoardIdAndId(Integer id, String boardId) throws ItemNotFoundException {

@@ -122,7 +122,7 @@ public class BoardControllerV3 {
             if (userId != null) {
 //                List<Boards> boards = boardService.getBoardByUserId(userId);
 //                return ResponseEntity.ok(boards);
-                List<TaskV3DTO> tasks = taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId);
+                List<TaskDTOV3> tasks = taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId);
                 return ResponseEntity.ok(tasks);
             }
         }

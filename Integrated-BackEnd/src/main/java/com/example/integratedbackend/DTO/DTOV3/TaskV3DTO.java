@@ -8,7 +8,7 @@ import lombok.Data;
 public class TaskV3DTO {
     private Integer id;
     private String title;
-    private String description;
+    private String Assignees;
     private Integer status;
-    private Integer board;
+    private String boardId;
 }
