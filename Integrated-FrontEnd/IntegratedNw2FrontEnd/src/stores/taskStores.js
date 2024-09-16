@@ -16,7 +16,6 @@ export const useStoreTasks = defineStore("tasks", () => {
       taskData.forEach((task) => {
         tasks.value.push(task);
       });
-      console.log(tasks.value);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -44,9 +43,9 @@ export const useStoreTasks = defineStore("tasks", () => {
       throw new Error(error.message);
     }
   }
-  async function updateTask(id, task) {
+  async function updateTask(routeId,id, task) {
     try {
-      const updatedTask = await editTask(id, task);
+      const updatedTask = await editTask(routeId,id, task);
       const taskIndex = tasks.value.findIndex((task) => task.id === id);
       tasks.value[taskIndex] = updatedTask;
       return updatedTask;
@@ -56,9 +55,9 @@ export const useStoreTasks = defineStore("tasks", () => {
   }
   async function sortTasksByStatus(sortOrder) {
     if (sortOrder === "DEFAULT") {
-      tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name));
+      tasks.value.sort((a, b) => a.status.statusName.localeCompare(b.status.statusName));
     } else if (sortOrder === "ASC") {
-      tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name));
+      tasks.value.sort((a, b) => b.status.statusName.localeCompare(a.status.statusName));
     } else {
       tasks.value.sort((a, b) => a.id - b.id);
     }

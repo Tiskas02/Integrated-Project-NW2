@@ -1,5 +1,8 @@
 <script setup>
 import { defineProps, defineEmits } from "vue";
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
 const emit = defineEmits(["close", "task"]);
 const props = defineProps({
   task: Object,
@@ -35,7 +38,7 @@ const getRandomColor = () => {
                   class="itbkk-status text-lg"
                   :style="{ color: getRandomColor() }"
                 >
-                  {{ task?.status.name }}
+                  {{ task?.status.statusName }}
                 </div>
               </div>
             </div>
@@ -105,6 +108,7 @@ const getRandomColor = () => {
                   class="itbkk-button-cancel btn btn-error text-white"
                   @click="
                     () => {
+                      $router.go(-1);
                       emit('close', false);
                     }
                   "

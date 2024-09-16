@@ -30,7 +30,7 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       {
-        path: ":id",
+        path: ":taskid",
         name: "taskDetail",
         component: TaskModal,
         meta: { requiresAuth: true },
@@ -56,7 +56,7 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       {
-        path: ":id",
+        path: ":statusid",
         name: "statusDetail",
         component: StatusTable,
         meta: { requiresAuth: true },

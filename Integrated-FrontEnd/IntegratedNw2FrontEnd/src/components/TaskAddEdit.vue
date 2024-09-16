@@ -10,6 +10,8 @@ const allStatus = ref([]);
 const routerId = ref(route.params.id);
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus(routerId.value);
+  console.log(allStatus.value);
+  
 });
 const props = defineProps({
   mode: String,
@@ -108,7 +110,7 @@ computed(newTask.value, () => {
                       :key="status.id"
                       :value="status.id"
                     >
-                      {{ status.name }}
+                      {{ status.name}}
                     </option>
                   </select>
                 </label>

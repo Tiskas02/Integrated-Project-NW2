@@ -29,9 +29,9 @@ onMounted(async () => {
 onMounted(async () => {
   await statusStore.fetchStatus(routerId.value);
 });
-const fetchDataById = async (id, mode) => {
+const fetchDataById = async (routerId,id, mode) => {
   storeMode.value = mode;
-  // storeTask.value = await getTaskById(id);
+  storeTask.value = await getTaskById(routerId,id);
   statusStore.value = await getStatusData(routerId.value);
   if (storeMode.value === "add") {
     showDetail.value = true;
@@ -47,7 +47,7 @@ const fetchDataById = async (id, mode) => {
     storeMode.value === "view"
   ) {
     showDetail.value = true;
-    router.push({ name: "taskDetail", params: { id: id } });
+    router.push({ name: "taskDetail", params: { taskid: id } });
   } else if (storeMode.value === "delete") {
     showDetail.value = true;
   } else {
@@ -112,7 +112,7 @@ const addEditTask = async (newTask) => {
     }
   } else {
     if (newTask.assignees === null) {
-      const dataEdit = await tasksStore.updateTask(newTask.id, {
+      const dataEdit = await tasksStore.updateTask(routerId.value,newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees,
         statusId: newTask.status,
@@ -129,7 +129,7 @@ const addEditTask = async (newTask) => {
         });
       }
     } else {
-      const dataEdit = await tasksStore.updateTask(newTask.id, {
+      const dataEdit = await tasksStore.updateTask(routerId.value,newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees.trim(),
         statusId: newTask.status,
@@ -422,19 +422,19 @@ const ClearStatuses = () => {
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[10%] px-6 py-4 whitespace-nowrap"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                     >
                       {{ index + 1 }}
                     </div>
                     <div
                       class="itbkk-title w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                     >
                       {{ task.title }}
                     </div>
                     <div
                       class="itbkk-assignees w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                       :style="{
                         fontStyle: task.assignees ? 'normal' : 'italic',
                       }"
@@ -443,7 +443,7 @@ const ClearStatuses = () => {
                     </div>
                     <div
                       class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                     >
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
@@ -456,14 +456,14 @@ const ClearStatuses = () => {
                     >
                       <div
                         class="itbkk-button-edit btn btn-outline btn-warning"
-                        @click="fetchDataById(task.id, 'edit')"
+                        @click="fetchDataById(routerId,task.id, 'edit')"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
                         @click="
-                          fetchDataById(task.id, 'delete'), setIndex(index)
+                          fetchDataById(routerId,task.id, 'delete'), setIndex(index)
                         "
                       >
                         Delete
