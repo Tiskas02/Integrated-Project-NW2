@@ -4,8 +4,11 @@ import com.example.integratedbackend.DTO.LoginRequest;
 import com.example.integratedbackend.DTO.LoginResponse;
 
 import com.example.integratedbackend.JWT.JwtUtil;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Users;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.UsersRepositoriesV3;
 import com.example.integratedbackend.Users.User;
 import com.example.integratedbackend.Users.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +27,11 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UsersRepositoriesV3 usersRepositoriesV3;
+    @Autowired
+    ModelMapper modelMapper;
 
     private Argon2PasswordEncoder encoder() {
         return new Argon2PasswordEncoder(8,16,3,2048,1);
@@ -49,6 +57,11 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUserName(), loginRequest.getPassword(
                 )));
+        if (user != null) {
+            Users users = modelMapper.map(user, Users.class);
+            System.out.println(users);
+            Users addedUser = usersRepositoriesV3.save(users);
+        }
         String userToken = jwtUtil.generateToken(user);
         return new LoginResponse(userToken);
     }

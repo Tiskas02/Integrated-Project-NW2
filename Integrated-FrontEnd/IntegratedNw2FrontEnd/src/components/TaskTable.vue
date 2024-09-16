@@ -7,6 +7,7 @@ import { useStoreStatus } from "../stores/statusStores.js";
 import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
 import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
 import TaskModal from "../components/TaskModal.vue";
+import BaseBtn from "@/shared/BaseBtn.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 const route = useRoute();
 const router = useRouter();
@@ -21,17 +22,18 @@ const storeTasks = ref({});
 const storeIndex = ref(0);
 const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
-onMounted(async () => {
-  const data = await tasksStore.fetchTasks();
+const routerId = ref(route.params.id);
+onMounted(async () => { 
+  const data = await tasksStore.fetchTasks(routerId.value);
   storeTasks.value = data;
 });
 onMounted(async () => {
-  await statusStore.fetchStatus();
+  await statusStore.fetchStatus(routerId.value);
 });
-const fetchDataById = async (id, mode) => {
+const fetchDataById = async (routerId,id, mode) => {
   storeMode.value = mode;
-  storeTask.value = await getTaskById(id);
-  statusStore.value = await getStatusData();
+  storeTask.value = await getTaskById(routerId,id);
+  statusStore.value = await getStatusData(routerId.value);
   if (storeMode.value === "add") {
     showDetail.value = true;
     router.push({ name: "addTask" });
@@ -40,13 +42,13 @@ const fetchDataById = async (id, mode) => {
     storeMode.value === "edit"
   ) {
     showDetail.value = true;
-    router.push({ name: "editTask", params: { id: id } });
+    router.push({ name: "editTask", params: { editid: id } });
   } else if (
     Object.keys(storeTask.value).length > 0 &&
     storeMode.value === "view"
   ) {
     showDetail.value = true;
-    router.push({ name: "taskDetail", params: { id: id } });
+    router.push({ name: "taskDetail", params: { taskid: id } });
   } else if (storeMode.value === "delete") {
     showDetail.value = true;
   } else {
@@ -60,11 +62,11 @@ const fetchDataById = async (id, mode) => {
 };
 
 if (route.params.id) {
-  fetchDataById(route.params.id, "view");
+  // fetchDataById(route.params.id, "view");
 }
 
 const removeTask = async (id) => {
-  const res = await tasksStore.deleteTask(id);
+  const res = await tasksStore.deleteTask(routerId.value,id);
   if (res !== 404) {
     toasterStore.success({ text: "Task deleted successfully!" });
   } else if (res === 404) {
@@ -84,7 +86,7 @@ const addEditTask = async (newTask) => {
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
-      });
+      },routerId.value);
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -100,7 +102,7 @@ const addEditTask = async (newTask) => {
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
-      });
+      },routerId.value);
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -111,12 +113,12 @@ const addEditTask = async (newTask) => {
     }
   } else {
     if (newTask.assignees === null) {
-      const dataEdit = await tasksStore.updateTask(newTask.id, {
+      const dataEdit = await tasksStore.updateTask(routerId.value,newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees,
         statusId: newTask.status,
         title: newTask.title.trim(),
-        description: newTask.description
+        description: newTask.descriptio
           ? newTask.description.trim()
           : newTask.description,
       });
@@ -128,7 +130,7 @@ const addEditTask = async (newTask) => {
         });
       }
     } else {
-      const dataEdit = await tasksStore.updateTask(newTask.id, {
+      const dataEdit = await tasksStore.updateTask(routerId.value,newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees.trim(),
         statusId: newTask.status,
@@ -161,7 +163,6 @@ const setDetail = (value, id, mode) => {
 
 const setClose = (value) => {
   showDetail.value = value;
-  router.push({ name: "task" });
 };
 
 const SortOrder = async () => {
@@ -188,7 +189,7 @@ const updateFilterList = (filterName) => {
 const getFilterTask = computed(() => {
   return selectFilter.value.length > 0
     ? tasks.value.filter((task) =>
-        selectFilter.value.includes(task.status.name)
+        selectFilter.value.includes(task.status.statusName)
       )
     : tasks.value;
 });
@@ -200,6 +201,15 @@ const ClearStatuses = () => {
 
 <template>
   <div>
+    <div class="flex justify-end m-10">
+    <BaseBtn >
+      <router-link :to="{ name: 'status' }">
+      <template #default>
+        <button class="p-4">Manage Status</button>
+      </template>
+    </router-link>
+    </BaseBtn>
+</div>
     <div class="w-full flex justify-center my-3">
       <div
         class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
@@ -421,19 +431,19 @@ const ClearStatuses = () => {
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[10%] px-6 py-4 whitespace-nowrap"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                     >
                       {{ index + 1 }}
                     </div>
                     <div
                       class="itbkk-title w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                     >
                       {{ task.title }}
                     </div>
                     <div
                       class="itbkk-assignees w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                       :style="{
                         fontStyle: task.assignees ? 'normal' : 'italic',
                       }"
@@ -442,12 +452,12 @@ const ClearStatuses = () => {
                     </div>
                     <div
                       class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
-                      @click="fetchDataById(task.id, 'view')"
+                      @click="fetchDataById(routerId,task.id, 'view')"
                     >
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ task?.status.name }}
+                        {{ task?.status.statusName }}
                       </div>
                     </div>
                     <div
@@ -455,14 +465,14 @@ const ClearStatuses = () => {
                     >
                       <div
                         class="itbkk-button-edit btn btn-outline btn-warning"
-                        @click="fetchDataById(task.id, 'edit')"
+                        @click="fetchDataById(routerId,task.id, 'edit')"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
                         @click="
-                          fetchDataById(task.id, 'delete'), setIndex(index)
+                          fetchDataById(routerId,task.id, 'delete'), setIndex(index)
                         "
                       >
                         Delete

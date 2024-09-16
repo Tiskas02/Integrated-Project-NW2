@@ -1,6 +1,7 @@
 package com.example.integratedbackend.Kradankanban;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -41,6 +42,4 @@ public class Tasks {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updatedOn", insertable = false, updatable = false)
     private ZonedDateTime updatedOn;
-
-
 }

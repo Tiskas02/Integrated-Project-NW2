@@ -1,18 +1,18 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
-  getTaskData,
   addTask,
   deleteItemById,
   editTask,
+  getTaskDataInBoardId,
 } from "../libs/api/task/fetchUtilTask.js";
 
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([]);
-  async function fetchTasks() {
+  async function fetchTasks(id) {
     try {
       tasks.value = [];
-      const taskData = await getTaskData();
+      const taskData = await getTaskDataInBoardId(id);
       taskData.forEach((task) => {
         tasks.value.push(task);
       });
@@ -21,9 +21,9 @@ export const useStoreTasks = defineStore("tasks", () => {
     }
   }
 
-  async function createTask(task) {
+  async function createTask(task,id) {
     try {
-      const addedTask = await addTask(task);
+      const addedTask = await addTask(task,id);
       tasks.value.push(addedTask);
       return addedTask;
     } catch (error) {
@@ -31,9 +31,9 @@ export const useStoreTasks = defineStore("tasks", () => {
     }
   }
 
-  async function deleteTask(id) {
+  async function deleteTask(routeId,id) {
     try {
-      const res = await deleteItemById(id);
+      const res = await deleteItemById(routeId,id);
       tasks.value.splice(
         tasks.value.findIndex((task) => task.id === id),
         1
@@ -43,9 +43,9 @@ export const useStoreTasks = defineStore("tasks", () => {
       throw new Error(error.message);
     }
   }
-  async function updateTask(id, task) {
+  async function updateTask(routeId,id, task) {
     try {
-      const updatedTask = await editTask(id, task);
+      const updatedTask = await editTask(routeId,id, task);
       const taskIndex = tasks.value.findIndex((task) => task.id === id);
       tasks.value[taskIndex] = updatedTask;
       return updatedTask;
@@ -55,9 +55,9 @@ export const useStoreTasks = defineStore("tasks", () => {
   }
   async function sortTasksByStatus(sortOrder) {
     if (sortOrder === "DEFAULT") {
-      tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name));
+      tasks.value.sort((a, b) => a.status.statusName.localeCompare(b.status.statusName));
     } else if (sortOrder === "ASC") {
-      tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name));
+      tasks.value.sort((a, b) => b.status.statusName.localeCompare(a.status.statusName));
     } else {
       tasks.value.sort((a, b) => a.id - b.id);
     }

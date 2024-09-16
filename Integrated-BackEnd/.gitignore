@@ -33,3 +33,7 @@ build/
 .vscode/
 .env
 .env.production
+# Ignore .properties files only in the root directory
+/*.properties
+
+

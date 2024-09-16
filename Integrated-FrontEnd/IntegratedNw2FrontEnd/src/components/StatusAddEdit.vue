@@ -1,5 +1,8 @@
 <script setup>
 import { defineProps, defineEmits, ref, watch, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
 const emit = defineEmits(["close", "newStatus"]);
 const props = defineProps({
   status: {
@@ -93,6 +96,7 @@ const descriptionCharCount = computed(() =>
                   class="itbkk-button-confirm disabled btn btn-info text-white"
                   @click="
                     () => {
+                      $router.go(-1)
                       emit('close', false);
                       emit('newStatus', storeData);
                     }
@@ -112,6 +116,7 @@ const descriptionCharCount = computed(() =>
                   class="itbkk-button-cancel btn btn-error text-white"
                   @click="
                     () => {
+                      $router.go(-1)
                       emit('close', false);
                     }
                   "

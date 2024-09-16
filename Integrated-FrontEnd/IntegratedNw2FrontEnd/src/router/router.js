@@ -6,6 +6,7 @@ import StatusTable from "@/components/StatusTable.vue";
 import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
 import Login from "@/components/Login.vue";
+import BoardHome from "@/views/BoardHome.vue";
 const history = createWebHistory(import.meta.env.BASE_URL);
 const routes = [
   {
@@ -18,13 +19,18 @@ const routes = [
     component: Login,
   },
   {
-    path: "/task",
-    name: "task",
+    path:"/board",
+    name:"board",
+    component: BoardHome,
+  },
+  {
+    path: "/board/:id/task",
+    name: "Task",
     component: TaskHome,
     meta: { requiresAuth: true },
     children: [
       {
-        path: ":id",
+        path: ":taskid",
         name: "taskDetail",
         component: TaskModal,
         meta: { requiresAuth: true },
@@ -36,7 +42,7 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: ":id/edit",
+        path: ":editid/edit",
         name: "editTask",
         component: TaskAddEdit,
         meta: { requiresAuth: true },
@@ -44,13 +50,13 @@ const routes = [
     ],
   },
   {
-    path: "/status",
+    path: "/board/:id/status",
     name: "status",
     component: TaskHome,
     meta: { requiresAuth: true },
     children: [
       {
-        path: ":id",
+        path: ":statusid",
         name: "statusDetail",
         component: StatusTable,
         meta: { requiresAuth: true },
@@ -62,7 +68,7 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: ":id/edit",
+        path: ":editid/edit",
         name: "editStatus",
         component: StatusAddEdit,
         meta: { requiresAuth: true },
@@ -83,7 +89,7 @@ const router = createRouter({
   linkExactActiveClass: "hover:text-[#2ff6da] hover:text-[#2ff6da] p-2",
 });
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem("userPayload"); 
+  const isAuthenticated = !!localStorage.getItem("token"); 
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'login' }); 
   } else {
