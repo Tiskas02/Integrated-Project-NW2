@@ -16,6 +16,8 @@ export const useStoreTasks = defineStore("tasks", () => {
       taskData.forEach((task) => {
         tasks.value.push(task);
       });
+      console.log(tasks.value);
+      
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -24,6 +26,8 @@ export const useStoreTasks = defineStore("tasks", () => {
   async function createTask(task,id) {
     try {
       const addedTask = await addTask(task,id);
+      console.log(tasks.value);
+      console.log(addedTask);
       tasks.value.push(addedTask);
       return addedTask;
     } catch (error) {

@@ -100,31 +100,10 @@ computed(newTask.value, () => {
               <div class="max-w-fit my-auto mx-6">Status</div>
 
               <div>
-                <label class="form-control w-full max-w-xs">
-                  <!-- Dropdown select -->
-                  <select
-                    class="select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                    v-model="newTask.status"
-                  >
-                    <!-- Default placeholder showing current status if no option is selected -->
-                    <option :disabled="true" :selected="!newTask.status" class="text-b">
-                      {{ task?.status.statusName }}
-                    </option>
-
-                    <!-- Dynamic options from allStatus -->
-                    <option
-                      v-for="status in allStatus"
-                      :key="status.id"
-                      :value="status.id"
-                    >
-                      {{ status.name }}
-                    </option>
-                  </select>
-                </label>
-                <!-- <label class="form-control w-full">
+                <label class="form-control w-full">
                   <select
                     class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                    v-model="newTask.status"
+                    v-model="newTask.id"
                   >
                     <option
                       v-for="status in allStatus"
@@ -133,9 +112,9 @@ computed(newTask.value, () => {
                     >
                       {{ status.name}}
                     </option>
-                    {{task?.status.statusName}}
+                    <!-- {{task?.status.statusName}} -->
                   </select>
-                </label> -->
+                </label>
               </div>
             </div>
             <div class="flex">
