@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class StatusService {
     public Status findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Status" + " " + id + " " + "doesn't exist !!!"));
+                        HttpStatus.FORBIDDEN, "Status" + " " + id + " " + "doesn't exist !!!"));
     }
 
     @Transactional
@@ -79,13 +80,13 @@ public class StatusService {
             throw new ItemErrorNotFoundException("destination status for task transfer must be different from current status.");
         }
         if (!repositories.existsById(oldId)) {
-            throw new ItemNotFoundException("Not Found Status Id:" + oldId);
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Not Found Status Id:" + oldId);
         }
         if (!repositories.existsById(newId)) {
             throw new ItemErrorNotFoundException("the specified status for task transfer does not exist.");
         }
         Status oldStatus = repositories.findById(oldId)
-                .orElseThrow(() -> new ItemNotFoundException("StatusEntity not found with id: " + oldId));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "StatusEntity not found with id: " + oldId));
         Status newStatus = repositories.findById(newId)
                 .orElseThrow(() -> new ItemErrorNotFoundException("the specified status for task transfer does not exist."));
         try {
@@ -94,14 +95,14 @@ public class StatusService {
             repositories.delete(oldStatus);
             return oldStatus;
         } catch (Exception e) {
-            throw new ItemNotFoundException("Error transferring status: " + e.getMessage());
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Error transferring status: " + e.getMessage());
         }
     }
 
     @Transactional
     public StatusDTO updateStatus(NewStatusDTO inputStatus, Integer id) {
         Status status = repositories.findById(id).
-                orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:" + id));
+                orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "NOT FOUND ID:" + id));
         List<Status> statusList = repositories.findAllByNameIgnoreCase(inputStatus.getName());
         for (Status s : statusList) {
             if (!id.equals(s.getId()) && inputStatus.getName().equalsIgnoreCase(s.getName())) {
@@ -119,7 +120,7 @@ public class StatusService {
     @Transactional
     public Boolean deleteOrTransfer(Integer id) {
         Status status = repositories.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Not Found"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Not Found"));
         List<Taskv2> tasks = tasksRepositoriesV2.findAllByStatus(status);
         return !tasks.isEmpty();
     }

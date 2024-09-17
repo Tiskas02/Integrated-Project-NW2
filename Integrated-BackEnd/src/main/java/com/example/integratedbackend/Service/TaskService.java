@@ -42,7 +42,7 @@ public class TaskService {
     public Tasks findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Task" + " " + id + " " + "doesn't exist !!!"));
+                        HttpStatus.FORBIDDEN, "Task" + " " + id + " " + "doesn't exist !!!"));
     }
 
     @Transactional

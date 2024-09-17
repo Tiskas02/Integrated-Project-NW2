@@ -2,12 +2,9 @@ package com.example.integratedbackend.Service.ServiceV3;
 
 import com.example.integratedbackend.DTO.DTOV3.NewStatusIDDTO;
 import com.example.integratedbackend.DTO.NewStatusDTO;
-import com.example.integratedbackend.DTO.StatusDTO;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
-import com.example.integratedbackend.Kradankanban.Status;
-import com.example.integratedbackend.Kradankanban.Taskv2;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3;
@@ -19,10 +16,10 @@ import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StatusServiceV3 {
@@ -44,17 +41,17 @@ public class StatusServiceV3 {
     public StatusV3 findById(String boardId, Integer statusId) throws ItemNotFoundException {
         //อันนี้อะไว้เช็คว่ามี board idที่รับมาจิงมั้ยุถ้าไม่มีโชว์ "Board with ID " + boardId + " not found"
         Boards board = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
-                new ItemNotFoundException("Board with ID " + boardId + " not found"));
+                new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with ID " + boardId + " not found"));
         //อันนี้ใช้ repo หาว่า boardId&statusId มันมีตรงกันมั้ยในดาต้าเบส ถ้าไม่ตรงก็โชว์ "Status with ID " + statusId + " doesn't exist on board with ID " + boardId
         return (StatusV3) statusRepositoriesV3.findByBoardBoardIdAndStatusId(boardId, statusId).orElseThrow(() ->
-                new ItemNotFoundException("Status with ID " + statusId + " doesn't exist on board with ID " + boardId));
+                new ItemNotFoundException(HttpStatus.FORBIDDEN, "Status with ID " + statusId + " doesn't exist on board with ID " + boardId));
     }
 
 
     @Transactional
     public StatusV3 createStatus(NewStatusDTO status, String boardId) {
         Boards boards = boardsRepositoriesV3.findById(boardId)
-                .orElseThrow(() -> new ItemNotFoundException("Board with ID " + boardId + " not found"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with ID " + boardId + " not found"));
         StatusV3 oldStatus = statusRepositoriesV3.findByStatusNameIgnoreCaseAndBoard(status.getName(),boards);
         if (oldStatus != null){
             throw new TaskNameDuplicatedException("must be unique");
@@ -79,7 +76,7 @@ public class StatusServiceV3 {
         newStatusDTO.setDescription(description);
         StatusV3 status = mapper.map(newStatusDTO, StatusV3.class);
         Boards boards = boardsRepositoriesV3.findById(boardId)
-                .orElseThrow(() -> new ItemNotFoundException("Board with ID " + boardId + " not found"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with ID " + boardId + " not found"));
         status.setBoard(boards);
         statusRepositoriesV3.save(status);
     }
@@ -88,7 +85,7 @@ public class StatusServiceV3 {
     @Transactional
     public NewStatusIDDTO updateStatus(Integer statusId, NewStatusDTO status) {
         StatusV3 oldStatusV3 = statusRepositoriesV3.findById(statusId).
-                orElseThrow(() -> new ItemNotFoundException("NOT FOUND ID:" + statusId));
+                orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "NOT FOUND ID:" + statusId));
         StatusV3 statusDuplicate = statusRepositoriesV3.findByStatusNameIgnoreCaseAndBoard(status.getName(),oldStatusV3.getBoard());
         if (statusDuplicate != null && !oldStatusV3.getStatusName().equalsIgnoreCase(status.getName())){
                 throw new TaskNameDuplicatedException("must be unique");
@@ -124,13 +121,13 @@ public class StatusServiceV3 {
             throw new ItemErrorNotFoundException("destination status for task transfer must be different from current status.");
         }
         if (!statusRepositoriesV3.existsById(oldId)) {
-            throw new ItemNotFoundException("Not Found Status Id:" + oldId);
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Not Found Status Id:" + oldId);
         }
         if (!statusRepositoriesV3.existsById(newId)) {
             throw new ItemErrorNotFoundException("the specified status for task transfer does not exist.");
         }
         StatusV3 oldStatus = statusRepositoriesV3.findById(oldId)
-                .orElseThrow(() -> new ItemNotFoundException("StatusEntity not found with id: " + oldId));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "StatusEntity not found with id: " + oldId));
         StatusV3 newStatus = statusRepositoriesV3.findById(newId)
                 .orElseThrow(() -> new ItemErrorNotFoundException("the specified status for task transfer does not exist."));
         try {
@@ -140,13 +137,13 @@ public class StatusServiceV3 {
             statusRepositoriesV3.delete(oldStatus);
             return taskCount;
         } catch (Exception e) {
-            throw new ItemNotFoundException("Error transferring status: " + e.getMessage());
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Error transferring status: " + e.getMessage());
         }
     }
     @Transactional
     public Boolean deleteOrTransfer(Integer id) {
         StatusV3 status = statusRepositoriesV3.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Not Found"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Not Found"));
         List<TaskV3> tasks = tasksRepositoriesV3.findAllByStatus(status);
         return !tasks.isEmpty();
     }

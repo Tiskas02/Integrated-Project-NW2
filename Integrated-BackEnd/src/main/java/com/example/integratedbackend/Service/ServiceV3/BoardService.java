@@ -11,6 +11,7 @@ import com.example.integratedbackend.Service.ListMapper;
 import io.viascom.nanoid.NanoId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class BoardService {
         Users user = users.get(0);
         List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
         if (boards == null){
-            throw new ItemNotFoundException("Board with username" +
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
                     " " + userName + " not found");
         }
         return boards;
@@ -42,7 +43,7 @@ public class BoardService {
         List<Users> listUsers = usersRepositoriesV3.findAllByUsername(userName);
         Users user = listUsers.get(0);
         Users users = usersRepositoriesV3.findById(user.getOid()).orElseThrow(() ->
-            new ItemNotFoundException("User with ID " + user + " not found"));
+            new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with ID " + user + " not found"));
         if(boardsRepositoriesV3.existsBoardsByNameIgnoreCaseAndUsers(boardDTO.getName(), users)){
             throw new TaskNameDuplicatedException("must be unique");
         }
