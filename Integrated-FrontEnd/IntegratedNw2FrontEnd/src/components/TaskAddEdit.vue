@@ -11,7 +11,6 @@ const routerId = ref(route.params.id);
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus(routerId.value);
   console.log(allStatus.value);
-  
 });
 const props = defineProps({
   mode: String,
@@ -37,6 +36,7 @@ const newTask = ref({
   status: props.task.status.id ? props.task.status.id : 1,
 });
 
+console.log(newTask.value);
 
 const titleCharCount = computed(() =>
   newTask.value.title ? newTask.value.title.length : 0
@@ -100,7 +100,28 @@ computed(newTask.value, () => {
               <div class="max-w-fit my-auto mx-6">Status</div>
 
               <div>
-                <label class="form-control w-full">
+                <label class="form-control w-full max-w-xs">
+                  <!-- Dropdown select -->
+                  <select
+                    class="select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                    v-model="newTask.status"
+                  >
+                    <!-- Default placeholder showing current status if no option is selected -->
+                    <option :disabled="true" :selected="!newTask.status" class="text-b">
+                      {{ task?.status.statusName }}
+                    </option>
+
+                    <!-- Dynamic options from allStatus -->
+                    <option
+                      v-for="status in allStatus"
+                      :key="status.id"
+                      :value="status.id"
+                    >
+                      {{ status.name }}
+                    </option>
+                  </select>
+                </label>
+                <!-- <label class="form-control w-full">
                   <select
                     class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     v-model="newTask.status"
@@ -112,8 +133,9 @@ computed(newTask.value, () => {
                     >
                       {{ status.name}}
                     </option>
+                    {{task?.status.statusName}}
                   </select>
-                </label>
+                </label> -->
               </div>
             </div>
             <div class="flex">
@@ -215,7 +237,7 @@ computed(newTask.value, () => {
                   class="itbkk-button-cancel btn btn-error text-white"
                   @click="
                     () => {
-                      $router.go(-1)
+                      $router.go(-1);
                       emit('close', false);
                     }
                   "
