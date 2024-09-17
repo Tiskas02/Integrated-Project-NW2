@@ -85,6 +85,7 @@ const setIndex = (indexes) => {
 };
 const addEditTask = async (newTask) => {
   if (newTask.id === undefined) {
+    console.log("in add method");
     if (newTask.assignees === null) {
       const data = await tasksStore.createTask(
         {
