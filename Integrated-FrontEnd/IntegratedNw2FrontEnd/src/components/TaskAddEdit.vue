@@ -91,6 +91,7 @@ computed(newTask.value, () => {
                   v-model="newTask.title"
                   >{{ task?.title }}</textarea
                 >
+                
               </div>
               <div class="flex justify-end text-xs">
                 {{ titleCharCount }}/100
