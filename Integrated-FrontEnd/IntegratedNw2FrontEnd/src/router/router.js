@@ -7,7 +7,30 @@ import TaskAddEdit from "@/components/TaskAddEdit.vue";
 import StatusAddEdit from "@/components/StatusAddEdit.vue";
 import Login from "@/components/Login.vue";
 import BoardHome from "@/views/BoardHome.vue";
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    return null; // Return null if parsing fails
+  }
+}
+
+// Helper function to delete token from localStorage
+function deleteTokenFromLocalStorage() {
+  localStorage.removeItem('token');
+}
+
+
 const history = createWebHistory(import.meta.env.BASE_URL);
+
 const routes = [
   {
     path: "/",
@@ -19,9 +42,10 @@ const routes = [
     component: Login,
   },
   {
-    path:"/board",
-    name:"board",
+    path: "/board",
+    name: "board",
     component: BoardHome,
+    meta: { requiresAuth: true },
   },
   {
     path: "/board/:id/task",
@@ -88,10 +112,25 @@ const router = createRouter({
   linkActiveClass: "text-[#2ff6da]",
   linkExactActiveClass: "hover:text-[#2ff6da] hover:text-[#2ff6da] p-2",
 });
+
+
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem("token"); 
+  const token = localStorage.getItem("token");
+  let isAuthenticated = false;
+
+  if (token) {
+    const jwtPayload = parseJwt(token);
+    if (jwtPayload && jwtPayload.exp >= Date.now() / 1000) {
+      isAuthenticated = true; 
+    } else {
+      deleteTokenFromLocalStorage(); 
+      alert("Your session has expired. Please log in again.");
+    }
+  }
+
+
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'login' }); 
+    next({ name: 'login' });
   } else {
     next(); 
   }

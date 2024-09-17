@@ -14,6 +14,8 @@ export const useStoreBoard = defineStore("boards", () => {
         });
         if (boards.value.length === 0) {
           return noData;
+        }else{
+          return boards.value
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -28,9 +30,18 @@ export const useStoreBoard = defineStore("boards", () => {
         throw new Error(error.message);
       }
     }
+    function matchUserBoard(id){
+      const matchedBoard = boards.value.find(board => board.boardId === id);
+    if (matchedBoard) {
+        return matchedBoard.name;
+    } else {
+        return 'Board not found';
+    }
+    }
     return {
       boards,
       fetchBoards,
       createBoard,
+      matchUserBoard
     };
 });

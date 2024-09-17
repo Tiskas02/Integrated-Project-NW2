@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "daisyui": "^4.10.2",
+    "jwt-decode": "^4.0.0",
     "pinia": "^2.1.7",
     "tailwindcss-animated": "^1.0.1",
     "vue": "^3.4.21",

@@ -52,6 +52,7 @@ const addBoard = async (newBoard) =>{
   })
   if(data){
     toasterStore.success({ text: "Board added successfully!" });
+    navigateToBoardTasks(data.boardId)
   }else{  
     toasterStore.error({
       text: "An error occurred while adding the board.",

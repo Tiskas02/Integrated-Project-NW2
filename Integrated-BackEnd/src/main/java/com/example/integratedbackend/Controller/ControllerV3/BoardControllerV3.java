@@ -1,10 +1,7 @@
 package com.example.integratedbackend.Controller.ControllerV3;
 
 import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
-import com.example.integratedbackend.DTO.DTOV3.NewTaskDTOV3;
-import com.example.integratedbackend.DTO.DTOV3.TaskDTOV3;
-import com.example.integratedbackend.DTO.DTOV3.TaskV3DTO;
+import com.example.integratedbackend.DTO.DTOV3.*;
 import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
@@ -156,7 +153,7 @@ public class BoardControllerV3 {
             String jwt = authHeader.substring(7);
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
-                return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(taskServiceV3.createTask(newTask,boardId), NewTaskReturnV2.class));
+                return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(taskServiceV3.createTask(newTask,boardId), NewTaskReturnV3.class));
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
