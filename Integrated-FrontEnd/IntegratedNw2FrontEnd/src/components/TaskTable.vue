@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
+import { useStoreBoard } from "@/stores/boardStore";
 import { useStoreTasks } from "../stores/taskStores.js";
 import { useStoreStatus } from "../stores/statusStores.js";
 import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
@@ -11,9 +12,11 @@ import BaseBtn from "@/shared/BaseBtn.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 const route = useRoute();
 const router = useRouter();
+const boardStore = useStoreBoard();
 const tasksStore = useStoreTasks();
 const statusStore = useStoreStatus();
 const toasterStore = useToasterStore();
+// const { boards } = storeToRefs(boardStore);
 const { tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const storeMode = ref("");
@@ -23,16 +26,20 @@ const storeIndex = ref(0);
 const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
 const routerId = ref(route.params.id);
-onMounted(async () => { 
+const nameBoard = ref()
+onMounted(async () => {
   const data = await tasksStore.fetchTasks(routerId.value);
   storeTasks.value = data;
 });
 onMounted(async () => {
   await statusStore.fetchStatus(routerId.value);
+  // const data = await boardStore.fetchBoards();
+  nameBoard.value = boardStore.matchUserBoard(routerId.value)
+  
 });
-const fetchDataById = async (routerId,id, mode) => {
+const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
-  storeTask.value = await getTaskById(routerId,id);
+  storeTask.value = await getTaskById(routerId, id);
   statusStore.value = await getStatusData(routerId.value);
   if (storeMode.value === "add") {
     showDetail.value = true;
@@ -66,7 +73,7 @@ if (route.params.id) {
 }
 
 const removeTask = async (id) => {
-  const res = await tasksStore.deleteTask(routerId.value,id);
+  const res = await tasksStore.deleteTask(routerId.value, id);
   if (res !== 404) {
     toasterStore.success({ text: "Task deleted successfully!" });
   } else if (res === 404) {
@@ -79,14 +86,17 @@ const setIndex = (indexes) => {
 const addEditTask = async (newTask) => {
   if (newTask.id === undefined) {
     if (newTask.assignees === null) {
-      const data = await tasksStore.createTask({
-        assignees: newTask.assignees,
-        statusId: newTask.status ? newTask.status : 1,
-        title: newTask.title.trim(),
-        description: newTask.description
-          ? newTask.description.trim()
-          : newTask.description,
-      },routerId.value);
+      const data = await tasksStore.createTask(
+        {
+          assignees: newTask.assignees,
+          statusId: newTask.status ? newTask.status : 1,
+          title: newTask.title.trim(),
+          description: newTask.description
+            ? newTask.description.trim()
+            : newTask.description,
+        },
+        routerId.value
+      );
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -95,14 +105,17 @@ const addEditTask = async (newTask) => {
         });
       }
     } else {
-      const data = await tasksStore.createTask({
-        assignees: newTask.assignees.trim(),
-        statusId: newTask.status ? newTask.status : 1,
-        title: newTask.title.trim(),
-        description: newTask.description
-          ? newTask.description.trim()
-          : newTask.description,
-      },routerId.value);
+      const data = await tasksStore.createTask(
+        {
+          assignees: newTask.assignees.trim(),
+          statusId: newTask.status ? newTask.status : 1,
+          title: newTask.title.trim(),
+          description: newTask.description
+            ? newTask.description.trim()
+            : newTask.description,
+        },
+        routerId.value
+      );
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -113,7 +126,7 @@ const addEditTask = async (newTask) => {
     }
   } else {
     if (newTask.assignees === null) {
-      const dataEdit = await tasksStore.updateTask(routerId.value,newTask.id, {
+      const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees,
         statusId: newTask.status,
@@ -130,7 +143,7 @@ const addEditTask = async (newTask) => {
         });
       }
     } else {
-      const dataEdit = await tasksStore.updateTask(routerId.value,newTask.id, {
+      const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees.trim(),
         statusId: newTask.status,
@@ -202,21 +215,30 @@ const ClearStatuses = () => {
 <template>
   <div>
     <div class="flex justify-end m-10">
-    <BaseBtn >
-      <router-link :to="{ name: 'status' }">
-      <template #default>
-        <button class="p-4">Manage Status</button>
-      </template>
-    </router-link>
-    </BaseBtn>
-</div>
+      <BaseBtn>
+        <router-link :to="{ name: 'status' }">
+          <template #default>
+            <button class="p-4">Manage Status</button>
+          </template>
+        </router-link>
+      </BaseBtn>
+    </div>
     <div class="w-full flex justify-center my-3">
       <div
         class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
       >
-        Manage Tasks
+        Board name : {{ nameBoard }}      
+      </div>
+      
+    </div>
+    <div class="w-full flex justify-center my-3">
+      <div
+        class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
+      >
+      Manage Task
       </div>
     </div>
+    
     <div
       class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between"
     >
@@ -424,26 +446,28 @@ const ClearStatuses = () => {
           </div>
           <div class="w-full h-[500px] overflow-auto rounded">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
-              <div class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner">
+              <div
+                class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+              >
                 <div
                   class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[10%] px-6 py-4 whitespace-nowrap"
-                      @click="fetchDataById(routerId,task.id, 'view')"
+                      @click="fetchDataById(routerId, task.id, 'view')"
                     >
                       {{ index + 1 }}
                     </div>
                     <div
                       class="itbkk-title w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="fetchDataById(routerId,task.id, 'view')"
+                      @click="fetchDataById(routerId, task.id, 'view')"
                     >
                       {{ task.title }}
                     </div>
                     <div
                       class="itbkk-assignees w-[22%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="fetchDataById(routerId,task.id, 'view')"
+                      @click="fetchDataById(routerId, task.id, 'view')"
                       :style="{
                         fontStyle: task.assignees ? 'normal' : 'italic',
                       }"
@@ -452,7 +476,7 @@ const ClearStatuses = () => {
                     </div>
                     <div
                       class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
-                      @click="fetchDataById(routerId,task.id, 'view')"
+                      @click="fetchDataById(routerId, task.id, 'view')"
                     >
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
@@ -465,14 +489,15 @@ const ClearStatuses = () => {
                     >
                       <div
                         class="itbkk-button-edit btn btn-outline btn-warning"
-                        @click="fetchDataById(routerId,task.id, 'edit')"
+                        @click="fetchDataById(routerId, task.id, 'edit')"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete btn btn-outline btn-error"
                         @click="
-                          fetchDataById(routerId,task.id, 'delete'), setIndex(index)
+                          fetchDataById(routerId, task.id, 'delete'),
+                            setIndex(index)
                         "
                       >
                         Delete
