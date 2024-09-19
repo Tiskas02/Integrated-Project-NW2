@@ -11,7 +11,6 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.StatusRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.TasksRepositoriesV3;
-import com.example.integratedbackend.Service.ListMapper;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
@@ -31,8 +30,6 @@ public class StatusServiceV3 {
     private TasksRepositoriesV3 tasksRepositoriesV3;
     @Autowired
     ModelMapper mapper;
-    @Autowired
-    private ListMapper listMapper;
 
     public List<StatusV3> getAllStatus(String boardId) {
         return statusRepositoriesV3.findByBoard_BoardId(boardId);

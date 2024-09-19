@@ -1,10 +1,10 @@
 <script setup>
-import BaseBtn from "@/shared/BaseBtn.vue";
-import { defineEmits,ref } from 'vue';
-const emit = defineEmits(["close", "newBoard"]);
+import BaseBtn from "@/shared/BaseBtn.vue"
+import { defineEmits, ref } from "vue"
+const emit = defineEmits(["close", "newBoard"])
 const newBoard = ref({
   name: "",
-});
+})
 </script>
 
 <template>
@@ -33,13 +33,13 @@ const newBoard = ref({
           </div>
           <div class="flex flex-row w-full justify-end my-4">
             <div class="flex mr-2">
-              <BaseBtn class="mx-4 mt-3 ">
+              <BaseBtn class="mx-4 mt-3">
                 <template #default>
                   <button
                     @click="
                       () => {
-                        emit('close', false);
-                        emit('newBoard', newBoard);
+                        emit('close', false)
+                        emit('newBoard', newBoard)
                       }
                     "
                   >
@@ -52,7 +52,7 @@ const newBoard = ref({
                   <button
                     @click="
                       () => {
-                        emit('close', false);
+                        emit('close', false)
                       }
                     "
                   >
@@ -69,8 +69,4 @@ const newBoard = ref({
 </template>
 
 <style scoped>
-/* placeholder="Enter your title here..."
-                required
-                maxlength="50"
-                v-model="storeData.name" */
-                </style>
+</style>

@@ -1,66 +1,69 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useStoreBoard } from "@/stores/boardStore";
-import LoadingScreen from "@/shared/LoadingScreen.vue";
-import Logo from "@/shared/Logo.vue";
-import BaseBtn from "@/shared/BaseBtn.vue";
-import { storeToRefs } from "pinia";
-import BoardModal from "@/components/BoardModal.vue";
-import { useToasterStore } from "@/stores/notificationStores";
-import { useRoute, useRouter } from "vue-router";
-const route = useRoute();
-const router = useRouter();
-const dataLoaded = ref(true);
-const boardStore = useStoreBoard();
-const toasterStore = useToasterStore();
-const { boards } = storeToRefs(boardStore);
-const showModal = ref(false);
+import { ref, onMounted } from "vue"
+import { useStoreBoard } from "@/stores/boardStore"
+import LoadingScreen from "@/shared/LoadingScreen.vue"
+import Logo from "@/shared/Logo.vue"
+import BaseBtn from "@/shared/BaseBtn.vue"
+import { storeToRefs } from "pinia"
+import BoardModal from "@/components/BoardModal.vue"
+import { useToasterStore } from "@/stores/notificationStores"
+import { useRoute, useRouter } from "vue-router"
+const route = useRoute()
+const router = useRouter()
+const dataLoaded = ref(true)
+const boardStore = useStoreBoard()
+const toasterStore = useToasterStore()
+const { boards } = storeToRefs(boardStore)
+const showModal = ref(false)
 const parseJwt = (token) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const base64Url = token.split(".")[1]
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
       .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
       })
       .join("")
-  );
-  return JSON.parse(jsonPayload);
-};
+  )
+  return JSON.parse(jsonPayload)
+}
+
 const userPayload = localStorage.getItem("token")
   ? parseJwt(localStorage.getItem("token"))
-  : null;
+  : null
 onMounted(async () => {
-  const data = await boardStore.fetchBoards();
+  const data = await boardStore.fetchBoards()
   if (boardStore.boards.length > 0 || data) {
-    dataLoaded.value = true;
+    dataLoaded.value = true
   } else {
-    dataLoaded.value = false;
+    dataLoaded.value = false
   }
-});
-const setModal = () => {
-  showModal.value = true;
-};
-const setClose = () => {
-  showModal.value = false;
-};
+})
 
-const addBoard = async (newBoard) =>{
+const setModal = () => {
+  showModal.value = true
+}
+
+const setClose = () => {
+  showModal.value = false
+}
+
+const addBoard = async (newBoard) => {
   const data = await boardStore.createBoard({
     name: newBoard.name,
   })
-  if(data){
-    toasterStore.success({ text: "Board added successfully!" });
+  if (data) {
+    toasterStore.success({ text: "Board added successfully!" })
     navigateToBoardTasks(data.boardId)
-  }else{  
+  } else {
     toasterStore.error({
       text: "An error occurred while adding the board.",
-    });
+    })
   }
 }
 const navigateToBoardTasks = (boardId) => {
-      router.push({ name: "Task", params: { id: boardId } })
+  router.push({ name: "Task", params: { id: boardId } })
 }
 </script>
 
@@ -175,7 +178,7 @@ const navigateToBoardTasks = (boardId) => {
       </div>
     </div>
     <teleport to="#body">
-      <BoardModal v-if="showModal" @close="setClose" @newBoard="addBoard"/>
+      <BoardModal v-if="showModal" @close="setClose" @newBoard="addBoard" />
     </teleport>
   </div>
 </template>

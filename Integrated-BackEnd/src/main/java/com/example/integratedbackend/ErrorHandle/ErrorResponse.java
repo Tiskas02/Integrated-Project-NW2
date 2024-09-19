@@ -2,7 +2,6 @@ package com.example.integratedbackend.ErrorHandle;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;

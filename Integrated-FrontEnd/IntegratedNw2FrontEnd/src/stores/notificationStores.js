@@ -1,12 +1,12 @@
-import { defineStore } from "pinia";
+import { defineStore } from "pinia"
 
-const defaultTimeout = 2000;
+const defaultTimeout = 2000
 
 const createToast = (text, status) => ({
   text,
   status,
   id: Math.random() * 1000,
-});
+})
 
 export const useToasterStore = defineStore("toaster-store", {
   state: () => ({
@@ -14,26 +14,26 @@ export const useToasterStore = defineStore("toaster-store", {
   }),
   actions: {
     updateState(payload, status) {
-      const { text, timeout } = payload;
+      const { text, timeout } = payload
 
-      const toast = createToast(text, status);
+      const toast = createToast(text, status)
 
-      this.toasts.push(toast);
+      this.toasts.push(toast)
 
       setTimeout(() => {
-        this.toasts = this.toasts.filter((t) => t.id !== toast.id);
-      }, timeout ?? defaultTimeout);
+        this.toasts = this.toasts.filter((t) => t.id !== toast.id)
+      }, timeout ?? defaultTimeout)
     },
     success(payload) {
-      this.updateState(payload, "success");
+      this.updateState(payload, "success")
     },
 
     warning(payload) {
-      this.updateState(payload, "warning");
+      this.updateState(payload, "warning")
     },
 
     error(payload) {
-      this.updateState(payload, "error");
+      this.updateState(payload, "error")
     },
   },
-});
+})

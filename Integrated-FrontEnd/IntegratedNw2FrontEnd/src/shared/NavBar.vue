@@ -1,31 +1,31 @@
 <script setup>
-import BaseBtn from "./BaseBtn.vue";
-import { useRoute } from "vue-router";
-import { ref, watch } from "vue";
-import router from "@/router/router";
-import duration from "tailwindcss-animated/src/utilities/duration";
-const route = useRoute();
-const usePath = ref(false);
+import BaseBtn from "./BaseBtn.vue"
+import { useRoute } from "vue-router"
+import { ref, watch } from "vue"
+import router from "@/router/router"
+const route = useRoute()
+const usePath = ref(false)
 watch(
   () => route.path,
   () => {
     if (route.path.startsWith("/status")) {
-      usePath.value = true;
+      usePath.value = true
     } else {
-      usePath.value = false;
+      usePath.value = false
     }
   },
   { immediate: true }
-);
+)
+
 const userPayload = localStorage.getItem("userPayload")
   ? JSON.parse(localStorage.getItem("userPayload"))
-  : null;
+  : null
 
 const logout = () => {
-  localStorage.removeItem("userPayload");
-  userPayload.value = null;
-  router.push("/");
-};
+  localStorage.removeItem("userPayload")
+  userPayload.value = null
+  router.push("/")
+}
 </script>
 
 <template>
@@ -88,7 +88,9 @@ const logout = () => {
         <div class="flex items-center">
           <div v-if="userPayload" class="flex justify-center items-center">
             <div class="itbkk-fullname px-2">{{ userPayload.name }}</div>
-            <div class="px-4 cursor-pointer btn btn-error" @click="logout">Logout</div>
+            <div class="px-4 cursor-pointer btn btn-error" @click="logout">
+              Logout
+            </div>
           </div>
           <div v-else>
             <div class="px-4 cursor-pointer hover:text-blue-700">Login</div>

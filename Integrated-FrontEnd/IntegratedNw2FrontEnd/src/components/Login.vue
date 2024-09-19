@@ -26,21 +26,6 @@ const isFormValid = computed(() => {
   )
 })
 
-const parseJwt = (token) => {
-  const base64Url = token.split(".")[1]
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
-  const jsonPayload = decodeURIComponent(
-    atob(base64)
-      .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
-      })
-      .join("")
-  )
-
-  return JSON.parse(jsonPayload)
-}
-
 async function userLogin(user) {
   console.log(`${url}/login`)
   try {
@@ -58,7 +43,6 @@ async function userLogin(user) {
     }
 
     const data = await res.json()
-    // const payload = parseJwt(data.access_token)
     localStorage.setItem("token", data.access_token)
     return data
   } catch (error) {
@@ -81,13 +65,18 @@ const submitForm = async () => {
 
 <template>
   <div class="w-full h-screen flex justify-center items-center">
-    <div class="w-[65%] h-[80%] py-28" >
+    <div class="w-[65%] h-[80%] py-28">
       <div class="w-full flex justify-center my-4">
-      <img class="w-[30%]  " src="/icon.png" alt="icon" />
+        <img class="w-[30%]" src="/icon.png" alt="icon" />
       </div>
-      <div class="w-full flex justify-center"><div class="text-white font-rubik text-4xl font-bold text-center shadow-md ">IT-Bangmod<br/> Kradan Kanban</div></div>
-      
-      
+      <div class="w-full flex justify-center">
+        <div
+          class="text-white font-rubik text-4xl font-bold text-center shadow-md"
+        >
+          IT-Bangmod<br />
+          Kradan Kanban
+        </div>
+      </div>
     </div>
     <div
       class="w-[35%] h-[80%] bg-white rounded-2xl shadow-xl flex justify-center items-center mx-32"

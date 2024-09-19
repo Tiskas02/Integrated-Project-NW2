@@ -1,6 +1,5 @@
 package com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories;
 
-import com.example.integratedbackend.Kradankanban.Status;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
 import org.springframework.data.jpa.repository.JpaRepository;

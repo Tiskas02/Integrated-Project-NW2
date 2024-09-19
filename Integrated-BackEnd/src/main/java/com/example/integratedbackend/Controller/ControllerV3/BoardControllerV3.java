@@ -10,21 +10,16 @@ import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.BoardService;
 import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
 import com.example.integratedbackend.Service.ServiceV3.TaskServiceV3;
-import com.example.integratedbackend.Service.ServiceV3.UserServiceV3;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("v3/board")
@@ -32,8 +27,6 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 public class BoardControllerV3 {
     @Autowired
     private BoardService boardService;
-    @Autowired
-    private UserServiceV3 UserService;
     @Autowired
     private StatusServiceV3 statusServiceV3;
     @Autowired
