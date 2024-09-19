@@ -82,6 +82,7 @@ const deleteOne = async (id) => {
     toasterStore.error({ text: "An error occurred while deleting the task." })
   }
 }
+
 const deleteTranfer = async (value) => {
   const status = await statusStore.tranferStatus(value.oldId, value.newId)
   if (status === 200) {

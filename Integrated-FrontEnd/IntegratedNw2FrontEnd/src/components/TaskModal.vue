@@ -9,6 +9,7 @@ const props = defineProps({
   task: Object,
   index: Number,
 })
+
 const sentMode = ref(props.mode)
 const sentTask = ref(props.task)
 const sentIndex = ref(props.index)

@@ -11,7 +11,6 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.StatusRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.TasksRepositoriesV3;
-import com.example.integratedbackend.Service.ListMapper;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;

@@ -16,9 +16,11 @@ const props = defineProps({
     },
   },
 })
+
 const oldId = ref(props.status.id)
 const newId = ref(null)
 const shouldDeleteOrTransfer = ref(false)
+
 onMounted(async () => {
   const deleted = await shouldDeleteOrTransferStatus(props.status.id)
   if (deleted === true) {

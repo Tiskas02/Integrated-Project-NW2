@@ -31,7 +31,6 @@ onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus(routerId.value)
   const noStatus = allStatus.value.find((status) => status.name === "No Status")
 
-  // If found, assign its statusId to defaultStatus.value.statusId
   if (noStatus) {
     defaultStatus.value.statusId = noStatus.id
   }
