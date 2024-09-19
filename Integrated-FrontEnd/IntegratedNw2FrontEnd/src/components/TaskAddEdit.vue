@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref, computed, onMounted } from "vue";
+import { defineProps, defineEmits, ref, computed, onMounted,watch } from "vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
@@ -8,10 +8,6 @@ const emit = defineEmits(["close", "sentData"]);
 const statusStore = useStoreStatus();
 const allStatus = ref([]);
 const routerId = ref(route.params.id);
-onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value);
-  console.log(allStatus.value);
-});
 const props = defineProps({
   mode: String,
   task: {
@@ -19,11 +15,7 @@ const props = defineProps({
     default: {
       id: undefined,
       assignees: null,
-      status: {
-        id: undefined,
-        name: "",
-        description: "",
-      },
+      status: 0,
       title: "",
       description: "",
       createdOn: "",
@@ -31,11 +23,38 @@ const props = defineProps({
     },
   },
 });
-const newTask = ref({
-  ...props.task,
-  status: props.task.status.id ? props.task.status.id : 1,
+const defaultStatus = ref({
+  statusId: null,
+});
+onMounted(async () => {
+  allStatus.value = await statusStore.fetchStatus(routerId.value);
+  const noStatus = allStatus.value.find(status => status.name === 'No Status');
+  
+// If found, assign its statusId to defaultStatus.value.statusId
+  if (noStatus) {
+  defaultStatus.value.statusId = noStatus.id;
+  }
 });
 
+
+
+// watch(() => props.task.status, (newStatus) => {
+//   console.log(newStatus.statusName);
+  
+//   if (newStatus.statusName === "No status") {
+    
+//     defaultStatus.value.statusId = newStatus.statusId;
+//   }
+// }, { immediate: true });
+console.log(props.task);
+const newTask = ref({
+  ...props.task,
+  statusId: props.task.status.statusId ? props.task.status.statusId : defaultStatus.value.statusId,
+});
+// const newTask = ref({ edit
+//   ...props.task,
+//   statusId: props.task.status.statusId ? props.task.status.statusId : defaultStatus.value.statusId,
+// });
 console.log(newTask.value);
 
 const titleCharCount = computed(() =>
@@ -101,7 +120,28 @@ computed(newTask.value, () => {
               <div class="max-w-fit my-auto mx-6">Status</div>
 
               <div>
-                <label class="form-control w-full">
+                <label class="form-control w-full max-w-xs">
+                  <!-- Dropdown select -->
+                  <select
+                    class="select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                    v-model="newTask.statusId"
+                  >
+                    <!-- Default placeholder showing current status if no option is selected -->
+                    <option :disabled="true" :selected="!newTask.statusId" class="text-b">
+                      {{ task?.status.statusName }}
+                    </option>
+
+                    <!-- Dynamic options from allStatus -->
+                    <option
+                      v-for="status in allStatus"
+                      :key="status.id"
+                      :value="status.id"
+                    >
+                      {{ status.name }}
+                    </option>
+                  </select>
+                </label>
+                <!-- <label class="form-control w-full">
                   <select
                     class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     v-model="newTask.id"
@@ -204,7 +244,7 @@ computed(newTask.value, () => {
                       ((newTask.assignees ?? '') === (task?.assignees ?? '') &&
                         (newTask.description ?? '') ===
                           (task?.description ?? '') &&
-                        (newTask.status ?? '') === (task?.status.id ?? '') &&
+                        (newTask.statusId ?? '') === (task?.status.statusId ?? '') &&
                         (newTask.title ?? '') === (task?.title ?? ''))
                     "
                   >

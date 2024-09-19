@@ -4,12 +4,7 @@ function getToken() {
 }
 async function getStatusData(id) {
   try {
-    const token = getToken();
-    const res = await fetch(`${url}/v3/board/${id}/statuses`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await fetch(`${url}/v3/board/${id}/statuses`);
     const data = await res.json();
     return data;
   } catch (error) {
@@ -17,15 +12,16 @@ async function getStatusData(id) {
     return null;
   }
 }
+// , {
+//   headers: {
+//     Authorization: `Bearer ${token}`,
+//   },
+// }
 async function getStatusDataById(routeId,id) {
   try {
     
     const token = getToken();
-    const res = await fetch(`${url}/v3/board/${routeId}/statuses/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await fetch(`${url}/v3/board/${routeId}/statuses/${id}`);
     const data = await res.json();
     return data;
   } catch (error) {
@@ -39,8 +35,7 @@ async function addStatus(newStatus,id) {
     const res = await fetch(`${url}/v3/board/${id}/statuses`, {
       method: "POST",
       headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${token}`
+        "content-type": "application/json"
       },
       body: JSON.stringify({
         ...newStatus,
@@ -58,8 +53,7 @@ async function editStatus(id, editStatus,routerId) {
     const res = await fetch(`${url}/v3/board/${routerId}/statuses/${id}`, {
       method: "PUT",
       headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${token}`
+        "content-type": "application/json"
       },
       body: JSON.stringify({
         ...editStatus,
@@ -87,9 +81,7 @@ async function deleteOneStatus(id) {
     const token = getToken();
     const res = await fetch(`${url}/v3/board/statuses/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }});
+      });
     return res;
   } catch (error) {
     console.error("Error fetching data:", error);

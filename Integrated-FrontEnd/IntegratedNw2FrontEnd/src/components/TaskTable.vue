@@ -26,16 +26,22 @@ const storeIndex = ref(0);
 const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
 const routerId = ref(route.params.id);
-const nameBoard = ref()
-onMounted(async () => {
+const allStatus = ref([]);
+const defaultStatus = ref({
+  statusId: null,
+});
+onMounted(async () => { 
   const data = await tasksStore.fetchTasks(routerId.value);
   storeTasks.value = data;
 });
 onMounted(async () => {
-  await statusStore.fetchStatus(routerId.value);
-  // const data = await boardStore.fetchBoards();
-  nameBoard.value = boardStore.matchUserBoard(routerId.value)
+  allStatus.value = await statusStore.fetchStatus(routerId.value);
+  const noStatus = allStatus.value.find(status => status.name === 'No Status');
   
+// If found, assign its statusId to defaultStatus.value.statusId
+  if (noStatus) {
+  defaultStatus.value.statusId = noStatus.id;
+  }
 });
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
@@ -84,20 +90,19 @@ const setIndex = (indexes) => {
   storeIndex.value = indexes;
 };
 const addEditTask = async (newTask) => {
+  console.log(newTask)
   if (newTask.id === undefined) {
     console.log("in add method");
     if (newTask.assignees === null) {
-      const data = await tasksStore.createTask(
-        {
-          assignees: newTask.assignees,
-          statusId: newTask.status ? newTask.status : 1,
-          title: newTask.title.trim(),
-          description: newTask.description
-            ? newTask.description.trim()
-            : newTask.description,
-        },
-        routerId.value
-      );
+      console.log(newTask);
+      const data = await tasksStore.createTask({
+        assignees: newTask.assignees,
+        statusId: newTask.statusId ? newTask.statusId : defaultStatus.value.statusId,
+        title: newTask.title.trim(),
+        description: newTask.description
+          ? newTask.description.trim()
+          : newTask.description,
+      },routerId.value);
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -106,17 +111,14 @@ const addEditTask = async (newTask) => {
         });
       }
     } else {
-      const data = await tasksStore.createTask(
-        {
-          assignees: newTask.assignees.trim(),
-          statusId: newTask.status ? newTask.status : 1,
-          title: newTask.title.trim(),
-          description: newTask.description
-            ? newTask.description.trim()
-            : newTask.description,
-        },
-        routerId.value
-      );
+      const data = await tasksStore.createTask({
+        assignees: newTask.assignees.trim(),
+        statusId: newTask.statusId ? newTask.statusId : defaultStatus.value.statusId,
+        title: newTask.title.trim(),
+        description: newTask.description
+          ? newTask.description.trim()
+          : newTask.description,
+      },routerId.value);
       if (data.id) {
         toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
@@ -130,7 +132,7 @@ const addEditTask = async (newTask) => {
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees,
-        statusId: newTask.status,
+        statusId: newTask.statusId,
         title: newTask.title.trim(),
         description: newTask.descriptio
           ? newTask.description.trim()
@@ -147,7 +149,7 @@ const addEditTask = async (newTask) => {
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees.trim(),
-        statusId: newTask.status,
+        statusId: newTask.statusId,
         title: newTask.title.trim(),
         description: newTask.description
           ? newTask.description.trim()
