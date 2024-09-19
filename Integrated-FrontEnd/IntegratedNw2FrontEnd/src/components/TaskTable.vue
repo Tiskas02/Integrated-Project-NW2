@@ -27,11 +27,14 @@ const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
 const routerId = ref(route.params.id);
 const allStatus = ref([]);
+const nameBoard = ref();
 const defaultStatus = ref({
   statusId: null,
 });
 onMounted(async () => { 
   const data = await tasksStore.fetchTasks(routerId.value);
+  const nameBoardf = boardStore.matchUserBoard(routerId.value);
+  nameBoard.value = nameBoardf;
   storeTasks.value = data;
 });
 onMounted(async () => {
@@ -230,7 +233,7 @@ const ClearStatuses = () => {
       <div
         class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
       >
-        Board name : {{ nameBoard }}      
+        Board name : {{ nameBoard }}     
       </div>
       
     </div>
