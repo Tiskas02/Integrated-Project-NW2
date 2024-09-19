@@ -154,8 +154,8 @@ computed(newTask.value, () => {
                       {{ status.name}}
                     </option>
                     <!-- {{task?.status.statusName}} -->
-                  </select>
-                </label>
+                  <!-- </select> -->
+                <!-- </label> -->
               </div>
             </div>
             <div class="flex">
