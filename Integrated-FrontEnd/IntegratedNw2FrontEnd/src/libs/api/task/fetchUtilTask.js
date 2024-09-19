@@ -53,7 +53,6 @@ async function addTask(newTask,id) {
       }),
     });
     const addedTask = await res.json();
-    console.log(addedTask);
     return addedTask;
   } catch (error) {
     console.log(`error: ${error}`);

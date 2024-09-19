@@ -26,12 +26,6 @@ export const useStoreTasks = defineStore("tasks", () => {
   async function createTask(task,id) {
     try {
       const addedTask = await addTask(task, id);
-      addedTask.status.statusName = addedTask.status.name;
-      addedTask.status.statusId = addedTask.status.id;
-      addedTask.status.statusDescription = addedTask.status.description;
-      delete addedTask.status.name;
-      delete addedTask.status.id;
-      delete addedTask.status.description;
       tasks.value.push(addedTask);
       console.log(tasks.value);
       return addedTask;

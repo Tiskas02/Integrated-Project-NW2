@@ -36,9 +36,13 @@ export const useStoreStatus = defineStore("status", () => {
   async function updateStatus(id, status,routeId) {
     try {
       const updatedStatus = await editStatus(id, status,routeId);
+      console.log(updateStatus);
+      
       const statusIndex = statuses.value.findIndex(
         (status) => status.id === id
       );
+      updatedStatus.name = updatedStatus.statusName;
+      delete updatedStatus.statusName;
       // statuses.value.splice(statusIndex, 1, updatedStatus);
       console.log(statuses.value[statusIndex]);
       console.log(updatedStatus);
