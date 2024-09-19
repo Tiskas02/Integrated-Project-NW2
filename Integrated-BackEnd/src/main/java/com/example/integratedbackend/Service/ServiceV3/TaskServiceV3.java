@@ -73,7 +73,7 @@ public class TaskServiceV3 {
                         "Task" + " " + id + " " + "doesn't exist !!!"));
     }
 
-    public TaskDTOV3 createTask(NewTaskDTOV3 addTask,String boardId) {
+    public TaskV3 createTask(NewTaskDTOV3 addTask,String boardId) {
         StatusV3 statusObj = statusRepositoriesV3.findById(addTask.getStatusId()).orElseThrow(
                 () -> new StatusIdNotFoundException("does not exist")
         );
@@ -84,7 +84,7 @@ public class TaskServiceV3 {
         taskV3.setBoard(boards);
         taskV3.setStatus(statusObj);
         TaskV3 addedTask = tasksRepositoriesV3.saveAndFlush(taskV3);
-        return modelMapper.map(addedTask, TaskDTOV3.class);
+        return modelMapper.map(addedTask, TaskV3.class);
     }
 
     @Transactional

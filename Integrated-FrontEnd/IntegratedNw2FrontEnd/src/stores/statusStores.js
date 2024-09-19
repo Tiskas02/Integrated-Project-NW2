@@ -23,7 +23,7 @@ export const useStoreStatus = defineStore("status", () => {
   }
   async function createStatus(newStatus,id) {
     try {
-      const addedStatus = await addStatus(newStatus,id);
+      const addedStatus = await addStatus(newStatus,id);    
       if (addedStatus.status === undefined) {
         statuses.value.push(addedStatus);
       }
