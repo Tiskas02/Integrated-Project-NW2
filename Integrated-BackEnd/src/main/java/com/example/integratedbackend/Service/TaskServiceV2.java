@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class TaskServiceV2 {
     public Taskv2 findByID(Integer id) throws ItemNotFoundException {
         return repositories.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Task" + " " + id + " " + "doesn't exist !!!"));
+                        HttpStatus.FORBIDDEN, "Task" + " " + id + " " + "doesn't exist !!!"));
     }
 
     public TaskIDDTOV2 createTask(NewTaskDTOV2 addTask) {
@@ -87,7 +88,7 @@ public class TaskServiceV2 {
     @Transactional
     public TaskIDDTOV2 updateTask(NewTaskDTOV2 editTask, Integer id) {
         Taskv2 existingTask = repositories.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Task " + id + " doesn't exist!"));
         existingTask.setTaskTitle(editTask.getTitle());
         existingTask.setTaskDescription(editTask.getDescription());
         existingTask.setTaskAssignees(editTask.getAssignees());

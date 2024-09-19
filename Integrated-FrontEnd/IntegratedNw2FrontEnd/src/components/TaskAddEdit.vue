@@ -144,7 +144,7 @@ computed(newTask.value, () => {
                 <!-- <label class="form-control w-full">
                   <select
                     class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                    v-model="newTask.status"
+                    v-model="newTask.id"
                   >
                     <option
                       v-for="status in allStatus"
@@ -153,9 +153,9 @@ computed(newTask.value, () => {
                     >
                       {{ status.name}}
                     </option>
-                    {{task?.status.statusName}}
+                    <!-- {{task?.status.statusName}} -->
                   </select>
-                </label> -->
+                </label>
               </div>
             </div>
             <div class="flex">

@@ -16,6 +16,8 @@ export const useStoreTasks = defineStore("tasks", () => {
       taskData.forEach((task) => {
         tasks.value.push(task);
       });
+      console.log(tasks.value);
+      
     } catch (error) {
       console.error("Error fetching data:", error);
     }

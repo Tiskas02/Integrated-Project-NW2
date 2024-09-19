@@ -4,6 +4,7 @@ import StatusModal from "./StatusModal.vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
+import { useStoreBoard } from "@/stores/boardStore";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useToasterStore } from "@/stores/notificationStores";
 import BaseBtn from "@/shared/BaseBtn.vue";
@@ -11,13 +12,19 @@ const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
 const storeMode = ref("");
+const boardStore = useStoreBoard();
 const statusStore = useStoreStatus();
+// const { boards } = storeToRefs(boardStore);
 const { statuses } = storeToRefs(statusStore);
 const dataById = ref();
 const toasterStore = useToasterStore();
-const routeId =ref(route.params.id);
+const routeId = ref(route.params.id);
+const nameBoard = ref();
 onMounted(async () => {
   await statusStore.fetchStatus(routeId.value);
+  const nameBoardf = boardStore.matchUserBoard(routeId.value);
+  nameBoard.value = nameBoardf
+  
 });
 const addOrEditStatus = async (newStatus) => {
   try {
@@ -26,10 +33,13 @@ const addOrEditStatus = async (newStatus) => {
       ? newStatus.description.trim()
       : newStatus.description;
     if (newStatus.id === undefined) {
-      const check = await statusStore.createStatus({
-        name,
-        description,
-      },routeId.value);
+      const check = await statusStore.createStatus(
+        {
+          name,
+          description,
+        },
+        routeId.value
+      );
       if (check.id !== undefined) {
         toasterStore.success({ text: "Status added successfully!" });
       } else if (check.errors[0].message) {
@@ -42,10 +52,14 @@ const addOrEditStatus = async (newStatus) => {
         });
       }
     } else {
-      const check = await statusStore.updateStatus(newStatus.id, {
-        name,
-        description,
-      },routeId.value);
+      const check = await statusStore.updateStatus(
+        newStatus.id,
+        {
+          name,
+          description,
+        },
+        routeId.value
+      );
       if (check.id !== undefined) {
         toasterStore.success({ text: "Status edit successfully!" });
       } else if (check.status === 400) {
@@ -62,7 +76,7 @@ const addOrEditStatus = async (newStatus) => {
 const deleteOne = async (id) => {
   const status = await statusStore.deleteStatus(id);
   console.log(status);
-  
+
   if (status === 200) {
     toasterStore.success({ text: "Status deleted successfully!" });
   } else {
@@ -96,7 +110,7 @@ const fetchById = async (id, mode) => {
   if (!id) {
     return alert("No id provided");
   }
-  dataById.value = await getStatusDataById(routeId.value,id);
+  dataById.value = await getStatusDataById(routeId.value, id);
   storeMode.value = mode;
   if (storeMode.value === "edit" && id !== null) {
     router.push({ name: "editStatus", params: { editid: id } });
@@ -122,15 +136,22 @@ const setClose = (value) => {
 
 <template>
   <div class="flex justify-end m-10">
-    <BaseBtn >
+    <BaseBtn>
       <router-link :to="{ name: 'Task' }">
-      <template #default>
-        <button class="p-4">Manage Task</button>
-      </template>
-    </router-link>
+        <template #default>
+          <button class="p-4">Manage Task</button>
+        </template>
+      </router-link>
     </BaseBtn>
-</div>
+  </div>
   <div>
+    <div class="w-full flex justify-center my-3">
+      <div
+        class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
+      >
+        Board name : {{ nameBoard }}
+      </div>
+    </div>
     <div class="w-full flex justify-center my-3">
       <div
         class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
@@ -139,11 +160,9 @@ const setClose = (value) => {
       </div>
     </div>
     <div
-      class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between "
+      class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between"
     >
-      <div
-        class="w-[95%] h-full m-auto  flex justify-start items-center px-6"
-      >
+      <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
         <div class="font-bold text-slate-700">Tool Bar :</div>
         <div
           class="itbkk-button-add btn btn-outline flex mx-8"
@@ -206,11 +225,11 @@ const setClose = (value) => {
               </p>
             </div>
           </div>
-          <div
-            class="w-full h-[500px] overflow-auto rounded "
-          >
+          <div class="w-full h-[500px] overflow-auto rounded">
             <div v-for="(status, index) in statuses" :key="status.id">
-              <div class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner">
+              <div
+                class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+              >
                 <div class="w-full max-h-[550px]">
                   <div
                     class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"

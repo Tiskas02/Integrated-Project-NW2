@@ -2,15 +2,9 @@ package com.example.integratedbackend.Service.ServiceV3;
 
 import com.example.integratedbackend.DTO.DTOV3.NewTaskDTOV3;
 import com.example.integratedbackend.DTO.DTOV3.TaskDTOV3;
-import com.example.integratedbackend.DTO.DTOV3.TaskV3DTO;
-import com.example.integratedbackend.DTO.NewTaskDTOV2;
-import com.example.integratedbackend.DTO.TaskDTOV2;
-import com.example.integratedbackend.DTO.TaskIDDTOV2;
 import com.example.integratedbackend.ErrorHandle.ItemErrorNotFoundException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.StatusIdNotFoundException;
-import com.example.integratedbackend.Kradankanban.Status;
-import com.example.integratedbackend.Kradankanban.Taskv2;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3;
@@ -18,15 +12,14 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.Bo
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.StatusRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.TasksRepositoriesV3;
 import com.example.integratedbackend.Service.ListMapper;
-import io.viascom.nanoid.NanoId;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -44,7 +37,7 @@ public class TaskServiceV3 {
     public List<TaskDTOV3> getAllTasksByBoardId(List<String> statusNames, String[] sortBy, String[] direction, String nanoId) {
         Boards boards = boardsRepositoriesV3.findById(nanoId).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "board" + " " + nanoId + " " + "doesn't exist !!!")
+                        HttpStatus.FORBIDDEN, "board" + " " + nanoId + " " + "doesn't exist !!!")
         );
         List<Sort.Order> orders = new ArrayList<>();
         if ((sortBy.length != 0 && !(sortBy[0].equals("status.name"))) || sortBy.length > 1) {
@@ -67,10 +60,10 @@ public class TaskServiceV3 {
 
     public TaskV3 findTaskByBoardIdAndId(Integer id, String boardId) throws ItemNotFoundException {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() -> new ItemNotFoundException(
-                "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
+                HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         return tasksRepositoriesV3.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Task" + " " + id + " " + "doesn't exist !!!"));
+                        HttpStatus.FORBIDDEN, "Task" + " " + id + " " + "doesn't exist !!!"));
     }
 
     public TaskV3 createTask(NewTaskDTOV3 addTask,String boardId) {
@@ -79,7 +72,7 @@ public class TaskServiceV3 {
         );
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
+                        HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         TaskV3 taskV3 = modelMapper.map(addTask, TaskV3.class);
         taskV3.setBoard(boards);
         taskV3.setStatus(statusObj);
@@ -91,7 +84,7 @@ public class TaskServiceV3 {
     public TaskDTOV3 deleteTask(Integer id, String boardId) throws ItemNotFoundException {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
+                        HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         TaskV3 taskToDelete = tasksRepositoriesV3.findById(id)
                 .orElseThrow(() -> new ItemErrorNotFoundException("NOT FOUND"));
         tasksRepositoriesV3.delete(taskToDelete);
@@ -103,9 +96,9 @@ public class TaskServiceV3 {
     public TaskV3 updateTask(NewTaskDTOV3 editTask, Integer id, String boardId) throws ItemNotFoundException {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(
                 () -> new ItemNotFoundException(
-                        "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
+                        HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         TaskV3 existingTask = tasksRepositoriesV3.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException("Task " + id + " doesn't exist!"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Task " + id + " doesn't exist!"));
         existingTask.setTitle(editTask.getTitle());
         existingTask.setDescription(editTask.getDescription());
         existingTask.setAssignees(editTask.getAssignees());
