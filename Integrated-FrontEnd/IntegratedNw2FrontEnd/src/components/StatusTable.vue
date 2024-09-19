@@ -1,37 +1,36 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import StatusModal from "./StatusModal.vue";
-import { useStoreStatus } from "@/stores/statusStores";
-import { useRoute, useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
-import { useStoreBoard } from "@/stores/boardStore";
-import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
-import { useToasterStore } from "@/stores/notificationStores";
-import BaseBtn from "@/shared/BaseBtn.vue";
-const route = useRoute();
-const router = useRouter();
-const showModal = ref(false);
-const storeMode = ref("");
-const boardStore = useStoreBoard();
-const statusStore = useStoreStatus();
-// const { boards } = storeToRefs(boardStore);
-const { statuses } = storeToRefs(statusStore);
-const dataById = ref();
-const toasterStore = useToasterStore();
-const routeId = ref(route.params.id);
-const nameBoard = ref();
+import { ref, onMounted } from "vue"
+import StatusModal from "./StatusModal.vue"
+import { useStoreStatus } from "@/stores/statusStores"
+import { useRoute, useRouter } from "vue-router"
+import { storeToRefs } from "pinia"
+import { useStoreBoard } from "@/stores/boardStore"
+import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js"
+import { useToasterStore } from "@/stores/notificationStores"
+import BaseBtn from "@/shared/BaseBtn.vue"
+const route = useRoute()
+const router = useRouter()
+const showModal = ref(false)
+const storeMode = ref("")
+const boardStore = useStoreBoard()
+const statusStore = useStoreStatus()
+const { statuses } = storeToRefs(statusStore)
+const dataById = ref()
+const toasterStore = useToasterStore()
+const routeId = ref(route.params.id)
+const nameBoard = ref()
 onMounted(async () => {
-  await statusStore.fetchStatus(routeId.value);
-  const nameBoardf = boardStore.matchUserBoard(routeId.value);
+  await statusStore.fetchStatus(routeId.value)
+  const nameBoardf = boardStore.matchUserBoard(routeId.value)
   nameBoard.value = nameBoardf
-  
-});
+})
+
 const addOrEditStatus = async (newStatus) => {
   try {
-    const name = newStatus.name ? newStatus.name.trim() : newStatus.name;
+    const name = newStatus.name ? newStatus.name.trim() : newStatus.name
     const description = newStatus.description
       ? newStatus.description.trim()
-      : newStatus.description;
+      : newStatus.description
     if (newStatus.id === undefined) {
       const check = await statusStore.createStatus(
         {
@@ -39,17 +38,17 @@ const addOrEditStatus = async (newStatus) => {
           description,
         },
         routeId.value
-      );
+      )
       if (check.id !== undefined) {
-        toasterStore.success({ text: "Status added successfully!" });
+        toasterStore.success({ text: "Status added successfully!" })
       } else if (check.errors[0].message) {
         toasterStore.error({
           text: `Status Name ${check.errors[0].message} `,
-        });
+        })
       } else if (check.status === 400) {
         toasterStore.error({
           text: "An error occurred while adding the status.",
-        });
+        })
       }
     } else {
       const check = await statusStore.updateStatus(
@@ -59,79 +58,75 @@ const addOrEditStatus = async (newStatus) => {
           description,
         },
         routeId.value
-      );
+      )
       if (check.id !== undefined) {
-        toasterStore.success({ text: "Status edit successfully!" });
+        toasterStore.success({ text: "Status edit successfully!" })
       } else if (check.status === 400) {
         toasterStore.error({
           text: "An error occurred while editing the status.",
-        });
+        })
       }
     }
   } catch (error) {
-    console.error("Error adding/editing status:", error);
+    console.error("Error adding/editing status:", error)
   }
-};
+}
 
 const deleteOne = async (id) => {
-  const status = await statusStore.deleteStatus(id);
-  console.log(status);
+  const status = await statusStore.deleteStatus(id)
+  console.log(status)
 
   if (status === 200) {
-    toasterStore.success({ text: "Status deleted successfully!" });
+    toasterStore.success({ text: "Status deleted successfully!" })
   } else {
-    toasterStore.error({ text: "An error occurred while deleting the task." });
+    toasterStore.error({ text: "An error occurred while deleting the task." })
   }
-};
+}
 const deleteTranfer = async (value) => {
-  const status = await statusStore.tranferStatus(value.oldId, value.newId);
+  const status = await statusStore.tranferStatus(value.oldId, value.newId)
   if (status === 200) {
-    toasterStore.success({ text: "Status tranfer successfully!" });
+    toasterStore.success({ text: "Status tranfer successfully!" })
   } else {
     toasterStore.error({
       text: "An error occurred while tranfering the task.",
-    });
+    })
   }
-};
+}
 
 const setModal = async (value, mode, id) => {
-  showModal.value = value;
-  storeMode.value = mode;
+  showModal.value = value
+  storeMode.value = mode
   if (storeMode.value === "add") {
-    router.push({ name: "addStatus" });
+    router.push({ name: "addStatus" })
   } else if (storeMode.value === "edit" && id !== null) {
-    router.push({ name: "editStatus", params: { editid: id } });
+    router.push({ name: "editStatus", params: { editid: id } })
   } else {
-    dataById.value = statusStore.statuses.find((status) => status.id === id);
+    dataById.value = statusStore.statuses.find((status) => status.id === id)
   }
-};
+}
 
 const fetchById = async (id, mode) => {
   if (!id) {
-    return alert("No id provided");
+    return alert("No id provided")
   }
-  dataById.value = await getStatusDataById(routeId.value, id);
-  storeMode.value = mode;
+  dataById.value = await getStatusDataById(routeId.value, id)
+  storeMode.value = mode
   if (storeMode.value === "edit" && id !== null) {
-    router.push({ name: "editStatus", params: { editid: id } });
+    router.push({ name: "editStatus", params: { editid: id } })
   }
   if (dataById.value.status == "404") {
-    alert("The requested status does not exist");
-    router.replace({ name: "status" });
-    showModal.value = false;
-    return;
+    alert("The requested status does not exist")
+    router.replace({ name: "status" })
+    showModal.value = false
+    return
   }
 
-  showModal.value = true;
-};
-
-// if (route.params.id) {
-//   fetchById(route.params.id, "view");
-// }
+  showModal.value = true
+}
 
 const setClose = (value) => {
-  showModal.value = value;
-};
+  showModal.value = value
+}
 </script>
 
 <template>

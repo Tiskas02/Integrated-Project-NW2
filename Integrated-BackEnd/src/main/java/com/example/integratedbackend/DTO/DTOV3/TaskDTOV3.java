@@ -1,7 +1,5 @@
 package com.example.integratedbackend.DTO.DTOV3;
 
-import com.example.integratedbackend.Kradankanban.Status;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
 import lombok.Data;
 

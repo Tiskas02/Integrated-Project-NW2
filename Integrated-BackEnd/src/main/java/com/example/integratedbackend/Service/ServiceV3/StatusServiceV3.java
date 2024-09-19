@@ -31,8 +31,6 @@ public class StatusServiceV3 {
     private TasksRepositoriesV3 tasksRepositoriesV3;
     @Autowired
     ModelMapper mapper;
-    @Autowired
-    private ListMapper listMapper;
 
     public List<StatusV3> getAllStatus(String boardId) {
         return statusRepositoriesV3.findByBoard_BoardId(boardId);

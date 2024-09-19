@@ -1,13 +1,12 @@
 <script setup>
-import { defineProps, defineEmits, ref, computed, onMounted,watch } from "vue";
-import { useStoreStatus } from "@/stores/statusStores";
-import { useRoute, useRouter } from "vue-router";
-const route = useRoute();
-const router = useRouter();
-const emit = defineEmits(["close", "sentData"]);
-const statusStore = useStoreStatus();
-const allStatus = ref([]);
-const routerId = ref(route.params.id);
+import { defineProps, defineEmits, ref, computed, onMounted } from "vue"
+import { useStoreStatus } from "@/stores/statusStores"
+import { useRoute } from "vue-router"
+const route = useRoute()
+const emit = defineEmits(["close", "sentData"])
+const statusStore = useStoreStatus()
+const allStatus = ref([])
+const routerId = ref(route.params.id)
 const props = defineProps({
   mode: String,
   task: {
@@ -22,66 +21,57 @@ const props = defineProps({
       updatedOn: "",
     },
   },
-});
+})
+
 const defaultStatus = ref({
   statusId: null,
-});
+})
+
 onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value);
-  const noStatus = allStatus.value.find(status => status.name === 'No Status');
-  
-// If found, assign its statusId to defaultStatus.value.statusId
+  allStatus.value = await statusStore.fetchStatus(routerId.value)
+  const noStatus = allStatus.value.find((status) => status.name === "No Status")
+
+  // If found, assign its statusId to defaultStatus.value.statusId
   if (noStatus) {
-  defaultStatus.value.statusId = noStatus.id;
+    defaultStatus.value.statusId = noStatus.id
   }
-});
+})
 
-
-
-// watch(() => props.task.status, (newStatus) => {
-//   console.log(newStatus.statusName);
-  
-//   if (newStatus.statusName === "No status") {
-    
-//     defaultStatus.value.statusId = newStatus.statusId;
-//   }
-// }, { immediate: true });
-console.log(props.task);
 const newTask = ref({
   ...props.task,
-  statusId: props.task.status.statusId ? props.task.status.statusId : defaultStatus.value.statusId,
-});
-// const newTask = ref({ edit
-//   ...props.task,
-//   statusId: props.task.status.statusId ? props.task.status.statusId : defaultStatus.value.statusId,
-// });
-console.log(newTask.value);
+  statusId: props.task.status.statusId
+    ? props.task.status.statusId
+    : defaultStatus.value.statusId,
+})
 
 const titleCharCount = computed(() =>
   newTask.value.title ? newTask.value.title.length : 0
-);
+)
+
 const assigneesCharCount = computed(() =>
   newTask.value.assignees ? newTask.value.assignees.length : 0
-);
+)
+
 const descriptionCharCount = computed(() =>
   newTask.value.description ? newTask.value.description.length : 0
-);
+)
+
 computed(newTask.value, () => {
   Errortext.value.title == "" &&
     Errortext.value.description == "" &&
-    Errortext.value.assignee == "";
+    Errortext.value.assignee == ""
   if (newTask.value.title.trim().length > 100) {
-    Errortext.value.title = "Title has longer than 100 character";
+    Errortext.value.title = "Title has longer than 100 character"
   } else if (newTask.value.title.trim().length == 0) {
-    Errortext.value.title = "Title can not be empty!!";
+    Errortext.value.title = "Title can not be empty!!"
   } else if (newTask.value.description.trim().length > 500) {
-    Errortext.value.description = "Description has longer than 500 character";
+    Errortext.value.description = "Description has longer than 500 character"
   } else if (newTask.value.assignees.trim().length > 30) {
-    Errortext.value.assignees = "Assignees has longer than 30 character";
+    Errortext.value.assignees = "Assignees has longer than 30 character"
   } else {
-    Errortext.value.assignees = "";
+    Errortext.value.assignees = ""
   }
-});
+})
 </script>
 
 <template>
@@ -110,7 +100,6 @@ computed(newTask.value, () => {
                   v-model="newTask.title"
                   >{{ task?.title }}</textarea
                 >
-                
               </div>
               <div class="flex justify-end text-xs">
                 {{ titleCharCount }}/100
@@ -127,7 +116,11 @@ computed(newTask.value, () => {
                     v-model="newTask.statusId"
                   >
                     <!-- Default placeholder showing current status if no option is selected -->
-                    <option :disabled="true" :selected="!newTask.statusId" class="text-b">
+                    <option
+                      :disabled="true"
+                      :selected="!newTask.statusId"
+                      class="text-b"
+                    >
                       {{ task?.status.statusName }}
                     </option>
 
@@ -141,21 +134,6 @@ computed(newTask.value, () => {
                     </option>
                   </select>
                 </label>
-                <!-- <label class="form-control w-full">
-                  <select
-                    class="itbkk-status select select-bordered bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                    v-model="newTask.id"
-                  >
-                    <option
-                      v-for="status in allStatus"
-                      :key="status.id"
-                      :value="status.id"
-                    >
-                      {{ status.name}}
-                    </option>
-                    <!-- {{task?.status.statusName}} -->
-                  <!-- </select> -->
-                <!-- </label> -->
               </div>
             </div>
             <div class="flex">
@@ -234,9 +212,9 @@ computed(newTask.value, () => {
                     class="itbkk-button-confirm disabled btn btn-info text-white"
                     @click="
                       () => {
-                        $router.go(-1);
-                        emit('sentData', newTask);
-                        emit('close', false);
+                        $router.go(-1)
+                        emit('sentData', newTask)
+                        emit('close', false)
                       }
                     "
                     :disabled="
@@ -244,7 +222,8 @@ computed(newTask.value, () => {
                       ((newTask.assignees ?? '') === (task?.assignees ?? '') &&
                         (newTask.description ?? '') ===
                           (task?.description ?? '') &&
-                        (newTask.statusId ?? '') === (task?.status.statusId ?? '') &&
+                        (newTask.statusId ?? '') ===
+                          (task?.status.statusId ?? '') &&
                         (newTask.title ?? '') === (task?.title ?? ''))
                     "
                   >
@@ -257,8 +236,8 @@ computed(newTask.value, () => {
                   class="itbkk-button-cancel btn btn-error text-white"
                   @click="
                     () => {
-                      $router.go(-1);
-                      emit('close', false);
+                      $router.go(-1)
+                      emit('close', false)
                     }
                   "
                 >

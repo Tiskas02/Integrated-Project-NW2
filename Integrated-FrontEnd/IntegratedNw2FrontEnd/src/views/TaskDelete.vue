@@ -1,16 +1,10 @@
 <script setup>
-import { defineProps, defineEmits,ref} from "vue";
-const emit = defineEmits(["close", "savedDelete"]);
-import { useRoute, useRouter } from "vue-router";
-const route = useRoute();
-const router = useRouter();
-const routerId = ref(route.params.id);
+import { defineProps, defineEmits } from "vue"
+const emit = defineEmits(["close", "savedDelete"])
 const props = defineProps({
   task: Object,
   index: Number,
-});
-
-
+})
 </script>
 
 <template>
@@ -30,7 +24,7 @@ const props = defineProps({
           </div>
           <div class="flex justify-end my-4">
             <div
-              @click="[$emit('close', false)]"
+              @click=";[$emit('close', false)]"
               class="itbkk-button-cancel btn btn-error text-white mx-2"
             >
               Cancel
@@ -38,8 +32,7 @@ const props = defineProps({
             <div
               @click="
                 () => {
-                    $emit('close', false),
-                    $emit('savedDelete', task?.id);
+                  $emit('close', false), $emit('savedDelete', task?.id)
                 }
               "
               class="itbkk-button-confirm btn btn-success text-white"

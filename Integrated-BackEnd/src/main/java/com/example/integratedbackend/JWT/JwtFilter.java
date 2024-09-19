@@ -1,6 +1,5 @@
 package com.example.integratedbackend.JWT;
 
-import com.example.integratedbackend.Users.User;
 import com.example.integratedbackend.Service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

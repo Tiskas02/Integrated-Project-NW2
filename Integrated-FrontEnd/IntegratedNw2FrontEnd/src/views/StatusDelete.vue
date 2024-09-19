@@ -1,11 +1,11 @@
 <script setup>
-import { shouldDeleteOrTransferStatus } from "@/libs/api/status/fetchUtilStatus";
-import { defineProps, defineEmits, ref, watch, onMounted } from "vue";
-import { useStoreStatus } from "@/stores/statusStores";
-import { storeToRefs } from "pinia";
-const statusStore = useStoreStatus();
-const { statuses } = storeToRefs(statusStore);
-const emit = defineEmits(["close", "sentDelete", "sentTranfer"]);
+import { shouldDeleteOrTransferStatus } from "@/libs/api/status/fetchUtilStatus"
+import { defineProps, defineEmits, ref, watch, onMounted } from "vue"
+import { useStoreStatus } from "@/stores/statusStores"
+import { storeToRefs } from "pinia"
+const statusStore = useStoreStatus()
+const { statuses } = storeToRefs(statusStore)
+const emit = defineEmits(["close", "sentDelete", "sentTranfer"])
 const props = defineProps({
   status: {
     type: Object,
@@ -15,18 +15,18 @@ const props = defineProps({
       description: "",
     },
   },
-});
-const oldId = ref(props.status.id);
-const newId = ref(null);
-const shouldDeleteOrTransfer = ref(false);
+})
+const oldId = ref(props.status.id)
+const newId = ref(null)
+const shouldDeleteOrTransfer = ref(false)
 onMounted(async () => {
-  const deleted = await shouldDeleteOrTransferStatus(props.status.id);
+  const deleted = await shouldDeleteOrTransferStatus(props.status.id)
   if (deleted === true) {
-    shouldDeleteOrTransfer.value = true;
+    shouldDeleteOrTransfer.value = true
   } else {
-    shouldDeleteOrTransfer.value = false;
+    shouldDeleteOrTransfer.value = false
   }
-});
+})
 </script>
 
 <template>
@@ -64,7 +64,7 @@ onMounted(async () => {
           </div>
           <div class="flex justify-end my-4">
             <div
-              @click="[$emit('close', false)]"
+              @click=";[$emit('close', false)]"
               class="itbkk-button-cancel btn btn-error text-white mx-2"
             >
               Cancel
@@ -73,7 +73,7 @@ onMounted(async () => {
               v-if="shouldDeleteOrTransfer"
               @click="
                 () => {
-                  $emit('close', false), $emit('sentTranfer', { oldId, newId });
+                  $emit('close', false), $emit('sentTranfer', { oldId, newId })
                 }
               "
               class="itbkk-button-confirm btn btn-success text-white"
@@ -84,7 +84,7 @@ onMounted(async () => {
               v-else
               @click="
                 () => {
-                  $emit('close', false), $emit('sentDelete', oldId);
+                  $emit('close', false), $emit('sentDelete', oldId)
                 }
               "
               class="itbkk-button-confirm btn btn-success text-white"

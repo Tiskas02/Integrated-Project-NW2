@@ -7,7 +7,6 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Users;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.UsersRepositoriesV3;
-import com.example.integratedbackend.Service.ListMapper;
 import io.viascom.nanoid.NanoId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,7 @@ public class BoardService {
     private StatusServiceV3 statusServiceV3;
     @Autowired
     ModelMapper modelMapper;
-    @Autowired
-    private ListMapper listMapper;
+
 
     public List<Boards> getBoardByUserId(String userName){
         List<Users> users = usersRepositoriesV3.findAllByUsername(userName);

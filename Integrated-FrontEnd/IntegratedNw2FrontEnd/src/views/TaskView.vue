@@ -1,16 +1,13 @@
 <script setup>
-import { defineProps, defineEmits } from "vue";
-import { useRoute, useRouter } from "vue-router";
-const route = useRoute();
-const router = useRouter();
-const emit = defineEmits(["close", "task"]);
+import { defineProps, defineEmits } from "vue"
+const emit = defineEmits(["close", "task"])
 const props = defineProps({
   task: Object,
-});
+})
 
 const getRandomColor = () => {
-  return "#" + Math.floor(Math.random() * 16777215).toString(16);
-};
+  return "#" + Math.floor(Math.random() * 16777215).toString(16)
+}
 </script>
 
 <template>
@@ -108,8 +105,8 @@ const getRandomColor = () => {
                   class="itbkk-button-cancel btn btn-error text-white"
                   @click="
                     () => {
-                      $router.go(-1);
-                      emit('close', false);
+                      $router.go(-1)
+                      emit('close', false)
                     }
                   "
                 >

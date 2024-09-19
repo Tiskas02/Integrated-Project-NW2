@@ -1,9 +1,6 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
-const route = useRoute();
-const router = useRouter();
-const emit = defineEmits(["close", "newStatus"]);
+import { defineProps, defineEmits, ref, watch, computed } from "vue"
+const emit = defineEmits(["close", "newStatus"])
 const props = defineProps({
   status: {
     type: Object,
@@ -14,28 +11,31 @@ const props = defineProps({
     },
   },
   mode: String,
-});
+})
+
 const storeData = ref({
   id: undefined,
   name: "",
   description: "",
-});
+})
+
 watch(
   () => props.status,
   () => {
     if (props.mode === "edit") {
-      storeData.value = { ...props.status };
+      storeData.value = { ...props.status }
     }
   },
   { deep: true, immediate: true }
-);
+)
+
 const nameCharCount = computed(() =>
   storeData.value.name ? storeData.value.name.length : 0
-);
+)
+
 const descriptionCharCount = computed(() =>
   storeData.value.description ? storeData.value.description.length : 0
-);
-
+)
 </script>
 
 <template>
@@ -97,8 +97,8 @@ const descriptionCharCount = computed(() =>
                   @click="
                     () => {
                       $router.go(-1)
-                      emit('close', false);
-                      emit('newStatus', storeData);
+                      emit('close', false)
+                      emit('newStatus', storeData)
                     }
                   "
                   :disabled="
@@ -117,7 +117,7 @@ const descriptionCharCount = computed(() =>
                   @click="
                     () => {
                       $router.go(-1)
-                      emit('close', false);
+                      emit('close', false)
                     }
                   "
                 >

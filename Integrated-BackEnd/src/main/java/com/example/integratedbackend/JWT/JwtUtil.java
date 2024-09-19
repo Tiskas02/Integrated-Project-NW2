@@ -1,7 +1,6 @@
 package com.example.integratedbackend.JWT;
 
 import com.example.integratedbackend.Users.User;
-import com.example.integratedbackend.Users.UserRole;
 import com.example.integratedbackend.Users.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 @Component
