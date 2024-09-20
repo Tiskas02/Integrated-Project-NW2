@@ -38,6 +38,7 @@ export const useStoreStatus = defineStore("status", () => {
     try {
       const updatedStatus = await editStatus(id, status, routeId)
       const statusIndex = statuses.value.findIndex((status) => status.id === id)
+      updateStatus.name = updateStatus.statusName
       delete updateStatus.statusName
       statuses.value[statusIndex] = updatedStatus
       return updatedStatus
