@@ -26,7 +26,7 @@ const newBoard = ref({
                 class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder="Enter board name"
                 required
-                maxlength="50"
+                maxlength="120"
                 v-model="newBoard.name"
               ></textarea>
             </div>
