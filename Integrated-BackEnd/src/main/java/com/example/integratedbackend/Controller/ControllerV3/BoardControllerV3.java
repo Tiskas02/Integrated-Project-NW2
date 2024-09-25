@@ -22,7 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("v3/board")
+@RequestMapping("v3/boards")
 @CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th","*"})
 public class BoardControllerV3 {
     @Autowired
