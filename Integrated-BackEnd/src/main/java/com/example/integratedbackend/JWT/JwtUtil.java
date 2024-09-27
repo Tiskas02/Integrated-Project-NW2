@@ -24,6 +24,8 @@ public class JwtUtil {
     private String SECRET_KEY;
     @Value("#{${jwt.max-token-interval-hour}*60*60*1000}")
     private long JWT_TOKEN_VALIDITY;
+    @Value("#{${jwt.refresh-token-validity-days}*24*60*60*1000}")
+    private long JWT_REFRESH_TOKEN_VALIDITY;
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
 
@@ -60,8 +62,15 @@ public class JwtUtil {
         return createToken(claims, user.getUsername());
     }
 
+    public String generateRefreshToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("oid", user.getOid());
+        return createRefreshToken(claims, user.getUsername(), JWT_REFRESH_TOKEN_VALIDITY);
+    }
+
     private String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setHeaderParam("typ", "JWT").
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT").
                 setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -69,7 +78,23 @@ public class JwtUtil {
                 .signWith(signatureAlgorithm, SECRET_KEY).compact();
     }
 
+    private String createRefreshToken(Map<String, Object> claims, String subject, long tokenValidity) {
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT").
+                setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenValidity))
+                .signWith(signatureAlgorithm, SECRET_KEY)
+                .compact();
+    }
+
     public Boolean validateToken(String token, String username) {
+        final String tokenUsername = extractUsername(token);
+        return (tokenUsername.equals(username) && !isTokenExpired(token));
+    }
+
+    public Boolean validateRefreshToken(String token, String username) {
         final String tokenUsername = extractUsername(token);
         return (tokenUsername.equals(username) && !isTokenExpired(token));
     }

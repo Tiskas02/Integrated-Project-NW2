@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Controller;
 
+import com.example.integratedbackend.DTO.DTOV3.RefreshTokenRequest;
 import com.example.integratedbackend.DTO.LoginRequest;
 import com.example.integratedbackend.DTO.LoginResponse;
 import com.example.integratedbackend.Service.AuthService;
@@ -20,4 +21,16 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.authenticate(loginRequest));
     }
+
+//    @PostMapping("/token")
+//    public ResponseEntity<LoginResponse> refreshAccessToken(@RequestHeader @Valid RefreshTokenRequest refreshTokenRequest) {
+//        return ResponseEntity.ok(authService.refreshToken(refreshTokenRequest.getRefresh_token()));
+//    }
+
+    @PostMapping("/token")
+    public ResponseEntity<LoginResponse> refreshAccessToken(@RequestHeader("Authorization") RefreshTokenRequest refreshToken) {
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
+    }
+
+
 }
