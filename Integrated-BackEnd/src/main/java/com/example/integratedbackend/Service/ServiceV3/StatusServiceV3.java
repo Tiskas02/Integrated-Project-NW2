@@ -32,7 +32,7 @@ public class StatusServiceV3 {
     ModelMapper mapper;
 
     public List<StatusV3> getAllStatus(String boardId) {
-        return statusRepositoriesV3.findByBoard_BoardId(boardId);
+        return statusRepositoriesV3.findByBoard_Id(boardId);
     }
 
     public StatusV3 findById(String boardId, Integer statusId) throws ItemNotFoundException {
@@ -40,7 +40,7 @@ public class StatusServiceV3 {
         Boards board = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with ID " + boardId + " not found"));
         //อันนี้ใช้ repo หาว่า boardId&statusId มันมีตรงกันมั้ยในดาต้าเบส ถ้าไม่ตรงก็โชว์ "Status with ID " + statusId + " doesn't exist on board with ID " + boardId
-        return (StatusV3) statusRepositoriesV3.findByBoardBoardIdAndStatusId(boardId, statusId).orElseThrow(() ->
+        return (StatusV3) statusRepositoriesV3.findByBoardIdAndStatusId(boardId, statusId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.FORBIDDEN, "Status with ID " + statusId + " doesn't exist on board with ID " + boardId));
     }
 

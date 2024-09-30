@@ -54,7 +54,7 @@ public class TaskServiceV3 {
             List<StatusV3> statuses = statusNames.stream().map((nameStatus) -> statusRepositoriesV3.findByStatusName(nameStatus.replace("_"," "))).toList();
             return listMapper.mapList(tasksRepositoriesV3.findByStatusInAndBoard(statuses,boards, Sort.by(orders)), TaskDTOV3.class, modelMapper);
         }
-        List<TaskV3> tasks = tasksRepositoriesV3.findTasksByBoard_BoardId(boards.getBoardId(), Sort.by(orders));
+        List<TaskV3> tasks = tasksRepositoriesV3.findTasksByBoard_Id(boards.getId(), Sort.by(orders));
         return listMapper.mapList(tasks, TaskDTOV3.class, modelMapper);
     }
 

@@ -10,7 +10,7 @@ public class NewTaskDTOV3 {
     private Integer id;
     @NotBlank(message = "must not be null")
     @Size(max = 100, message = "Title size must be between 1 and 100")
-    private String Title;
+    private String title;
     @Size(max = 30, message = "Assignees size must be up to 30 characters")
     private String Assignees;
     @Size(max = 500, message = "Description size must be between 1 and 500")
@@ -37,7 +37,7 @@ public class NewTaskDTOV3 {
         }
     }
     public void setTitle(String title) {
-        this.Title = (title != null) ? title.trim() : null;
+        this.title = (title != null) ? title.trim() : null;
     }
 
 }

@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 public class Boards {
     @Id
     @Column(name = "boardId", nullable = false)
-    private String boardId;
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
