@@ -6,7 +6,7 @@ function getToken() {
 
 async function getStatusData(id) {
   try {
-    const res = await fetch(`${url}/v3/board/${id}/statuses`)
+    const res = await fetch(`${url}/v3/boards/${id}/statuses`)
     const data = await res.json()
     return data
   } catch (error) {
@@ -17,7 +17,7 @@ async function getStatusData(id) {
 
 async function getStatusDataById(routeId, id) {
   try {
-    const res = await fetch(`${url}/v3/board/${routeId}/statuses/${id}`)
+    const res = await fetch(`${url}/v3/boards/${routeId}/statuses/${id}`)
     const data = await res.json()
     return data
   } catch (error) {
@@ -27,7 +27,7 @@ async function getStatusDataById(routeId, id) {
 }
 async function addStatus(newStatus, id) {
   try {
-    const res = await fetch(`${url}/v3/board/${id}/statuses`, {
+    const res = await fetch(`${url}/v3/boards/${id}/statuses`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -45,7 +45,7 @@ async function addStatus(newStatus, id) {
 
 async function editStatus(id, editStatus, routerId) {
   try {
-    const res = await fetch(`${url}/v3/board/${routerId}/statuses/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routerId}/statuses/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
@@ -63,7 +63,7 @@ async function editStatus(id, editStatus, routerId) {
 
 async function shouldDeleteOrTransferStatus(id) {
   try {
-    const res = await fetch(`${url}/v3/board/statuses/${id}/indicator`)
+    const res = await fetch(`${url}/v3/boards/statuses/${id}/indicator`)
     const data = await res.json()
     return data
   } catch (error) {
@@ -73,7 +73,7 @@ async function shouldDeleteOrTransferStatus(id) {
 }
 async function deleteOneStatus(id) {
   try {
-    const res = await fetch(`${url}/v3/board/statuses/${id}`, {
+    const res = await fetch(`${url}/v3/boards/statuses/${id}`, {
       method: "DELETE",
     })
     return res
@@ -86,7 +86,7 @@ async function deleteOneStatus(id) {
 async function deleteTranferStatus(oldStatusId, newStatusId) {
   try {
     const res = await fetch(
-      `${url}/v3/board/statuses/${oldStatusId}/${newStatusId}`,
+      `${url}/v3/boards/statuses/${oldStatusId}/${newStatusId}`,
       {
         method: "DELETE",
       }

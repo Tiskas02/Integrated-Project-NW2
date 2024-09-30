@@ -46,6 +46,7 @@ onMounted(async () => {
     defaultStatus.value.statusId = noStatus.id
   }
 })
+
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode
   storeTask.value = await getTaskById(routerId, id)
