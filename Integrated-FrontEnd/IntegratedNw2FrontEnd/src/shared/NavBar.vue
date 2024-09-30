@@ -23,6 +23,7 @@ const userPayload = localStorage.getItem("token")
 
 const logout = () => {
   localStorage.removeItem("token")
+  localStorage.removeItem("refresh_token")
   userPayload.value = null
   router.push("/")
 }

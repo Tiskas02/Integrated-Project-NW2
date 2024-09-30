@@ -7,9 +7,9 @@ function getToken() {
 async function getTaskDataInBoardId(id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${id}/tasks`, {
+    const res = await fetch(`${url}/v3/boards/${id}/tasks`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
     })
     const data = await res.json()
@@ -23,9 +23,9 @@ async function getTaskDataInBoardId(id) {
 async function getTaskById(routeId, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${routeId}/task/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routeId}/task/${id}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
     })
     if (!res.ok) {
@@ -44,11 +44,11 @@ async function getTaskById(routeId, id) {
 async function addTask(newTask, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${id}/task`, {
+    const res = await fetch(`${url}/v3/boards/${id}/task`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ...newTask,
@@ -64,10 +64,10 @@ async function addTask(newTask, id) {
 async function deleteItemById(routerId, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${routerId}/task/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routerId}/task/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
     })
     return res.status
@@ -80,11 +80,11 @@ async function deleteItemById(routerId, id) {
 async function editTask(routerId, id, editTask) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${routerId}/task/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routerId}/task/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ...editTask,
