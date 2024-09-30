@@ -228,7 +228,7 @@ const ClearStatuses = () => {
 <template>
   <div>
     <div class="flex justify-end m-10">
-      <BaseBtn>
+      <BaseBtn class="itbkk-manage-status">
         <router-link :to="{ name: 'status' }">
           <template #default>
             <button class="p-4">Manage Status</button>
@@ -238,7 +238,7 @@ const ClearStatuses = () => {
     </div>
     <div class="w-full flex justify-center my-3">
       <div
-        class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
+        class="itbkk-board-name font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
       >
         Board name : {{ nameBoard }}
       </div>

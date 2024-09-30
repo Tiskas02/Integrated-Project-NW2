@@ -17,13 +17,13 @@ const newBoard = ref({
         <div
           class="overflow-auto max-h-screen flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
         >
-          <div>
+          <div class="itbkk-modal-new">
             <div class="text-xl font-bold my-3">Create personal board</div>
             <div class="border-b my-2"></div>
             <div class="text-lg z-0">Name</div>
             <div>
               <textarea
-                class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                class="itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder="Enter board name"
                 required
                 maxlength="120"
@@ -33,7 +33,7 @@ const newBoard = ref({
           </div>
           <div class="flex flex-row w-full justify-end my-4">
             <div class="flex mr-2">
-              <BaseBtn class="mx-4 mt-3">
+              <BaseBtn class="itbkk-button-ok mx-4 mt-3">
                 <template #default>
                   <button
                     @click="
@@ -47,7 +47,7 @@ const newBoard = ref({
                   </button>
                 </template>
               </BaseBtn>
-              <BaseBtn class="mx-4">
+              <BaseBtn class="itbkk-button-cancel mx-4">
                 <template #cancel>
                   <button
                     @click="

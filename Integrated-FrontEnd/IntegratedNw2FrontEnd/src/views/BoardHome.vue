@@ -29,9 +29,6 @@ const parseJwt = (token) => {
   return JSON.parse(jsonPayload)
 }
 
-const userPayload = localStorage.getItem("token")
-  ? parseJwt(localStorage.getItem("token"))
-  : null
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
   if (boardStore.boards.length > 0 || data) {
@@ -88,7 +85,7 @@ const navigateToBoardTasks = (boardId) => {
     <div class="flex justify-end mx-10" @click="setModal">
       <BaseBtn>
         <template #default>
-          <button class="p-4">Create personal board</button>
+          <button class="itbkk-button-create p-4">Create personal board</button>
         </template>
       </BaseBtn>
     </div>
