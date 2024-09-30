@@ -53,9 +53,9 @@ async function addTask(newTask, id) {
       body: JSON.stringify({
         ...newTask,
       }),
-    });
-    const addedTask = await res.json();
-    return addedTask;
+    })
+    const addedTask = await res.json()
+    return addedTask
   } catch (error) {
     console.log(`error: ${error}`)
   }

@@ -23,10 +23,13 @@ const parseJwt = (token) => {
 const userPayload = localStorage.getItem("token")
   ? parseJwt(localStorage.getItem("token"))
   : null
+
 const logout = () => {
   localStorage.removeItem("token")
+  localStorage.removeItem("refresh_token")
   router.push("/")
 }
+
 </script>
 
 <template>
