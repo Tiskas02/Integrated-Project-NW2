@@ -17,7 +17,6 @@ async function getStatusData(id) {
 
 async function getStatusDataById(routeId, id) {
   try {
-    const token = getToken()
     const res = await fetch(`${url}/v3/board/${routeId}/statuses/${id}`)
     const data = await res.json()
     return data
@@ -28,7 +27,6 @@ async function getStatusDataById(routeId, id) {
 }
 async function addStatus(newStatus, id) {
   try {
-    const token = getToken()
     const res = await fetch(`${url}/v3/board/${id}/statuses`, {
       method: "POST",
       headers: {
@@ -47,7 +45,6 @@ async function addStatus(newStatus, id) {
 
 async function editStatus(id, editStatus, routerId) {
   try {
-    const token = getToken()
     const res = await fetch(`${url}/v3/board/${routerId}/statuses/${id}`, {
       method: "PUT",
       headers: {
@@ -76,7 +73,6 @@ async function shouldDeleteOrTransferStatus(id) {
 }
 async function deleteOneStatus(id) {
   try {
-    const token = getToken()
     const res = await fetch(`${url}/v3/board/statuses/${id}`, {
       method: "DELETE",
     })

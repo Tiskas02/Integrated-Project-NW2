@@ -1,4 +1,5 @@
 const url = import.meta.env.VITE_BASE_URL
+
 function getToken() {
   return localStorage.getItem("token")
 }
@@ -6,7 +7,7 @@ function getToken() {
 async function getBoardData() {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board`, {
+    const res = await fetch(`${url}/v3/boards`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -22,7 +23,7 @@ async function getBoardData() {
 async function addBoard(newBoard) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board`, {
+    const res = await fetch(`${url}/v3/boards`, {
       method: "POST",
       headers: {
         "content-type": "application/json",

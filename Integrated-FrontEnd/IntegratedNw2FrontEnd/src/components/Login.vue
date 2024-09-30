@@ -27,7 +27,7 @@ const isFormValid = computed(() => {
 })
 
 async function userLogin(user) {
-  console.log(`${url}/login`)
+
   try {
     const res = await fetch(`${url}/login`, {
       method: "POST",
@@ -43,7 +43,9 @@ async function userLogin(user) {
     }
 
     const data = await res.json()
+    
     localStorage.setItem("token", data.access_token)
+    localStorage.setItem("refresh_token", data.refresh_token);
     return data
   } catch (error) {
     console.log(`error: ${error}`)
