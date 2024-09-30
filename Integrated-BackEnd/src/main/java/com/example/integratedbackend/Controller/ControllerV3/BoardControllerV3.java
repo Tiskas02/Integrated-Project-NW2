@@ -65,7 +65,7 @@ public class BoardControllerV3 {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
         }
         Boards board = boardService.createBoard(userId, newBoard);
-        if (board.getName() != null) {
+        if (board.getName() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Please check the input data.");
         }
         return new ResponseEntity<>(board, HttpStatus.CREATED);
