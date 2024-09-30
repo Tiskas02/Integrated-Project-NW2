@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         
-        if (request.getRequestURI().equals("/login")) {
+        if (request.getRequestURI().equals("/login") || request.getRequestURI().equals("/token")) {
             filterChain.doFilter(request, response);
             return;
         }

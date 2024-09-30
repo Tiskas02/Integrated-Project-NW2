@@ -84,17 +84,20 @@ public class AuthService {
 //        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
 //    }
 
-    public LoginResponse refreshToken(RefreshTokenRequest refreshToken) {
-        System.out.println("Received refresh token: " + refreshToken);
-        String username = jwtUtil.extractUsername(String.valueOf(refreshToken));
-        if (username != null) {
-            User user = userRepository.findByUsername(username);
-            if (jwtUtil.validateRefreshToken(String.valueOf(refreshToken), username)) {
-                String newAccessToken = jwtUtil.generateToken(user);
-                return new LoginResponse(newAccessToken, refreshToken.getRefresh_token());
+    public LoginResponse refreshToken(String refreshToken) {
+        if (refreshToken != null && refreshToken.startsWith("Bearer ")) {
+            String username = jwtUtil.extractUsername(refreshToken.substring(7));
+            if (username != null) {
+                User user = userRepository.findByUsername(username);
+                if (jwtUtil.validateRefreshToken(refreshToken.substring(7), username) ){
+                    String newAccessToken = jwtUtil.generateToken(user);
+                    return new LoginResponse(newAccessToken, null);
+                }
             }
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
     }
+
 
 }

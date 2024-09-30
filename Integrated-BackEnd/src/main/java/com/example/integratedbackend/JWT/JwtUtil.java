@@ -24,7 +24,7 @@ public class JwtUtil {
     private String SECRET_KEY;
     @Value("#{${jwt.max-token-interval-hour}*60*60*1000}")
     private long JWT_TOKEN_VALIDITY;
-    @Value("#{${jwt.refresh-token-validity-days}*24*60*60*1000}")
+    @Value("#{${jwt.refresh-token-validity-days}*60*60*1000}")
     private long JWT_REFRESH_TOKEN_VALIDITY;
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 

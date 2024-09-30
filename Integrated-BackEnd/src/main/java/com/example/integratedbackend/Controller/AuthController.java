@@ -11,13 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/login")
+//@RequestMapping("/login")
 @CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th","*"})
 public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("")
+    @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.authenticate(loginRequest));
     }
@@ -28,7 +28,7 @@ public class AuthController {
 //    }
 
     @PostMapping("/token")
-    public ResponseEntity<LoginResponse> refreshAccessToken(@RequestHeader("Authorization") RefreshTokenRequest refreshToken) {
+    public ResponseEntity<LoginResponse> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
         return ResponseEntity.ok(authService.refreshToken(refreshToken));
     }
 
