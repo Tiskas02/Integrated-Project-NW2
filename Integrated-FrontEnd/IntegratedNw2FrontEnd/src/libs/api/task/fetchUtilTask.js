@@ -9,7 +9,7 @@ async function getTaskDataInBoardId(id) {
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${id}/tasks`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
     })
     const data = await res.json()
@@ -25,7 +25,7 @@ async function getTaskById(routeId, id) {
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${routeId}/task/${id}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
     })
     if (!res.ok) {
@@ -48,7 +48,7 @@ async function addTask(newTask, id) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ...newTask,
@@ -67,7 +67,7 @@ async function deleteItemById(routerId, id) {
     const res = await fetch(`${url}/v3/boards/${routerId}/task/${id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
     })
     return res.status
@@ -84,7 +84,7 @@ async function editTask(routerId, id, editTask) {
       method: "PUT",
       headers: {
         "content-type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ...editTask,
