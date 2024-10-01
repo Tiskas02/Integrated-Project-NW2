@@ -50,7 +50,7 @@ services:
     container_name: reverse_proxy
     volumes: 
       - /proxy/ssl/:/etc/nginx/ssl/
-      - /nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - '80:80'
       - '443:443'
