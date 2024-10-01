@@ -19,7 +19,6 @@ const sentclose = (value) => {
 }
 
 const sentDelete = (value) => {
-  console.log(value)
   emit("saveDelete", value)
 }
 
