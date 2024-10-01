@@ -52,8 +52,8 @@ services:
       - '80:80'
       - '443:443'
     volumes: 
-      - ./ssl:/etc/nginx/ssl
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /proxy/ssl/:/etc/nginx/ssl/
+      - /proxy/nginx.conf:/etc/nginx/conf.d/default.conf
     networks: 
       FE-network:
         ipv4_address: 172.19.0.4
