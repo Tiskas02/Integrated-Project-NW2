@@ -60,6 +60,7 @@ const addBoard = async (newBoard) => {
   }
 }
 const navigateToBoardTasks = (boardId) => {
+  console.log(boardId);
   router.push({ name: "Task", params: { id: boardId } })
 }
 </script>
