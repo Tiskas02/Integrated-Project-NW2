@@ -74,7 +74,6 @@ const addOrEditStatus = async (newStatus) => {
 
 const deleteOne = async (id) => {
   const status = await statusStore.deleteStatus(id)
-  console.log(status)
 
   if (status === 200) {
     toasterStore.success({ text: "Status deleted successfully!" })

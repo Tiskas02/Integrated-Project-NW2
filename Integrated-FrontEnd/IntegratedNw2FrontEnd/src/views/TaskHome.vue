@@ -12,7 +12,6 @@ watch(
     if (route.path.includes("/status")) {
       usePath.value = true
     } else {
-      console.log(route.path , "path");
       usePath.value = false
     }
   },

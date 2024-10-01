@@ -51,8 +51,6 @@ async function userLogin(user) {
   }
 }
 
-
-
 const submitForm = async () => {
   const payload = await userLogin(user.value)
   if (payload) {
@@ -64,7 +62,6 @@ const submitForm = async () => {
     }, 3000)
   }
 }
-
 </script>
 
 <template>
