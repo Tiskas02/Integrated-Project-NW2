@@ -51,30 +51,7 @@ async function userLogin(user) {
   }
 }
 
-async function refreshAccessToken() {
-  try {
-    const refreshToken = localStorage.getItem("refresh_token")
-    const res = await fetch(`${url}/token`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-        "content-type": "application/json",
-      },
-    })
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`)
-    }
-
-    const data = await res.json()
-
-    localStorage.setItem("token", data.access_token)
-    return data
-  } catch (error) {
-    console.log(`Error during token refresh: ${error}`)
-    return null
-  }
-}
 
 const submitForm = async () => {
   const payload = await userLogin(user.value)
@@ -87,6 +64,7 @@ const submitForm = async () => {
     }, 3000)
   }
 }
+
 </script>
 
 <template>

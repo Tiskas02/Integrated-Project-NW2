@@ -7,6 +7,7 @@ import TaskAddEdit from "@/components/TaskAddEdit.vue"
 import StatusAddEdit from "@/components/StatusAddEdit.vue"
 import Login from "@/components/Login.vue"
 import BoardHome from "@/views/BoardHome.vue"
+const url = import.meta.env.VITE_BASE_URL
 function parseJwt(token) {
   try {
     const base64Url = token.split(".")[1]
@@ -23,9 +24,35 @@ function parseJwt(token) {
   }
 }
 
+async function refreshAccessToken() {
+  try {
+    const refreshToken = localStorage.getItem("refresh_token")
+    const res = await fetch(`${url}/token`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+        "content-type": "application/json",
+      },
+    })
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+
+    const data = await res.json()
+
+    localStorage.setItem("token", data.access_token)
+    return data
+  } catch (error) {
+    console.log(`Error during token refresh: ${error}`)
+    return null
+  }
+}
+
 // Helper function to delete token from localStorage
 function deleteTokenFromLocalStorage() {
   localStorage.removeItem("token")
+  localStorage.removeItem("refresh_token");
 }
 
 const history = createWebHistory(import.meta.env.BASE_URL)
@@ -112,25 +139,43 @@ const router = createRouter({
   linkExactActiveClass: "hover:text-[#2ff6da] hover:text-[#2ff6da] p-2",
 })
 
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("token")
-  let isAuthenticated = false
+router.beforeEach(async (to, from, next) => {
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refresh_token");
+  let isAuthenticated = false;
 
   if (token) {
-    const jwtPayload = parseJwt(token)
+    const jwtPayload = parseJwt(token);
+    const jwtPayloadRefresh = parseJwt(refreshToken);
+
     if (jwtPayload && jwtPayload.exp >= Date.now() / 1000) {
-      isAuthenticated = true
+      isAuthenticated = true;
+    } else if (jwtPayloadRefresh && jwtPayloadRefresh.exp >= Date.now() / 1000) {
+      try {
+        const refreshResponse = await refreshAccessToken();
+        if (refreshResponse) {
+          localStorage.setItem("token", refreshResponse.access_token);
+          isAuthenticated = true;
+        } else {
+          console.log("Failed to refresh access token. Please log in again.");
+          deleteTokenFromLocalStorage();
+        }
+      } catch (error) {
+        console.log("Error refreshing token: ", error);
+        deleteTokenFromLocalStorage();
+        alert("Your session has expired. Please log in again.");
+      }
     } else {
-      deleteTokenFromLocalStorage()
-      alert("Your session has expired. Please log in again.")
+      console.log("Session expired. Redirecting to login.");
+      deleteTokenFromLocalStorage();
+      alert("Your session has expired. Please log in again.");
     }
   }
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: "login" })
+    next({ name: "login" });
   } else {
-    next()
+    next();
   }
-})
-
+});
 export default router
