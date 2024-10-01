@@ -19,11 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("v3/board")
-@CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th","*"})
+@RequestMapping("v3/boards")
+@CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "*"})
 public class BoardControllerV3 {
     @Autowired
     private BoardService boardService;
@@ -38,64 +39,175 @@ public class BoardControllerV3 {
     @Autowired
     private ListMapper listMapper;
 
-// ================================Board=====================================
-        @GetMapping("")
-        public ResponseEntity<Object> getBoardByUserId(@RequestHeader("Authorization") String authHeader) {
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String jwt = authHeader.substring(7);
-                String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
-                if (userId != null) {
-                    List<Boards> boards = boardService.getBoardByUserId(userId);
-                    return ResponseEntity.ok(boards);
-                }
+    // ================================Board=====================================
+    @GetMapping("")
+    public ResponseEntity<Object> getBoardByUserId(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                List<Boards> boards = boardService.getBoardByUserId(userId);
+                return new ResponseEntity<>(boards, HttpStatus.OK);
             }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
         }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    }
 
-        @PostMapping("")
-        public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authHeader,@Valid @RequestBody NewBoardDTO newBoard) {
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String jwt = authHeader.substring(7);
-                String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
-                if (userId != null) {
-                    Boards board = boardService.createBoard(userId, newBoard);
-                    return ResponseEntity.ok(board);
-                }
-            }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    @PostMapping("")
+    public ResponseEntity<Object> createBoard(
+            @RequestHeader(value = "Authorization") String authHeader,
+            @RequestBody @Valid NewBoardDTO newBoard) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
         }
+        String jwt = authHeader.substring(7);
+        String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+        }
+        if (newBoard == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board name cannot be empty");
+        }
+        if (newBoard.getName() == null || newBoard.getName().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Name is required.");
+        }
+        Boards board = boardService.createBoard(userId, newBoard);
+        if (board.getName() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Please check the input data.");
+        }
+        return new ResponseEntity<>(board, HttpStatus.CREATED);
+    }
+//    @PostMapping("")
+//    public ResponseEntity<Object> createBoard(
+//            @RequestHeader(value = "Authorization", required = false) String authHeader,
+//            @Valid @RequestBody(required = false) NewBoardDTO newBoard) {
+//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
+//        }
+//        String jwt = authHeader.substring(7);
+//        String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+//        if (userId == null) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+//        }
+//        if (newBoard == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board name cannot be empty");
+//        }
+//        if (newBoard.getName() == null || newBoard.getName().isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Name is required.");
+//        }
+//        Boards board = boardService.createBoard(userId, newBoard);
+//        if (board == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Please check the input data.");
+//        }
+//        return new ResponseEntity<>(board, HttpStatus.CREATED);
+//    }
+
+
     // ================================statuses=====================================
     @GetMapping("{boardId}/statuses")
-    public ResponseEntity<Object> getAllStatus(@PathVariable String boardId) {
-        return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+    public ResponseEntity<Object> getAllStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
+
     @GetMapping("{boardId}/statuses/{statusId}")
-    public ResponseEntity<Object> findStatusById( @PathVariable String boardId, @PathVariable Integer statusId) {
-        return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
+    public ResponseEntity<Object> findStatusById(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
+            @PathVariable Integer statusId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
     @PostMapping("/{boardId}/statuses")
-    public ResponseEntity<Object> createStatus(@Valid @RequestBody NewStatusDTO statusV3,@PathVariable String boardId) {
+    public ResponseEntity<Object> createStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody NewStatusDTO statusV3,
+            @PathVariable String boardId) {
         StatusV3 createdStatus = statusServiceV3.createStatus(statusV3, boardId);
         StatusDTO statusDTO = modelMapper.map(createdStatus, StatusDTO.class);
-        return new ResponseEntity<> (statusDTO , HttpStatus.CREATED);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return new ResponseEntity<>(statusDTO, HttpStatus.CREATED);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
+
     @PutMapping("/{boardId}/statuses/{statusId}")
-    public ResponseEntity<Object> updateStatus(@PathVariable int statusId, @Valid @RequestBody NewStatusDTO status) {
-        return new ResponseEntity<>(statusServiceV3.updateStatus(statusId, status) , HttpStatus.OK);
+    public ResponseEntity<Object> updateStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable int statusId,
+            @Valid @RequestBody NewStatusDTO status) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return new ResponseEntity<>(statusServiceV3.updateStatus(statusId, status), HttpStatus.OK);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
+
     @DeleteMapping("/statuses/{statusId}")
-    public ResponseEntity<Object> deleteStatus(@PathVariable Integer statusId) {
-            return new ResponseEntity<>(statusServiceV3.deleteStatus(statusId) , HttpStatus.OK);
+    public ResponseEntity<Object> deleteStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Integer statusId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return new ResponseEntity<>(statusServiceV3.deleteStatus(statusId), HttpStatus.OK);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
+
     @DeleteMapping("/statuses/{statusId}/{newId}")
-    public ResponseEntity<Object> transferStatus(@PathVariable Integer statusId, @PathVariable Integer newId) throws BadRequestException {
-        return new ResponseEntity<>(statusServiceV3.transferStatus(statusId, newId), HttpStatus.OK);
+    public ResponseEntity<Object> transferStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Integer statusId,
+            @PathVariable Integer newId) throws BadRequestException {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return new ResponseEntity<>(statusServiceV3.transferStatus(statusId, newId), HttpStatus.OK);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
+
     @GetMapping("/statuses/{statusId}/indicator")
-    public ResponseEntity<Boolean> checkDeleteOrTransfer(@PathVariable Integer statusId) {
-        return ResponseEntity.ok(statusServiceV3.deleteOrTransfer(statusId));
+    public ResponseEntity<Boolean> checkDeleteOrTransfer(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Integer statusId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                return ResponseEntity.ok(statusServiceV3.deleteOrTransfer(statusId));
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
+
     // ================================Task=====================================
     @GetMapping("{boardId}/tasks")
     public ResponseEntity<Object> getAllTaskByBoardId(
@@ -109,15 +221,14 @@ public class BoardControllerV3 {
             String jwt = authHeader.substring(7);
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
-//                List<Boards> boards = boardService.getBoardByUserId(userId);
-//                return ResponseEntity.ok(boards);
-                List<TaskDTOV3> tasks = taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId);
-                return ResponseEntity.ok(tasks);
+                return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+            } else if (userId == null) {
+                return new ResponseEntity<>("Authentication Problem", HttpStatus.NOT_FOUND);
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
-//        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection,boardId));
     }
+
     @GetMapping("{boardId}/task/{id}")
     public ResponseEntity<Object> findTaskByBoardId(
             @RequestHeader("Authorization") String authHeader,
@@ -129,12 +240,10 @@ public class BoardControllerV3 {
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
                 TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
-                return ResponseEntity.ok(task);
+                return ResponseEntity.ok(modelMapper.map(task, TaskIDDTOV2.class));
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
-//            TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
-//        return ResponseEntity.ok(modelMapper.map(task, TaskIDDTOV2.class));
     }
 
     @PostMapping("/{boardId}/task")
@@ -146,11 +255,12 @@ public class BoardControllerV3 {
             String jwt = authHeader.substring(7);
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
-                return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(taskServiceV3.createTask(newTask,boardId), NewTaskReturnV3.class));
+                return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(taskServiceV3.createTask(newTask, boardId), NewTaskReturnV3.class));
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
+
     @DeleteMapping("/{boardId}/task/{id}")
     public TaskDTOV3 deleteTask(
             @RequestHeader("Authorization") String authHeader,
@@ -167,6 +277,7 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
 //        return taskServiceV3.deleteTask(id);
     }
+
     @PutMapping("/{boardId}/task/{id}")
     public ResponseEntity<Object> updateTask(
             @RequestHeader("Authorization") String authHeader,

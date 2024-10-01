@@ -23,14 +23,17 @@ const parseJwt = (token) => {
 const userPayload = localStorage.getItem("token")
   ? parseJwt(localStorage.getItem("token"))
   : null
+
 const logout = () => {
   localStorage.removeItem("token")
+  localStorage.removeItem("refresh_token")
   router.push("/")
 }
+
 </script>
 
 <template>
-  <div class="w-full flex items-center">
+  <div class="itbkk-home w-full flex items-center">
     <router-link :to="{ name: 'board' }">
       <div class="flex items-center">
         <slot name="image"><img src="/icon.png" class="w-[10%] m-2" /></slot>
@@ -60,7 +63,7 @@ const logout = () => {
             />
           </svg>
         </div>
-        <div class="text-white font-rubik font-medium text-lg">
+        <div class="itbkk-fullname text-white font-rubik font-medium text-lg">
           {{ userPayload ? userPayload.name : "User" }}
         </div>
         <BaseBtn class="mx-4">

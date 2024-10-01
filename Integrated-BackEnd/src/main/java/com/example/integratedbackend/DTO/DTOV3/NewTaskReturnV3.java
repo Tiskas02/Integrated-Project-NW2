@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public class NewTaskReturnV3 {
     private Integer id;
-    private String Title;
-    private String Assignees;
-    private String Description;
+    private String title;
+    private String assignees;
+    private String description;
     private StatusV3 status;
 }

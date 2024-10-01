@@ -17,12 +17,13 @@ watch(
   { immediate: true }
 )
 
-const userPayload = localStorage.getItem("userPayload")
-  ? JSON.parse(localStorage.getItem("userPayload"))
+const userPayload = localStorage.getItem("token")
+  ? JSON.parse(localStorage.getItem("token"))
   : null
 
 const logout = () => {
-  localStorage.removeItem("userPayload")
+  localStorage.removeItem("token")
+  localStorage.removeItem("refresh_token")
   userPayload.value = null
   router.push("/")
 }

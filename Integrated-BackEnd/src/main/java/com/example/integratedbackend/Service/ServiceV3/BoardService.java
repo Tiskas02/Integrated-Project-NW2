@@ -50,11 +50,11 @@ public class BoardService {
 //        }
         String boardId = NanoId.generate(10);
         Boards newBoard = modelMapper.map(new Boards(), Boards.class);
-        newBoard.setBoardId(boardId);
+        newBoard.setId(boardId);
         newBoard.setName(boardDTO.getName());
         newBoard.setUsers(user);
         Boards savedBoard = boardsRepositoriesV3.save(newBoard);
-        statusServiceV3.createDefaultStatus(savedBoard.getBoardId());
+        statusServiceV3.createDefaultStatus(savedBoard.getId());
         return savedBoard;
     }
 

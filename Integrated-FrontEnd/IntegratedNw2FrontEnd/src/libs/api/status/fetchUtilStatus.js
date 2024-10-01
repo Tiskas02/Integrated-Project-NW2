@@ -6,7 +6,12 @@ function getToken() {
 
 async function getStatusData(id) {
   try {
-    const res = await fetch(`${url}/v3/board/${id}/statuses`)
+    const token = getToken()
+    const res = await fetch(`${url}/v3/boards/${id}/statuses`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    })
     const data = await res.json()
     return data
   } catch (error) {
@@ -18,7 +23,11 @@ async function getStatusData(id) {
 async function getStatusDataById(routeId, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${routeId}/statuses/${id}`)
+    const res = await fetch(`${url}/v3/boards/${routeId}/statuses/${id}`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    })
     const data = await res.json()
     return data
   } catch (error) {
@@ -29,10 +38,11 @@ async function getStatusDataById(routeId, id) {
 async function addStatus(newStatus, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${id}/statuses`, {
+    const res = await fetch(`${url}/v3/boards/${id}/statuses`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ...newStatus,
@@ -48,10 +58,11 @@ async function addStatus(newStatus, id) {
 async function editStatus(id, editStatus, routerId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/${routerId}/statuses/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routerId}/statuses/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ...editStatus,
@@ -66,7 +77,12 @@ async function editStatus(id, editStatus, routerId) {
 
 async function shouldDeleteOrTransferStatus(id) {
   try {
-    const res = await fetch(`${url}/v3/board/statuses/${id}/indicator`)
+    const token = getToken()
+    const res = await fetch(`${url}/v3/boards/statuses/${id}/indicator`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    })
     const data = await res.json()
     return data
   } catch (error) {
@@ -77,8 +93,11 @@ async function shouldDeleteOrTransferStatus(id) {
 async function deleteOneStatus(id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/board/statuses/${id}`, {
+    const res = await fetch(`${url}/v3/boards/statuses/${id}`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
     })
     return res
   } catch (error) {
@@ -89,10 +108,14 @@ async function deleteOneStatus(id) {
 
 async function deleteTranferStatus(oldStatusId, newStatusId) {
   try {
+    const token = getToken()
     const res = await fetch(
-      `${url}/v3/board/statuses/${oldStatusId}/${newStatusId}`,
+      `${url}/v3/boards/statuses/${oldStatusId}/${newStatusId}`,
       {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
       }
     )
     return res
