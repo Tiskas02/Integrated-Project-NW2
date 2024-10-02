@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BoardService {
@@ -36,6 +37,15 @@ public class BoardService {
                     " " + userName + " not found");
         }
         return boards;
+    }
+
+    public Boards getBoardByBoardId(String boardId) {
+        Optional<Boards> boards = boardsRepositoriesV3.findById(boardId);
+        if (boards.isEmpty()) {
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
+                    " " + " not found");
+        }
+        return boards.get();
     }
     public Boards createBoard(String userName, NewBoardDTO boardDTO){
         List<Users> listUsers = usersRepositoriesV3.findAllByUsername(userName);

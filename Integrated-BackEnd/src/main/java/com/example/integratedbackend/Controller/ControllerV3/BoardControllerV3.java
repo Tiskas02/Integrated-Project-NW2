@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("v3/boards")
@@ -47,6 +48,21 @@ public class BoardControllerV3 {
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
                 List<Boards> boards = boardService.getBoardByUserId(userId);
+                return new ResponseEntity<>(boards, HttpStatus.OK);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    }
+
+    @GetMapping("/{boardId}")
+    public ResponseEntity<Object> getBoardByBoardId(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                Boards boards = (Boards) boardService.getBoardByBoardId(boardId);
                 return new ResponseEntity<>(boards, HttpStatus.OK);
             }
         }
@@ -204,7 +220,7 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @GetMapping("{boardId}/task/{id}")
+    @GetMapping("{boardId}/tasks/{id}")
     public ResponseEntity<Object> findTaskByBoardId(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id,
@@ -221,7 +237,7 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @PostMapping("/{boardId}/task")
+    @PostMapping("/{boardId}/tasks")
     public ResponseEntity<Object> createTask(
             @Valid @RequestBody NewTaskDTOV3 newTask,
             @PathVariable String boardId,
@@ -236,7 +252,7 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @DeleteMapping("/{boardId}/task/{id}")
+    @DeleteMapping("/{boardId}/tasks/{id}")
     public TaskDTOV3 deleteTask(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id,
@@ -253,7 +269,7 @@ public class BoardControllerV3 {
 //        return taskServiceV3.deleteTask(id);
     }
 
-    @PutMapping("/{boardId}/task/{id}")
+    @PutMapping("/{boardId}/tasks/{id}")
     public ResponseEntity<Object> updateTask(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody NewTaskDTOV3 editTask,
