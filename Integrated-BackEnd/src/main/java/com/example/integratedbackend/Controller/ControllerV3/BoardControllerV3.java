@@ -77,31 +77,6 @@ public class BoardControllerV3 {
         }
         return new ResponseEntity<>(board, HttpStatus.CREATED);
     }
-//    @PostMapping("")
-//    public ResponseEntity<Object> createBoard(
-//            @RequestHeader(value = "Authorization", required = false) String authHeader,
-//            @Valid @RequestBody(required = false) NewBoardDTO newBoard) {
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
-//        }
-//        String jwt = authHeader.substring(7);
-//        String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
-//        if (userId == null) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
-//        }
-//        if (newBoard == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board name cannot be empty");
-//        }
-//        if (newBoard.getName() == null || newBoard.getName().isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Name is required.");
-//        }
-//        Boards board = boardService.createBoard(userId, newBoard);
-//        if (board == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Please check the input data.");
-//        }
-//        return new ResponseEntity<>(board, HttpStatus.CREATED);
-//    }
-
 
     // ================================statuses=====================================
     @GetMapping("{boardId}/statuses")

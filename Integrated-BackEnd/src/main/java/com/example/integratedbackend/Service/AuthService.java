@@ -71,19 +71,6 @@ public class AuthService {
         return new LoginResponse(accessToken, refreshToken);
     }
 
-//    public LoginResponse refreshToken(String refreshToken) {
-//        String username = jwtUtil.extractUsername(refreshToken);
-//
-//        if (username != null) {
-//            User user = userRepository.findByUsername(username);
-//            if (jwtUtil.validateRefreshToken(refreshToken, username)) {
-//                String newAccessToken = jwtUtil.generateToken(user);
-//                return new LoginResponse(newAccessToken, refreshToken);
-//            }
-//        }
-//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
-//    }
-
     public LoginResponse refreshToken(String refreshToken) {
         if (refreshToken != null && refreshToken.startsWith("Bearer ")) {
             String username = jwtUtil.extractUsername(refreshToken.substring(7));

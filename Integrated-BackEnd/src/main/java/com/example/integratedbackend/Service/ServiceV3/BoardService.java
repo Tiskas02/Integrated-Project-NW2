@@ -27,11 +27,11 @@ public class BoardService {
     ModelMapper modelMapper;
 
 
-    public List<Boards> getBoardByUserId(String userName){
+    public List<Boards> getBoardByUserId(String userName) {
         List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
         Users user = users.get(0);
         List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
-        if (boards == null){
+        if (boards == null) {
             throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
                     " " + userName + " not found");
         }
@@ -45,9 +45,6 @@ public class BoardService {
         if(boardsRepositoriesV3.existsBoardsByNameIgnoreCaseAndUsers(boardDTO.getName(), users)){
             throw new TaskNameDuplicatedException("must be unique");
         }
-//        if (getBoardByUserId(userName) != null){
-//            throw new TaskNameDuplicatedException("User contain one board");
-//        }
         String boardId = NanoId.generate(10);
         Boards newBoard = modelMapper.map(new Boards(), Boards.class);
         newBoard.setId(boardId);
@@ -57,5 +54,7 @@ public class BoardService {
         statusServiceV3.createDefaultStatus(savedBoard.getId());
         return savedBoard;
     }
-
 }
+
+
+
