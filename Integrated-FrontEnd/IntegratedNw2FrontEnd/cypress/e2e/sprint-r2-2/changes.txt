@@ -1,0 +1,4 @@
+16-SEP-2024 v1.0 -- initial tc-pbi19-perosnal-board
+19-SEP-2024 v1.1 -- tc-pbi19-personal-board-3-fe-2.cy.js 
+                    modify "No Status" in line 43 to "Doing"
+                 -- add tc-pbi18-simple-auth

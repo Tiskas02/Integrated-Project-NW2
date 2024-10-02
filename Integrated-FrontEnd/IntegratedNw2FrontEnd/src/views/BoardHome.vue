@@ -85,7 +85,7 @@ const navigateToBoardTasks = (boardId) => {
     <div class="flex justify-end mx-10" @click="setModal">
       <BaseBtn>
         <template #default>
-          <button class="itbkk-button-create p-4">Create personal board</button>
+          <button class="itbkk-button-add itbkk-button-create p-4">Create personal board</button>
         </template>
       </BaseBtn>
     </div>
@@ -175,7 +175,7 @@ const navigateToBoardTasks = (boardId) => {
       </div>
     </div>
     <teleport to="#body">
-      <BoardModal v-if="showModal" @close="setClose" @newBoard="addBoard" />
+      <BoardModal v-if="showModal" @close="setClose" @newBoard="addBoard" class="itbkk-modal-task" />
     </teleport>
   </div>
 </template>

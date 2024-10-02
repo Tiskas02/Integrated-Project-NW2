@@ -42,7 +42,7 @@ const descriptionCharCount = computed(() =>
   <div>
     <div>
       <div
-        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-20"
+        class="itbkk-modal-status bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-20"
         style="translate: transform(-50%, -50%)"
       >
         <div class="w-[60%] m-[auto] max-h-screen">
@@ -57,7 +57,7 @@ const descriptionCharCount = computed(() =>
               <div class="text-lg z-0">Name</div>
               <div>
                 <textarea
-                  class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  class="itbkk-title itbkk-status-name w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                   placeholder="Enter your title here..."
                   required
                   maxlength="50"

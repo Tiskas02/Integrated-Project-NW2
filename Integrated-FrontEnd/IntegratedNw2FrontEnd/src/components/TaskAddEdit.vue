@@ -77,7 +77,7 @@ computed(newTask.value, () => {
   <div>
     <div>
       <div
-        class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-10 z-[2]"
+        class="itbkk-modal-task bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-10 z-[2]"
         style="translate: transform(-50%, -50%)"
       >
         <div class="w-[60%] m-[auto] max-h-screen">
@@ -111,7 +111,7 @@ computed(newTask.value, () => {
                 <label class="form-control w-full max-w-xs">
                   <!-- Dropdown select -->
                   <select
-                    class="select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                    class="itbkk-status select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     v-model="newTask.statusId"
                   >
                     <!-- Default placeholder showing current status if no option is selected -->

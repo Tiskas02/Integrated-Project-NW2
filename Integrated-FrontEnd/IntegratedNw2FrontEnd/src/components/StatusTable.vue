@@ -234,7 +234,7 @@ const setClose = (value) => {
                         {{ index + 1 }}
                       </div>
                       <div
-                        class="w-[20%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
+                        class="itbkk-status-name w-[20%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
                       >
                         {{ status.name }}
                       </div>
@@ -255,7 +255,7 @@ const setClose = (value) => {
                         class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4"
                       >
                         <div
-                          class="btn btn-outline btn-warning"
+                          class="itbkk-button-edit btn btn-outline btn-warning"
                           @click="fetchById(status.id, 'edit')"
                         >
                           Edit
