@@ -33,6 +33,9 @@ async function addBoard(newBoard) {
         ...newBoard,
       }),
     })
+    if (!res.ok) {
+      throw new Error("There is a problem. Please try again later.")
+    }
     const addedTask = await res.json()
     return addedTask
   } catch (error) {
