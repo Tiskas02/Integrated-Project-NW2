@@ -227,11 +227,11 @@ const ClearStatuses = () => {
 
 <template>
   <div>
-    <div class="flex justify-end m-10">
-      <BaseBtn class="itbkk-manage-status">
+    <div class="flex justify-end m-10 mt-16">
+      <BaseBtn>
         <router-link :to="{ name: 'status' }">
           <template #default>
-            <button class="p-4">Manage Status</button>
+            <button class="itbkk-manage-status ">Manage Status</button>
           </template>
         </router-link>
       </BaseBtn>
@@ -459,10 +459,10 @@ const ClearStatuses = () => {
           <div class="w-full h-[500px] overflow-auto rounded">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div
-                class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+                class="itbkk-item item bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
               >
                 <div
-                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
+                  class="cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
@@ -487,7 +487,7 @@ const ClearStatuses = () => {
                       {{ task.assignees ? task.assignees : "Unassigned" }}
                     </div>
                     <div
-                      class="w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
+                      class="itbkk-status w-[22%] px-6 py-4 whitespace-nowrap flex justify-center overflow-x-auto"
                       @click="fetchDataById(routerId, task.id, 'view')"
                     >
                       <div

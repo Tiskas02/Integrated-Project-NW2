@@ -1,7 +1,9 @@
 package com.example.integratedbackend.DTO.DTOV3;
 
+
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
 import lombok.Data;
+
 
 @Data
 public class NewTaskReturnV3 {

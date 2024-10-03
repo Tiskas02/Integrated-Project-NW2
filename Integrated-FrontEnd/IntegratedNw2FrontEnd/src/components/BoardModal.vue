@@ -10,7 +10,7 @@ const newBoard = ref({
 <template>
   <div>
     <div
-      class="bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-20"
+      class="itbkk-modal-new bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-20"
       style="translate: transform(-50%, -50%)"
     >
       <div class="w-[60%] m-[auto] max-h-screen">
@@ -23,7 +23,7 @@ const newBoard = ref({
             <div class="text-lg z-0">Name</div>
             <div>
               <textarea
-                class="itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                class="itbkk-title itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder="Enter board name"
                 required
                 maxlength="120"
@@ -33,7 +33,7 @@ const newBoard = ref({
           </div>
           <div class="flex flex-row w-full justify-end my-4">
             <div class="flex mr-2">
-              <BaseBtn class="itbkk-button-ok mx-4 mt-3">
+              <BaseBtn class="itbkk-button-confirm itbkk-button-ok mx-4 mt-3">
                 <template #default>
                   <button
                     @click="
@@ -42,6 +42,9 @@ const newBoard = ref({
                         emit('newBoard', newBoard)
                       }
                     "
+                    :disabled="
+                      newBoard.name.length < 1 || newBoard.name.length > 120
+                  "
                   >
                     Save
                   </button>

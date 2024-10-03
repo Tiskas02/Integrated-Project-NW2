@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("v3/boards")
@@ -53,6 +54,21 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
+    @GetMapping("/{boardId}")
+    public ResponseEntity<Object> getBoardByBoardId(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            if (userId != null) {
+                Boards boards = (Boards) boardService.getBoardByBoardId(boardId);
+                return new ResponseEntity<>(boards, HttpStatus.OK);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    }
+
     @PostMapping("")
     public ResponseEntity<Object> createBoard(
             @RequestHeader(value = "Authorization") String authHeader,
@@ -77,31 +93,6 @@ public class BoardControllerV3 {
         }
         return new ResponseEntity<>(board, HttpStatus.CREATED);
     }
-//    @PostMapping("")
-//    public ResponseEntity<Object> createBoard(
-//            @RequestHeader(value = "Authorization", required = false) String authHeader,
-//            @Valid @RequestBody(required = false) NewBoardDTO newBoard) {
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
-//        }
-//        String jwt = authHeader.substring(7);
-//        String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
-//        if (userId == null) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
-//        }
-//        if (newBoard == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board name cannot be empty");
-//        }
-//        if (newBoard.getName() == null || newBoard.getName().isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Name is required.");
-//        }
-//        Boards board = boardService.createBoard(userId, newBoard);
-//        if (board == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Board creation failed. Please check the input data.");
-//        }
-//        return new ResponseEntity<>(board, HttpStatus.CREATED);
-//    }
-
 
     // ================================statuses=====================================
     @GetMapping("{boardId}/statuses")
@@ -229,7 +220,7 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @GetMapping("{boardId}/task/{id}")
+    @GetMapping("{boardId}/tasks/{id}")
     public ResponseEntity<Object> findTaskByBoardId(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id,
@@ -246,7 +237,7 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @PostMapping("/{boardId}/task")
+    @PostMapping("/{boardId}/tasks")
     public ResponseEntity<Object> createTask(
             @Valid @RequestBody NewTaskDTOV3 newTask,
             @PathVariable String boardId,
@@ -261,7 +252,7 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @DeleteMapping("/{boardId}/task/{id}")
+    @DeleteMapping("/{boardId}/tasks/{id}")
     public TaskDTOV3 deleteTask(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id,
@@ -278,7 +269,7 @@ public class BoardControllerV3 {
 //        return taskServiceV3.deleteTask(id);
     }
 
-    @PutMapping("/{boardId}/task/{id}")
+    @PutMapping("/{boardId}/tasks/{id}")
     public ResponseEntity<Object> updateTask(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody NewTaskDTOV3 editTask,

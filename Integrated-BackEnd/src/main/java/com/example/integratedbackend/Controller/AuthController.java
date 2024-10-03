@@ -22,11 +22,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.authenticate(loginRequest));
     }
 
-//    @PostMapping("/token")
-//    public ResponseEntity<LoginResponse> refreshAccessToken(@RequestHeader @Valid RefreshTokenRequest refreshTokenRequest) {
-//        return ResponseEntity.ok(authService.refreshToken(refreshTokenRequest.getRefresh_token()));
-//    }
-
     @PostMapping("/token")
     public ResponseEntity<LoginResponse> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
         return ResponseEntity.ok(authService.refreshToken(refreshToken));

@@ -23,7 +23,7 @@ async function getTaskDataInBoardId(id) {
 async function getTaskById(routeId, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${routeId}/task/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routeId}/tasks/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       },
@@ -44,7 +44,7 @@ async function getTaskById(routeId, id) {
 async function addTask(newTask, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${id}/task`, {
+    const res = await fetch(`${url}/v3/boards/${id}/tasks`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -64,7 +64,7 @@ async function addTask(newTask, id) {
 async function deleteItemById(routerId, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${routerId}/task/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routerId}/tasks/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
@@ -80,7 +80,7 @@ async function deleteItemById(routerId, id) {
 async function editTask(routerId, id, editTask) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${routerId}/task/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routerId}/tasks/${id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json",

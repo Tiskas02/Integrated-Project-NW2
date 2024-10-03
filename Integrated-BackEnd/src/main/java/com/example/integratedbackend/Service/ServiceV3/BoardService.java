@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BoardService {
@@ -27,15 +28,24 @@ public class BoardService {
     ModelMapper modelMapper;
 
 
-    public List<Boards> getBoardByUserId(String userName){
+    public List<Boards> getBoardByUserId(String userName) {
         List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
         Users user = users.get(0);
         List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
-        if (boards == null){
+        if (boards == null) {
             throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
                     " " + userName + " not found");
         }
         return boards;
+    }
+
+    public Boards getBoardByBoardId(String boardId) {
+        Optional<Boards> boards = boardsRepositoriesV3.findById(boardId);
+        if (boards.isEmpty()) {
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
+                    " " + " not found");
+        }
+        return boards.get();
     }
     public Boards createBoard(String userName, NewBoardDTO boardDTO){
         List<Users> listUsers = usersRepositoriesV3.findAllByUsername(userName);
@@ -45,9 +55,6 @@ public class BoardService {
         if(boardsRepositoriesV3.existsBoardsByNameIgnoreCaseAndUsers(boardDTO.getName(), users)){
             throw new TaskNameDuplicatedException("must be unique");
         }
-//        if (getBoardByUserId(userName) != null){
-//            throw new TaskNameDuplicatedException("User contain one board");
-//        }
         String boardId = NanoId.generate(10);
         Boards newBoard = modelMapper.map(new Boards(), Boards.class);
         newBoard.setId(boardId);
@@ -57,5 +64,7 @@ public class BoardService {
         statusServiceV3.createDefaultStatus(savedBoard.getId());
         return savedBoard;
     }
-
 }
+
+
+
