@@ -493,7 +493,7 @@ const ClearStatuses = () => {
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ task?.status.statusName }}
+                        {{ task?.status.name }}
                       </div>
                     </div>
                     <div
