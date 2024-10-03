@@ -29,6 +29,11 @@ const parseJwt = (token) => {
   return JSON.parse(jsonPayload)
 }
 
+const receiveToken = localStorage.getItem("token")
+const token = parseJwt(receiveToken)
+console.log(token.name);
+
+
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
   console.log(data)
@@ -49,7 +54,7 @@ const setClose = () => {
 
 const addBoard = async (newBoard) => {
   const data = await boardStore.createBoard({
-    name: newBoard.name,
+    name: newBoard.name ? newBoard.name : `${token.name} Personal Board`,
   })
   if (data) {
     toasterStore.success({ text: "Board added successfully!" })
