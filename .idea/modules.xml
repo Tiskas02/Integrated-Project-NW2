@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Integrated-Project-NW2.iml" filepath="$PROJECT_DIR$/.idea/Integrated-Project-NW2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Integrated-BackEnd/IntegratedBackend.iml" filepath="$PROJECT_DIR$/Integrated-BackEnd/IntegratedBackend.iml" />
     </modules>
   </component>
 </project>

@@ -93,21 +93,25 @@ public class TaskServiceV3 {
 
 
     @Transactional
-    public TaskV3 updateTask(NewTaskDTOV3 editTask, Integer id, String boardId) throws ItemNotFoundException {
-        Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(
-                () -> new ItemNotFoundException(
-                        HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
+    public TaskV3 updateTask(NewTaskDTOV3 editTaskDto, Integer id, String boardId) throws ItemNotFoundException {
+        // Retrieve the board or throw exception if not found
+        Boards boards = boardsRepositoriesV3.findById(boardId)
+                .orElseThrow(() -> new ItemNotFoundException(
+                        HttpStatus.FORBIDDEN, "Board with ID " + boardId + " doesn't exist!"));
+
+        // Retrieve the existing task or throw exception if not found
         TaskV3 existingTask = tasksRepositoriesV3.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Task " + id + " doesn't exist!"));
-        existingTask.setTitle(editTask.getTitle());
-        existingTask.setDescription(editTask.getDescription());
-        existingTask.setAssignees(editTask.getAssignees());
-        if (editTask.getTitle() != null) {
-            StatusV3 findStatus = statusRepositoriesV3.findById(editTask.getStatusId())
-                    .orElseThrow(() -> new StatusIdNotFoundException("does not exist"));
-            existingTask.setStatus(findStatus);
-        }
-        TaskV3 updatedTask = tasksRepositoriesV3.save(existingTask);
-        return modelMapper.map(updatedTask, TaskV3.class);
+                .orElseThrow(() -> new ItemNotFoundException(
+                        HttpStatus.FORBIDDEN, "Task with ID " + id + " doesn't exist!"));
+
+        // Map the DTO to a new TaskV3 object (like your approach)
+        TaskV3 toUpdate = modelMapper.map(editTaskDto, TaskV3.class);
+
+        // Ensure essential fields from the existing task are preserved
+        toUpdate.setId(existingTask.getId());  // Preserve the task ID
+        toUpdate.setBoard(existingTask.getBoard());  // Preserve the associated board
+
+        return tasksRepositoriesV3.save(toUpdate);
     }
+
 }

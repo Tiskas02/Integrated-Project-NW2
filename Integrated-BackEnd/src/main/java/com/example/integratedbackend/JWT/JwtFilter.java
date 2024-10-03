@@ -53,7 +53,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT Token is not well-formed", request.getRequestURI());
                 return;
             } catch (SignatureException e) {
-                System.out.println(jwt);
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT Token has been tampered with", request.getRequestURI());
                 return;
             } catch (Exception e) {

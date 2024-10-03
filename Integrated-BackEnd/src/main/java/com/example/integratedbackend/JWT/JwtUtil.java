@@ -72,7 +72,13 @@ public class JwtUtil {
 
     public String generateRefreshToken(User user) {
         Map<String, Object> claims = new HashMap<>();
+
+        claims.put("iss", "http://intproj23.sit.kmutt.ac.th/NW2/");
+        claims.put("name", user.getName());
         claims.put("oid", user.getOid());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole().name());
+
         return createRefreshToken(claims, user.getUsername(), JWT_REFRESH_TOKEN_VALIDITY);
     }
 

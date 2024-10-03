@@ -26,6 +26,8 @@ export const useStoreBoard = defineStore("boards", () => {
     try {
       const addedBoard = await addBoard(newBoard)
       boards.value.push(addedBoard)
+      console.log(addedBoard);
+      
       return addedBoard
     } catch (error) {
       throw new Error(error.message)

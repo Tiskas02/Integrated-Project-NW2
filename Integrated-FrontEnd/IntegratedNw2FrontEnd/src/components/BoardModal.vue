@@ -42,9 +42,7 @@ const newBoard = ref({
                         emit('newBoard', newBoard)
                       }
                     "
-                    :disabled="
-                      newBoard.name.length < 1 || newBoard.name.length > 120
-                  "
+                    
                   >
                     Save
                   </button>

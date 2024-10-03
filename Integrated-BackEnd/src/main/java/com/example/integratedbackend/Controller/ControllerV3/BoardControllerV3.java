@@ -58,11 +58,11 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> getBoardByBoardId(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
-                Boards boards = (Boards) boardService.getBoardByBoardId(boardId);
+                Boards boards = boardService.getBoardByBoardId(boardId);
                 return new ResponseEntity<>(boards, HttpStatus.OK);
             }
         }
@@ -103,7 +103,9 @@ public class BoardControllerV3 {
             String jwt = authHeader.substring(7);
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
-                return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+                if (boardService.getBoardByBoardId(boardId) != null) {
+                    return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+                }
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
@@ -145,12 +147,16 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> updateStatus(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable int statusId,
-            @Valid @RequestBody NewStatusDTO status) {
+            @Valid @RequestBody NewStatusDTO status,
+            @PathVariable String boardId) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            boardService.getBoardByBoardId(boardId);
+
             if (userId != null) {
-                return new ResponseEntity<>(statusServiceV3.updateStatus(statusId, status), HttpStatus.OK);
+                return new ResponseEntity<>(modelMapper.map(statusServiceV3.updateStatus(statusId, status), StatusDtoV3.class), HttpStatus.OK);
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
@@ -231,7 +237,7 @@ public class BoardControllerV3 {
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (userId != null) {
                 TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
-                return ResponseEntity.ok(modelMapper.map(task, TaskIDDTOV2.class));
+                return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
