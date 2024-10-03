@@ -165,12 +165,12 @@ router.beforeEach(async (to, from, next) => {
           alert("Failed to refresh your session. Please log in again.")
         }
       } catch (error) {
-        console.log("Error refreshing token: ", `${error}`)
+        // console.log("Error refreshing token: ", `${error}`)
         deleteTokenFromLocalStorage()
         alert("Your session has expired. Please log in again.")
       }
     } else {
-      console.log(("Error refreshing token: ", `${error}`))
+      // console.log(("Error refreshing token: ", `${error}`))
       deleteTokenFromLocalStorage()
       alert("There is a problem. Please try again later.")
     }
