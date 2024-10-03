@@ -42,17 +42,18 @@ public class BoardService {
     public Boards getBoardByBoardId(String boardId) {
         Optional<Boards> boards = boardsRepositoriesV3.findById(boardId);
         if (boards.isEmpty()) {
-            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
-                    " " + " not found");
+            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with id " +
+                    boardId + " not found");
         }
         return boards.get();
     }
-    public Boards createBoard(String userName, NewBoardDTO boardDTO){
+
+    public Boards createBoard(String userName, NewBoardDTO boardDTO) {
         List<Users> listUsers = usersRepositoriesV3.findAllByUsername(userName);
         Users user = listUsers.get(0);
         Users users = usersRepositoriesV3.findById(user.getOid()).orElseThrow(() ->
-            new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with ID " + user + " not found"));
-        if(boardsRepositoriesV3.existsBoardsByNameIgnoreCaseAndUsers(boardDTO.getName(), users)){
+                new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with ID " + user + " not found"));
+        if (boardsRepositoriesV3.existsBoardsByNameIgnoreCaseAndUsers(boardDTO.getName(), users)) {
             throw new TaskNameDuplicatedException("must be unique");
         }
         String boardId = NanoId.generate(10);
