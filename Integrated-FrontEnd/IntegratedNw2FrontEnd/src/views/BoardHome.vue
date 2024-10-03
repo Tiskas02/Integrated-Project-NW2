@@ -31,6 +31,7 @@ const parseJwt = (token) => {
 
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
+  console.log(data)
   if (boardStore.boards.length > 0 || data) {
     dataLoaded.value = true
   } else {
