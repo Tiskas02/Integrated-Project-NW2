@@ -19,6 +19,10 @@ public class Boards {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "visibilities", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Visibilities visibilities;
+
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "createdOn", insertable = false, updatable = false)
