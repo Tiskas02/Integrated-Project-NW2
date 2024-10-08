@@ -6,6 +6,7 @@ import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Visibilities;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.BoardService;
 import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
@@ -348,6 +349,25 @@ public class BoardControllerV3 {
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
 //        return ResponseEntity.ok(modelMapper.map(taskServiceV3.updateTask(editTask, id), TaskIDDTOV2.class));
+    }
+
+    // ================================Visibilities=====================================
+
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<Object> updateBoard(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
+            @RequestBody VisibilityDTO newVisibility) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            if (userId != null) {
+                Visibilities updatedVisibility = visibilityService.changeVisibility(boardId, newVisibility);
+                return ResponseEntity.ok(updatedVisibility);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 }
 

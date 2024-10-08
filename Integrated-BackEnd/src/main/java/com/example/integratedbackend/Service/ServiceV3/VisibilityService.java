@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Service.ServiceV3;
 
+import com.example.integratedbackend.DTO.DTOV3.VisibilityDTO;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Visibilities;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
@@ -21,5 +22,15 @@ public class VisibilityService {
 
         //ถ้าvisibility = private return true, other return false
         return boards.getVisibilities() == Visibilities.PRIVATE;
+    }
+
+    public Visibilities changeVisibility(String boardId, VisibilityDTO newVisibilities) {
+        Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
+                new IllegalArgumentException("Board not found"));
+
+        boards.setVisibilities(newVisibilities.getVisibility());
+        boardsRepositoriesV3.save(boards);
+
+        return boards.getVisibilities();
     }
 }
