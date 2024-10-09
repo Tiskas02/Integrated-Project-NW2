@@ -3,16 +3,11 @@ package com.example.integratedbackend.Controller.ControllerV3;
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.DTO.DTOV3.*;
 import com.example.integratedbackend.JWT.JwtUtil;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Visibilities;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.*;
 import com.example.integratedbackend.Service.ListMapper;
-import com.example.integratedbackend.Service.ServiceV3.BoardService;
-import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
-import com.example.integratedbackend.Service.ServiceV3.TaskServiceV3;
-import com.example.integratedbackend.Service.ServiceV3.VisibilityService;
+import com.example.integratedbackend.Service.ServiceV3.*;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
@@ -36,6 +31,8 @@ public class BoardControllerV3 {
     private VisibilityService visibilityService;
     @Autowired
     private TaskServiceV3 taskServiceV3;
+    @Autowired
+    private CollabService collabService;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -326,7 +323,6 @@ public class BoardControllerV3 {
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
-
     }
 
     @PutMapping("/{boardId}/tasks/{id}")
@@ -368,6 +364,26 @@ public class BoardControllerV3 {
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    }
+
+    // ================================Collaborator=====================================
+
+    @GetMapping("/{boardId}/collabs")
+    public ResponseEntity<List<Collab>> getAllCollabs(@PathVariable String boardId, HttpServletRequest request) {
+        List<Collab> collabs = collabService.getAllCollaborator(boardId);
+        return ResponseEntity.ok(collabs);
+    }
+
+    @GetMapping("/{boardId}/collab/{callabId}")
+    public ResponseEntity<Collab> getCollab(@PathVariable String boardId, @PathVariable String callabId) {
+        Collab collab = collabService.getCollaborator(boardId, callabId);
+        return ResponseEntity.ok(collab);
+    }
+
+    @PostMapping("/{boardId}/collabs")
+    public ResponseEntity<Collab> addCollab(@PathVariable String boardId, @RequestBody CollabRequestDTO collabRequestDTO) {
+        Collab collab = collabService.addCollaborator(boardId, collabRequestDTO);
+        return new ResponseEntity<>(collab, HttpStatus.CREATED);
     }
 }
 

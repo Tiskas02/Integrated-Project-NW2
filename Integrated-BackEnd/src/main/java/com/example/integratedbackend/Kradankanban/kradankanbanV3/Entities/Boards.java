@@ -12,6 +12,7 @@ import java.time.ZonedDateTime;
 @Data
 @Table(name = "board", schema = "kradankanbanV3")
 public class Boards {
+
     @Id
     @Column(name = "boardId", nullable = false)
     private String id;
