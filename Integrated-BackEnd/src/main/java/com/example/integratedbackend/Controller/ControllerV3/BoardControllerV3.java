@@ -369,21 +369,70 @@ public class BoardControllerV3 {
     // ================================Collaborator=====================================
 
     @GetMapping("/{boardId}/collabs")
-    public ResponseEntity<List<Collab>> getAllCollabs(@PathVariable String boardId, HttpServletRequest request) {
-        List<Collab> collabs = collabService.getAllCollaborator(boardId);
-        return ResponseEntity.ok(collabs);
+    public ResponseEntity<List<Collab>> getAllCollabs(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            if (userId != null) {
+                List<Collab> collabs = collabService.getAllCollaborator(boardId);
+                return ResponseEntity.ok(collabs);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
     @GetMapping("/{boardId}/collab/{callabId}")
-    public ResponseEntity<Collab> getCollab(@PathVariable String boardId, @PathVariable String callabId) {
-        Collab collab = collabService.getCollaborator(boardId, callabId);
-        return ResponseEntity.ok(collab);
+    public ResponseEntity<Collab> getCollab(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
+            @PathVariable String callabId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            if (userId != null) {
+                Collab collab = collabService.getCollaborator(boardId, callabId);
+                return ResponseEntity.ok(collab);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
     @PostMapping("/{boardId}/collabs")
-    public ResponseEntity<Collab> addCollab(@PathVariable String boardId, @RequestBody CollabRequestDTO collabRequestDTO) {
-        Collab collab = collabService.addCollaborator(boardId, collabRequestDTO);
-        return new ResponseEntity<>(collab, HttpStatus.CREATED);
+    public ResponseEntity<Collab> addCollab(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
+            @RequestBody CollabRequestDTO collabRequestDTO) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            if (userId != null) {
+                Collab collab = collabService.addCollaborator(boardId, collabRequestDTO);
+                return new ResponseEntity<>(collab, HttpStatus.CREATED);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    }
+
+    @DeleteMapping("/{boardId}/collab/{callabId}")
+    public ResponseEntity<Collab> deleteCollab(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
+            @PathVariable String callabId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            if (userId != null) {
+                Collab collab = collabService.deleteCollaborator(boardId, callabId);
+                return ResponseEntity.ok(collab);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 }
 
