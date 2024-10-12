@@ -73,14 +73,27 @@ const navigateToBoardTasks = (boardId) => {
   <Logo />
   <div class="flex">
     <!-- SideBar -->
-    <div class="w-[10%] bg-customNavColor p-4 text-white" >
+    <div class="w-[10%] bg-customNavColor p-4 text-white">
       <button
-        class="flex w-full itbkk-button-add itbkk-button-create items-center rounded-lg text-base transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-slate-500 gap-2 p-2 pr-5"
+        class="flex w-full itbkk-button-add itbkk-button-create items-center rounded-lg text-base transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-slate-500 gap-2 p-2 pr-6"
         @click="setModal"
       >
-        <img src="../assets/ui/Add New.svg" alt="Add" class="w-[25%]" />
+        <img src="../assets/ui/Add New.svg" alt="Add" class="w-[35%]" />
         <p class="text-xl">Board</p>
+        
       </button>
+      <hr class="mt-2">
+      <label class="inline-flex items-center cursor-pointer ml-6 mt-4">
+          <input type="checkbox" value="" class="sr-only peer" checked />
+          <div
+            class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+          ></div>
+        </label>
+        <hr class="mt-2">
+        <div class="flex gap-1 mt-4">
+        <img src="../assets/ui/Support.svg" alt="Modify" class="w-[25%]">
+        <p class="text-xl">Status</p>
+      </div>
     </div>
 
     <!-- Main Content -->
@@ -118,9 +131,7 @@ const navigateToBoardTasks = (boardId) => {
                 >
                   {{ board.name }}
                 </div>
-                <div
-                  class="itbkk-personal-item"
-                >
+                <div class="itbkk-personal-item">
                   <div class="flex justify-between items-center">
                     <div
                       class="text-black text-xl p-4 hover:duration-200 hover:text-violet-600 hover:bg-gray-200 rounded-xl cursor-pointer"
