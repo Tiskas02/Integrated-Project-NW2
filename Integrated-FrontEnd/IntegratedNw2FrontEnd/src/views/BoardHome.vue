@@ -80,20 +80,19 @@ const navigateToBoardTasks = (boardId) => {
       >
         <img src="../assets/ui/Add New.svg" alt="Add" class="w-[35%]" />
         <p class="text-xl">Board</p>
-        
       </button>
-      <hr class="mt-2">
+      <hr class="mt-2" />
       <label class="inline-flex items-center cursor-pointer ml-6 mt-4">
-          <input type="checkbox" value="" class="sr-only peer" checked />
-          <div
-            class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-          ></div>
-        </label>
-        <hr class="mt-2">
-        <div class="flex gap-1 mt-4">
-        <img src="../assets/ui/Support.svg" alt="Modify" class="w-[25%]">
+        <input type="checkbox" value="" class="sr-only peer" checked />
+        <div
+          class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+        ></div>
+      </label>
+      <hr class="mt-2" />
+      <button class="flex gap-1 mt-4 cursor-pointer transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-slate-500 rounded-lg text-base p-2">
+        <img src="../assets/ui/Support.svg" alt="Modify" class="w-[25%]" />
         <p class="text-xl">Status</p>
-      </div>
+      </button>
     </div>
 
     <!-- Main Content -->
