@@ -71,7 +71,7 @@ const navigateToBoardTasks = (boardId) => {
 
 <template>
   <Logo />
-  <div class="flex">
+  <div class="flex h-screen">
     <!-- SideBar -->
     <div class="w-[10%] bg-customNavColor p-4 text-white">
       <button
@@ -96,7 +96,7 @@ const navigateToBoardTasks = (boardId) => {
     </div>
 
     <!-- Main Content -->
-    <div>
+    <div class="w-full">
       <LoadingScreen v-if="!dataLoaded" />
       <div
         class="w-full font-rubik font-medium text-4xl text-black text-center mt-6 mb-4"
