@@ -31,8 +31,7 @@ const parseJwt = (token) => {
 
 const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
-console.log(token.name);
-
+console.log(token.name)
 
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
@@ -71,59 +70,33 @@ const navigateToBoardTasks = (boardId) => {
 </script>
 
 <template>
-  <div>
-    <LoadingScreen v-if="!dataLoaded" />
-    <Logo>
-      <template #image>
-        <img src="/icon.png" alt="icon" class="w-[10%] m-2" />
-      </template>
-      <template #text>
-        <div class="font-chivo font-medium text-xl text-white mx-1">
-          IT-Bangmod Kradan Kanban
-        </div>
-      </template>
-    </Logo>
-    <div
-      class="w-full font-rubik font-medium text-4xl text-white text-center my-6"
-    >
-      Board List
+  <Logo />
+  <div class="flex">
+    <!-- SideBar -->
+    <div class="w-[10%] bg-customNavColor p-4 text-white" >
+      <button
+        class="flex w-full itbkk-button-add itbkk-button-create items-center rounded-lg text-base transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-slate-500 gap-2 p-2 pr-5"
+        @click="setModal"
+      >
+        <img src="../assets/ui/Add New.svg" alt="Add" class="w-[25%]" />
+        <p class="text-xl">Board</p>
+      </button>
     </div>
-    <div class="flex justify-end mx-10" @click="setModal">
-      <BaseBtn>
-        <template #default>
-          <button class="itbkk-button-add itbkk-button-create p-4">Create personal board</button>
-        </template>
-      </BaseBtn>
-    </div>
-    <div class="w-full flex justify-center mt-6">
-      <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/30">
-        <div class="min-w-full divide-y divide-gray-200 overflow-auto">
-          <div class="#4793AF bg-slate-800 flex rounded-md overflow-auto">
-            <div
-              class="w-[10%] m-auto text-start text-md font-bold text-white uppercase overflow-auto"
-            ></div>
-            <div
-              class="w-[22%] h-14 text-md font-bold text-white uppercase flex justify-center items-center"
-            >
-              <div class="w-full">No</div>
-            </div>
-            <div
-              class="w-[22%] h-14 text-md font-bold text-white uppercase flex justify-center items-center"
-            >
-              <div class="w-full">Name</div>
-            </div>
-            <div
-              class="w-[22%] h-14 text-center text-md font-bold text-white uppercase flex justify-center items-center"
-            ></div>
-            <div
-              class="w-[22%] h-14 text-left text-md font-bold text-white uppercase flex justify-center items-center"
-            >
-              <div class="w-full">Action</div>
-            </div>
-          </div>
+
+    <!-- Main Content -->
+    <div>
+      <LoadingScreen v-if="!dataLoaded" />
+      <div
+        class="w-full font-rubik font-medium text-4xl text-black text-center mt-6 mb-4"
+      >
+        Board List
+      </div>
+
+      <div class="itbkk-collab-board w-[100%] flex flex-col p-6 overflow-auto">
+        <div class="space-x-4">
           <div
             v-if="boardStore.length <= 0"
-            class="w-full border bg-white h-[60lvh] rounded-b-box"
+            class="w-full border bg-white rounded-b-box"
           >
             <div class="flex justify-center items-center h-full">
               <p class="text-xl font-bold animate-bounce text-slate-500">
@@ -131,33 +104,32 @@ const navigateToBoardTasks = (boardId) => {
               </p>
             </div>
           </div>
-          <div v-else class="w-full h-[500px] overflow-auto rounded-b-box">
-            <div v-for="(board, index) in boards" :key="board.id">
+
+          <div v-else class="overflow-auto rounded-b-box">
+            <div class="flex flex-wrap justify-between gap-4">
               <div
-                class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+                v-for="(board, index) in boards"
+                :key="board.id"
+                class="w-[30%] bg-white rounded-lg shadow-lg p-4 space-y-4"
               >
                 <div
-                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
+                  class="itbkk-board-name bg-blue-500 text-white font-semibold text-center p-4 rounded-md cursor-pointer hover:bg-yellow-300 hover:text-black hover:duration-200"
+                  @click="navigateToBoardTasks(board.id)"
                 >
-                  <div class="flex hover:shadow-inner hover:bg-slate-50">
+                  {{ board.name }}
+                </div>
+                <div
+                  class="itbkk-personal-item"
+                >
+                  <div class="flex justify-between items-center">
                     <div
-                      class="w-[30%] px-6 py-4 whitespace-nowrap text-center"
+                      class="text-black text-xl p-4 hover:duration-200 hover:text-violet-600 hover:bg-gray-200 rounded-xl cursor-pointer"
                       @click="navigateToBoardTasks(board.id)"
                     >
-                      {{ index + 1 }}
+                      Board No: {{ index + 1 }}
                     </div>
                     <div
-                      class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
-                    >
-                      {{ board.name }}
-                    </div>
-                    <div
-                      class="itbkk-assignees w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
-                    ></div>
-                    <div
-                      class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
+                      class="itbkk-button-action whitespace-nowrap flex justify-end gap-4"
                     >
                       <div
                         class="itbkk-button-edit btn btn-outline btn-warning"
@@ -179,10 +151,15 @@ const navigateToBoardTasks = (boardId) => {
           </div>
         </div>
       </div>
+      <teleport to="#body">
+        <BoardModal
+          v-if="showModal"
+          @close="setClose"
+          @newBoard="addBoard"
+          class="itbkk-modal-task"
+        />
+      </teleport>
     </div>
-    <teleport to="#body">
-      <BoardModal v-if="showModal" @close="setClose" @newBoard="addBoard" class="itbkk-modal-task" />
-    </teleport>
   </div>
 </template>
 

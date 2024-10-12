@@ -33,13 +33,13 @@ const logout = () => {
 </script>
 
 <template>
-  <div class="itbkk-home w-full flex items-center">
+  <div class="itbkk-home flex z-50 w-full items-center bg-gray-800">
     <router-link :to="{ name: 'board' }">
-      <div class="flex items-center">
-        <slot name="image"><img src="/icon.png" class="w-[10%] m-2" /></slot>
+      <div class="flex items-center w-[70%]">
+        <slot name="image"><img src="/icon.png" class="w-[10%] mt-2 ml-2 mr-2" /></slot>
         <slot name="text">
           <div
-            class="text-center font-chivo font-medium text-md text-blue-220 text-white"
+            class="text-center font-chivo font-medium text-2xl text-blue-220 text-white"
           >
             IT-Bangmod Kradan Kanban
           </div>
@@ -66,7 +66,7 @@ const logout = () => {
         <div class="itbkk-fullname text-white font-rubik font-medium text-lg">
           {{ userPayload ? userPayload.name : "User" }}
         </div>
-        <BaseBtn class="mx-4">
+        <BaseBtn class="mx-4 shadow-md">
           <template #cancel>
             <button @click="logout">Logout</button>
           </template>

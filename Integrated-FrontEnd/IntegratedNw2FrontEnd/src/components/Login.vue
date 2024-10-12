@@ -72,7 +72,7 @@ const submitForm = async () => {
       </div>
       <div class="w-full flex justify-center">
         <div
-          class="text-white font-rubik text-4xl font-bold text-center shadow-md"
+          class="text-black font-rubik text-4xl font-bold text-center"
         >
           IT-Bangmod<br />
           Kradan Kanban
@@ -80,18 +80,18 @@ const submitForm = async () => {
       </div>
     </div>
     <div
-      class="w-[35%] h-[80%] bg-white rounded-2xl shadow-xl flex justify-center items-center mx-32"
+      class="w-[35%] h-[80%] bg-white rounded-2xl shadow-2xl flex justify-center items-center mx-32"
     >
       <div>
         <div
-          class="text-slate-700 font-rubik font-semibold text-3xl text-center w-[20rem] mb-4"
+          class="text-black font-rubik font-semibold text-3xl text-center w-[20rem] mb-4"
         >
           Welcome
         </div>
         <div>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-slate-500"
+              <span class="label-text font-semibold text-black"
                 >Username</span
               >
             </div>
@@ -110,7 +110,7 @@ const submitForm = async () => {
           </label>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-slate-500"
+              <span class="label-text font-semibold text-black"
                 >Password</span
               >
             </div>
