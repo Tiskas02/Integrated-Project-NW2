@@ -9,13 +9,10 @@ import java.util.Optional;
 
 
 public interface BoardsRepositoriesV3 extends JpaRepository<Boards, String> {
-//    List<Boards> findAllByUser(Users user);
     List<Boards> findBoardsByUsersOid(String oid);
     boolean existsBoardsByNameIgnoreCaseAndUsers(String name, Users user);
 
     List<Boards> findBoardsById(String boardId);
 
-
-//    Optional<Boards> findByBoardId(String id);
-//    Boards existsByNameIgnoreCaseAndOid(String name, String oid);
+    List<Boards> findByIdIn(List<String> boardIds);
 }

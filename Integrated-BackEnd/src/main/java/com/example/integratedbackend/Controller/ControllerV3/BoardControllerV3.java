@@ -403,19 +403,9 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/collab/{collabId}")
-    public ResponseEntity<CollabBoardResponse> getCollabBoard(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable String collabId) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
-
-            if (userId != null) {
-                CollabBoardResponse collab = collabService.getCollabBoard(collabId);
-                return ResponseEntity.ok(collab);
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    public ResponseEntity<CollabBoardResponse> getCollabBoard(@PathVariable String collabId) {
+        CollabBoardResponse response = collabService.getCollabBoard(collabId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{boardId}/collabs")
