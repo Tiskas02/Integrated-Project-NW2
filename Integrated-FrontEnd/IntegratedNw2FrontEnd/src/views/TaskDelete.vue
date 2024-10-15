@@ -24,7 +24,7 @@ const props = defineProps({
           </div>
           <div class="flex justify-end my-4">
             <div
-              @click=";[$emit('close', false)]"
+              @click="[$emit('close', false)]"
               class="itbkk-button-cancel btn btn-error text-white mx-2"
             >
               Cancel

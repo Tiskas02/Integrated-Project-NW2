@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { getBoardData, addBoard } from "@/libs/api/board/fetchUtilBoard"
+import { getBoardData, addBoard,updateBoardVisibility } from "@/libs/api/board/fetchUtilBoard"
 
 export const useStoreBoard = defineStore("boards", () => {
   const boards = ref([])
@@ -12,9 +12,11 @@ export const useStoreBoard = defineStore("boards", () => {
       boardData.forEach((board) => {
         boards.value.push(board)
       })
+      console.log(boards.value);
       if (boards.value.length === 0) {
         return noData
       } else {
+        console.log(boards.value);
         return boards.value
       }
     } catch (error) {
@@ -34,10 +36,22 @@ export const useStoreBoard = defineStore("boards", () => {
     }
   }
 
+  async function updateVisibility(id, visibility) {
+    try {
+      const updatedBoard = await updateBoardVisibility(id, visibility)
+      const index = boards.value.findIndex((board) => board.id === id)
+      boards.value[index] = updatedBoard
+      return updatedBoard
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
   function matchUserBoard(id) {
+    boards.value.forEach((board) => console.log(board.id))
     const matchedBoard = boards.value.find((board) => board.id === id)
+    console.log(matchedBoard);
     if (matchedBoard) {
-      return matchedBoard.name
+      return matchedBoard
     } else {
       return "Board not found"
     }
@@ -48,5 +62,6 @@ export const useStoreBoard = defineStore("boards", () => {
     fetchBoards,
     createBoard,
     matchUserBoard,
+    updateVisibility
   }
 })
