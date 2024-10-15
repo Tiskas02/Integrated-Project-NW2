@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Service.ServiceV3;
 
+import com.example.integratedbackend.DTO.DTOV3.CollabBoardResponse;
 import com.example.integratedbackend.DTO.DTOV3.CollabRequestDTO;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
@@ -54,14 +55,19 @@ public class CollabService {
 //        return collab;
 //    }
 
-    public List<Collab> getCollabBoard (String userId){
+    public CollabBoardResponse getCollabBoard (String userId){
         userRepository.findById(userId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
+        String username = user.getUsername();
 
         List<Collab> collabs = collabRepositoriesV3.findByUserId(userId);
 
-        return collabs;
+//        return collabs;
+        return new CollabBoardResponse(username, collabs);
     }
+
 
     public Collab addCollaborator(String boardId, CollabRequestDTO collabRequestDTO){
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->

@@ -403,7 +403,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/collab/{collabId}")
-    public ResponseEntity<List<Collab>> getCollabBoard(
+    public ResponseEntity<CollabBoardResponse> getCollabBoard(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String collabId) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -411,7 +411,7 @@ public class BoardControllerV3 {
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
             if (userId != null) {
-                List<Collab> collab = collabService.getCollabBoard(collabId);
+                CollabBoardResponse collab = collabService.getCollabBoard(collabId);
                 return ResponseEntity.ok(collab);
             }
         }
