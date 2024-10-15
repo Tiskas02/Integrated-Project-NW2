@@ -1,95 +1,105 @@
 <script setup>
-import { ref, onMounted, computed } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { storeToRefs } from "pinia"
-import { useStoreBoard } from "@/stores/boardStore"
-import { useStoreTasks } from "../stores/taskStores.js"
-import { useStoreStatus } from "../stores/statusStores.js"
-import { getTaskById } from "@/libs/api/task/fetchUtilTask.js"
-import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js"
-import TaskModal from "../components/TaskModal.vue"
-import BaseBtn from "@/shared/BaseBtn.vue"
-import { useToasterStore } from "@/stores/notificationStores"
-const route = useRoute()
-const router = useRouter()
-const boardStore = useStoreBoard()
-const tasksStore = useStoreTasks()
-const statusStore = useStoreStatus()
-const toasterStore = useToasterStore()
-const { tasks } = storeToRefs(tasksStore)
-const showDetail = ref(false)
-const storeMode = ref("")
-const storeTask = ref({})
-const storeTasks = ref({})
-const storeIndex = ref(0)
-const sortOrder = ref("DEFAULT")
-const selectFilter = ref([])
-const routerId = ref(route.params.id)
-const allStatus = ref([])
-const nameBoard = ref()
+import { ref, onMounted, computed, Teleport } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { useStoreBoard } from "@/stores/boardStore";
+import { useStoreTasks } from "../stores/taskStores.js";
+import { useStoreStatus } from "../stores/statusStores.js";
+import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
+import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
+import TaskModal from "../components/TaskModal.vue";
+import BaseBtn from "@/shared/BaseBtn.vue";
+import { useToasterStore } from "@/stores/notificationStores";
+import Boardvisibility from "@/views/BoardVisibility.vue";
+const route = useRoute();
+const router = useRouter();
+const boardStore = useStoreBoard();
+const tasksStore = useStoreTasks();
+const statusStore = useStoreStatus();
+const toasterStore = useToasterStore();
+const { boards } = storeToRefs(boardStore);
+const { tasks } = storeToRefs(tasksStore);
+const showDetail = ref(false);
+const storeMode = ref("");
+const storeTask = ref({});
+const storeTasks = ref({});
+const storeIndex = ref(0);
+const sortOrder = ref("DEFAULT");
+const selectFilter = ref([]);
+const routerId = ref(route.params.id);
+const allStatus = ref([]);
+const matchedBoards = ref();
+const nameboard = ref();
+const boardVisibility = ref();
+const storeVisibility = ref();
+const showVisibility = ref(false);
 const defaultStatus = ref({
   statusId: null,
-})
+});
 onMounted(async () => {
-  const data = await tasksStore.fetchTasks(routerId.value)
-  const nameBoardf = boardStore.matchUserBoard(routerId.value)
-  nameBoard.value = nameBoardf
-  storeTasks.value = data
-})
+  const board = await boardStore.fetchBoards();
+  const data = await tasksStore.fetchTasks(routerId.value);
+  const matchedBoard = boardStore.matchUserBoard(routerId.value);
+  matchedBoards.value = matchedBoard;
+  nameboard.value = matchedBoards.value.name;
+  storeVisibility.value = matchedBoards.value.visibilities;
+  storeTasks.value = data;
+});
 
 onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value)
-  const noStatus = allStatus.value.find((status) => status.name === "No Status")
-
+  allStatus.value = await statusStore.fetchStatus(routerId.value);
+  const noStatus = allStatus.value.find(
+    (status) => status.name === "No Status"
+  );
   // If found, assign its statusId to defaultStatus.value.statusId
   if (noStatus) {
-    defaultStatus.value.statusId = noStatus.id
+    defaultStatus.value.statusId = noStatus.id;
   }
-})
+});
 
 const fetchDataById = async (routerId, id, mode) => {
-  storeMode.value = mode
-  storeTask.value = await getTaskById(routerId, id)
-  statusStore.value = await getStatusData(routerId.value)
+  storeMode.value = mode;
+  storeTask.value = await getTaskById(routerId, id);
+  statusStore.value = await getStatusData(routerId.value);
   if (storeMode.value === "add") {
-    showDetail.value = true
-    router.push({ name: "addTask" })
+    showDetail.value = true;
+    router.push({ name: "addTask" });
   } else if (
     Object.keys(storeTask.value).length > 0 &&
     storeMode.value === "edit"
   ) {
-    showDetail.value = true
-    router.push({ name: "editTask", params: { editid: id } })
+    showDetail.value = true;
+    router.push({ name: "editTask", params: { editid: id } });
   } else if (
     Object.keys(storeTask.value).length > 0 &&
     storeMode.value === "view"
   ) {
-    showDetail.value = true
-    router.push({ name: "taskDetail", params: { taskid: id } })
+    showDetail.value = true;
+    router.push({ name: "taskDetail", params: { taskid: id } });
   } else if (storeMode.value === "delete") {
-    showDetail.value = true
+    showDetail.value = true;
   } else {
-    showDetail.value = false
+    showDetail.value = false;
   }
   if (storeTask.value.status == "404") {
-    toasterStore.error({ text: "An error occurred redirect to task home" })
-    router.replace({ name: "task" })
-    showDetail.value = false
+    toasterStore.error({ text: "An error occurred redirect to task home" });
+    router.replace({ name: "task" });
+    showDetail.value = false;
   }
-}
+};
 
 const removeTask = async (id) => {
-  const res = await tasksStore.deleteTask(routerId.value, id)
+  const res = await tasksStore.deleteTask(routerId.value, id);
   if (res !== 404) {
-    toasterStore.success({ text: "Task deleted successfully!" })
+    toasterStore.success({ text: "Task deleted successfully!" });
   } else if (res === 404) {
-    toasterStore.error({ text: "An error occurred while deleting the task." })
+    toasterStore.error({ text: "An error occurred while deleting the task." });
   }
-}
+};
 
 const setIndex = (indexes) => {
-  storeIndex.value = indexes
-}
+  storeIndex.value = indexes;
+};
 
 const addEditTask = async (newTask) => {
   if (newTask.id === undefined) {
@@ -106,13 +116,13 @@ const addEditTask = async (newTask) => {
             : newTask.description,
         },
         routerId.value
-      )
+      );
       if (data.id) {
-        toasterStore.success({ text: "Task added successfully!" })
+        toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        })
+        });
       }
     } else {
       const data = await tasksStore.createTask(
@@ -127,13 +137,13 @@ const addEditTask = async (newTask) => {
             : newTask.description,
         },
         routerId.value
-      )
+      );
       if (data.id) {
-        toasterStore.success({ text: "Task added successfully!" })
+        toasterStore.success({ text: "Task added successfully!" });
       } else if (!data.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        })
+        });
       }
     }
   } else {
@@ -146,13 +156,13 @@ const addEditTask = async (newTask) => {
         description: newTask.descriptio
           ? newTask.description.trim()
           : newTask.description,
-      })
+      });
       if (dataEdit.id) {
-        toasterStore.success({ text: "Task Updated successfully!" })
+        toasterStore.success({ text: "Task Updated successfully!" });
       } else if (dataEdit.id === undefined) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        })
+        });
       }
     } else {
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
@@ -163,84 +173,120 @@ const addEditTask = async (newTask) => {
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
-      })
+      });
       if (dataEdit.id) {
-        toasterStore.success({ text: "Task Updated successfully!" })
+        toasterStore.success({ text: "Task Updated successfully!" });
       } else if (!dataEdit.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        })
+        });
       }
     }
   }
-}
+};
 
 const setDetail = (value, id, mode) => {
-  showDetail.value = value
-  storeMode.value = mode
+  showDetail.value = value;
+  storeMode.value = mode;
   if (storeMode.value === "add") {
-    router.push({ name: "addTask" })
+    router.push({ name: "addTask" });
   } else if (storeMode.value === "edit") {
-    router.push({ name: "editTask", params: { id: id } })
+    router.push({ name: "editTask", params: { id: id } });
   } else if (id !== null && storeMode.value !== "edit") {
-    router.push({ name: "taskDetail", params: { id: id } })
+    router.push({ name: "taskDetail", params: { id: id } });
   }
-}
+};
 
 const setClose = (value) => {
-  showDetail.value = value
-}
+  showDetail.value = value;
+};
+const setCloseVisibility = (value) => {
+  showVisibility.value = value;
+};
+const EditVisibilities = async (value) => {
+  const data = await boardStore.updateVisibility(routerId.value, value.visibilities);
+   
+  if (data === value.visibilities) {
+    storeVisibility.value = data
+    toasterStore.success({ text: "Visibility updated successfully!" });
+  } else {
+    toasterStore.error({ text: "An error occurred while updating visibility." });
+  }
+};
+const setVisibility = (value) => {
+  if (value === "PUBLIC") {
+    showVisibility.value = true;
+    // storeVisibility.value = value;
+    // showVisibility.value = false;
+  } else {
+    showVisibility.value = true;
+    // storeVisibility.value = value;
+
+    // showVisibility.value = true;
+  }
+};
 
 const SortOrder = async () => {
-  await tasksStore.sortTasksByStatus(sortOrder.value)
+  await tasksStore.sortTasksByStatus(sortOrder.value);
   if (sortOrder.value === "DEFAULT") {
-    sortOrder.value = "ASC"
+    sortOrder.value = "ASC";
   } else if (sortOrder.value === "ASC") {
-    sortOrder.value = "DESC"
+    sortOrder.value = "DESC";
   } else {
-    sortOrder.value = "DEFAULT"
+    sortOrder.value = "DEFAULT";
   }
-}
+};
 
 const updateFilterList = (filterName) => {
-  const filterIndex = selectFilter.value.indexOf(filterName)
+  const filterIndex = selectFilter.value.indexOf(filterName);
 
   if (filterIndex === -1) {
-    selectFilter.value.push(filterName)
+    selectFilter.value.push(filterName);
   } else {
-    selectFilter.value.splice(filterIndex, 1)
+    selectFilter.value.splice(filterIndex, 1);
   }
-}
+};
 
 const getFilterTask = computed(() => {
   return selectFilter.value.length > 0
     ? tasks.value.filter((task) =>
         selectFilter.value.includes(task.status.statusName)
       )
-    : tasks.value
-})
+    : tasks.value;
+});
 
 const ClearStatuses = () => {
-  selectFilter.value.splice(0, selectFilter.value.length)
-}
+  selectFilter.value.splice(0, selectFilter.value.length);
+};
 </script>
 
 <template>
   <div>
     <div class="flex justify-end m-10 mt-16">
-      <BaseBtn>
-        <router-link :to="{ name: 'status' }">
-          <template #default>
-            <button class="itbkk-manage-status ">Manage Status</button>
-          </template>
-        </router-link>
-      </BaseBtn>
+      <div class="mx-2">
+        <BaseBtn>
+          <router-link :to="{ name: 'status' }">
+            <template #default>
+              <button class="itbkk-manage-status">Manage Status</button>
+            </template>
+          </router-link>
+        </BaseBtn>
+      </div>
+      <div class="mx-2">
+        <BaseBtn>
+          <router-link :to="{ name: 'collab' }">
+            <template #default>
+              <button class="itbkk-manage-status">Manage Collaberator</button>
+            </template>
+          </router-link>
+        </BaseBtn>
+      </div>
     </div>
     <div class="w-full flex justify-center my-3">
       <div
         class="itbkk-board-name font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
       >
-        Board name : {{ nameBoard }}
+        Board name : {{ nameboard }}
       </div>
     </div>
     <div class="w-full flex justify-center my-3">
@@ -256,6 +302,22 @@ const ClearStatuses = () => {
     >
       <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
         <div class="font-bold text-slate-700">Tool Bar :</div>
+        <div>
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <span class="label-text mx-2">
+                {{ storeVisibility === "PUBLIC" ? "public" : "private" }}
+              </span>
+              <input
+                type="checkbox"
+                class="toggle border-blue-500 bg-blue-500 [--tglbg:red] hover:bg-blue-700"
+                value="storeVisibility"
+                @click="setVisibility(storeVisibility)"
+              />
+            </label>
+          </div>
+        </div>
+        {{ storeVisibility === "PUBLIC" ? "public" : "private" }}
         <div class="my-2 flex">
           <div
             class="itbkk-button-add btn btn-outline mx-5"
@@ -523,6 +585,14 @@ const ClearStatuses = () => {
         </div>
       </div>
     </div>
+    <teleport to="#body">
+      <Boardvisibility
+        v-if="showVisibility"
+        :board="matchedBoards"
+        @newBoard="EditVisibilities"
+        @close="setCloseVisibility"
+      />
+    </teleport>
     <teleport to="#body">
       <TaskModal
         v-if="showDetail"

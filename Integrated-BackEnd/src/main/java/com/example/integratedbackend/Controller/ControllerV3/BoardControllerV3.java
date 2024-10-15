@@ -357,7 +357,6 @@ public class BoardControllerV3 {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
-
             if (userId != null) {
                 Visibilities updatedVisibility = visibilityService.changeVisibility(boardId, newVisibility);
                 return ResponseEntity.ok(updatedVisibility);
