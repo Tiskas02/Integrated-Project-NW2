@@ -21,16 +21,19 @@ public class VisibilityService {
                 new IllegalArgumentException("Board not found"));
 
         //ถ้าvisibility = private return true, other return false
-        return boards.getVisibilities() == Visibilities.PRIVATE;
+//        return boards.getVisibilities() == Visibilities.PRIVATE;
+        return "private".equals(boards.getVisibilities());
     }
 
-    public Visibilities changeVisibility(String boardId, VisibilityDTO newVisibilities) {
+    public String changeVisibility(String boardId, VisibilityDTO newVisibilities) {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new IllegalArgumentException("Board not found"));
 
         boards.setVisibilities(newVisibilities.getVisibility());
         boardsRepositoriesV3.save(boards);
-
+//        modelMapper.map(boards, Visibilities.class);
         return boards.getVisibilities();
+
     }
+
 }

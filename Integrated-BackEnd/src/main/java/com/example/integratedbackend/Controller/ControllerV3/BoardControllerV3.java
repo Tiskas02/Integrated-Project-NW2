@@ -7,7 +7,6 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.*;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.*;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
@@ -64,6 +63,9 @@ public class BoardControllerV3 {
 
             boolean visibleValue = visibilityService.checkVisibility(boardId);
             if (visibleValue && userId != null) {
+                Boards boards = boardService.getBoardByBoardId(boardId);
+                return new ResponseEntity<>(boards, HttpStatus.OK);
+            }else if (visibleValue == false && userId != null){
                 Boards boards = boardService.getBoardByBoardId(boardId);
                 return new ResponseEntity<>(boards, HttpStatus.OK);
             }else {
@@ -359,7 +361,7 @@ public class BoardControllerV3 {
             String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
             if (userId != null) {
-                Visibilities updatedVisibility = visibilityService.changeVisibility(boardId, newVisibility);
+                String updatedVisibility = visibilityService.changeVisibility(boardId, newVisibility);
                 return ResponseEntity.ok(updatedVisibility);
             }
         }
@@ -395,6 +397,22 @@ public class BoardControllerV3 {
 
             if (userId != null) {
                 Collab collab = collabService.getCollaborator(boardId, callabId);
+                return ResponseEntity.ok(collab);
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+    }
+
+    @GetMapping("/collab/{collabId}")
+    public ResponseEntity<List<Collab>> getCollabBoard(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String collabId) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+            String userId = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            if (userId != null) {
+                List<Collab> collab = collabService.getCollabBoard(collabId);
                 return ResponseEntity.ok(collab);
             }
         }

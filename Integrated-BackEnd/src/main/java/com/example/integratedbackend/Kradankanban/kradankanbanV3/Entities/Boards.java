@@ -38,4 +38,8 @@ public class Boards {
     @JoinColumn(name = "oid", referencedColumnName = "oid")
     private Users users;
 
+    public String getVisibilities() {
+        return visibilities.name().toLowerCase();
+    }
+
 }
