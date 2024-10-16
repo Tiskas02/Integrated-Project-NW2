@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,52 +44,66 @@ public class CollabService {
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found"));
     }
 
-//    public List<Collab> getCollabBoard (String boardId){
-//        Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
-//                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
-//
-//        List<Collab> collab = collabRepositoriesV3.findByBoardId(boardId);
-//
-//        if (collab.isEmpty()){
-//            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "No collaborators found for this board");
-//        }
-//
-//        return collab;
-//    }
-
-//    public CollabBoardResponse getCollabBoard (String userId){
+//    public CollabBoardResponse getCollabBoard(String userId) {
 //        userRepository.findById(userId).orElseThrow(() ->
 //                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
-//        User user = userRepository.findById(userId).orElseThrow(() ->
-//                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
-//        String username = user.getUsername();
 //
 //        List<Collab> collabs = collabRepositoriesV3.findByUserId(userId);
 //
-////        return collabs;
-//        return new CollabBoardResponse(username, collabs);
+//        List<String> boardIds = collabs.stream()
+//                .map(Collab::getBoardId)
+//                .collect(Collectors.toList());
+//
+//        List<Boards> boards = boardsRepositoriesV3.findByIdIn(boardIds);
+//        System.out.println(boards);
+//
+//        Map<String, String> boardIdToNameMap = boards.stream()
+//                .collect(Collectors.toMap(Boards::getId, Boards::getName));
+//
+//        List<CollabBoardDto> collabBoardDtos = collabs.stream()
+//                .map(collab -> {
+//                    return new CollabBoardDto(
+//                            collab.getBoardId(),
+//                            boardIdToNameMap.get(collab.getBoardId()),
+//                            userId,
+//                            collab.getAddedOn(),
+//                            collab.getAccessRight()
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//
+//        return new CollabBoardResponse(collabBoardDtos);
 //    }
 
     public CollabBoardResponse getCollabBoard(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
+        // Check if the user exists
+        userRepository.findById(userId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
 
+        // Get all collaborations for the user
         List<Collab> collabs = collabRepositoriesV3.findByUserId(userId);
 
+        // Extract board IDs from the collaborations
         List<String> boardIds = collabs.stream()
                 .map(Collab::getBoardId)
                 .collect(Collectors.toList());
 
+        // Fetch all boards by their IDs
         List<Boards> boards = boardsRepositoriesV3.findByIdIn(boardIds);
+        System.out.println(boards);
 
-        Map<String, String> boardIdToNameMap = boards.stream()
-                .collect(Collectors.toMap(Boards::getId, Boards::getName));
+        // Create a map of board IDs to their board names and owner names
+        Map<String, Boards> boardIdToBoardMap = boards.stream()
+                .collect(Collectors.toMap(Boards::getId, board -> board));
 
+        // Map collaborations to DTOs
         List<CollabBoardDto> collabBoardDtos = collabs.stream()
                 .map(collab -> {
+                    Boards board = boardIdToBoardMap.get(collab.getBoardId());
                     return new CollabBoardDto(
                             collab.getBoardId(),
-                            boardIdToNameMap.get(collab.getBoardId()),
+                            board.getName(),  // Board name
+                            board.getUsers().getName(),  // Owner's name
                             userId,
                             collab.getAddedOn(),
                             collab.getAccessRight()
@@ -98,7 +113,6 @@ public class CollabService {
 
         return new CollabBoardResponse(collabBoardDtos);
     }
-
 
 
     public Collab addCollaborator(String boardId, CollabRequestDTO collabRequestDTO){
