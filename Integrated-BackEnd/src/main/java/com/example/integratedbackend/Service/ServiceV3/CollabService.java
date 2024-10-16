@@ -76,34 +76,27 @@ public class CollabService {
 //    }
 
     public CollabBoardResponse getCollabBoard(String userId) {
-        // Check if the user exists
         userRepository.findById(userId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
 
-        // Get all collaborations for the user
         List<Collab> collabs = collabRepositoriesV3.findByUserId(userId);
 
-        // Extract board IDs from the collaborations
         List<String> boardIds = collabs.stream()
                 .map(Collab::getBoardId)
                 .collect(Collectors.toList());
 
-        // Fetch all boards by their IDs
         List<Boards> boards = boardsRepositoriesV3.findByIdIn(boardIds);
-        System.out.println(boards);
 
-        // Create a map of board IDs to their board names and owner names
         Map<String, Boards> boardIdToBoardMap = boards.stream()
                 .collect(Collectors.toMap(Boards::getId, board -> board));
 
-        // Map collaborations to DTOs
         List<CollabBoardDto> collabBoardDtos = collabs.stream()
                 .map(collab -> {
                     Boards board = boardIdToBoardMap.get(collab.getBoardId());
                     return new CollabBoardDto(
                             collab.getBoardId(),
-                            board.getName(),  // Board name
-                            board.getUsers().getName(),  // Owner's name
+                            board.getName(),
+                            board.getUsers().getName(),
                             userId,
                             collab.getAddedOn(),
                             collab.getAccessRight()
