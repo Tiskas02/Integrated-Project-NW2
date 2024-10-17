@@ -25,7 +25,7 @@ public class VisibilityService {
         return "private".equals(boards.getVisibilities());
     }
 
-    public String changeVisibility(String boardId, VisibilityDTO newVisibilities) {
+    public Visibilities changeVisibility(String boardId, VisibilityDTO newVisibilities) {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new IllegalArgumentException("Board not found"));
 
