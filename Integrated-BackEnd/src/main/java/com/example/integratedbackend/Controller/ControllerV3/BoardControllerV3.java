@@ -72,39 +72,41 @@ public class BoardControllerV3 {
         Boards boardInfo = boardService.getBoardByBoardId(boardId);
         String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
 
-        Collab collabAccess = collabService.getCollaborator(boardId, collabId);
-
         //if owner ให้เข้าเลย
-        if (usernameFromToken.equals(boardOwnerName)) {
-            return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+        if (collabId != null) {
+            if (usernameFromToken.equals(boardOwnerName)) {
+
+                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+            }
         }
 
+        Collab collabAccess = collabService.getCollaborator(boardId, collabId);
         // Check board visibility
         boolean visibleValue = visibilityService.checkVisibility(boardId);
         if (!visibleValue) {
-                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
-                    if (usernameFromToken != null) {
-                        Boards boards = boardService.getBoardByBoardId(boardId);
-                        return new ResponseEntity<>(boards, HttpStatus.OK);
-                    } else {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
-                    }
+            if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                if (usernameFromToken != null) {
+                    Boards boards = boardService.getBoardByBoardId(boardId);
+                    return new ResponseEntity<>(boards, HttpStatus.OK);
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+                }
+            }
+        }
+
+        if (visibleValue) {
+            if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
+                if (usernameFromToken != null) {
+                    Boards boards = boardService.getBoardByBoardId(boardId);
+                    return new ResponseEntity<>(boards, HttpStatus.OK);
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
                 }
             }
 
-            if (visibleValue) {
-                if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
-                    if (usernameFromToken != null) {
-                        Boards boards = boardService.getBoardByBoardId(boardId);
-                        return new ResponseEntity<>(boards, HttpStatus.OK);
-                    } else {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
-                    }
-                }
+        }
 
-            }
-
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        return new ResponseEntity<>(boardInfo, HttpStatus.OK);
     }
 
 
@@ -134,54 +136,147 @@ public class BoardControllerV3 {
     }
 
     // ================================statuses=====================================
+//    @GetMapping("{boardId}/statuses/{collabId}")
+//    public ResponseEntity<Object> getAllStatus(
+//            @RequestHeader("Authorization") String authHeader,
+//            @PathVariable String boardId,
+//            @PathVariable String collabId) {
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            String jwt = authHeader.substring(7);
+//            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+//
+//            boolean visibleValue = visibilityService.checkVisibility(boardId);
+//            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+//            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+//
+//            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+//
+//            //if owner ให้เข้าเลย
+//            if (usernameFromToken.equals(boardOwnerName)) {
+//                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+//            }
+//
+//
+//            if (!visibleValue) {
+//                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+//                    if (usernameFromToken != null) {
+//                        if (boardService.getBoardByBoardId(boardId) != null) {
+//                            return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+//                        }
+//                    } else {
+//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+//                    }
+//                }
+//            }
+//
+//            if (visibleValue) {
+//                if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
+//                    if (usernameFromToken != null) {
+//                        if (boardService.getBoardByBoardId(boardId) != null) {
+//                            return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+//                        }
+//                    } else {
+//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+//                    }
+//                }
+//            }
+//
+//        }
+//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//    }
+
     @GetMapping("{boardId}/statuses/{collabId}")
     public ResponseEntity<Object> getAllStatus(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId,
             @PathVariable String collabId) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        }
 
-            boolean visibleValue = visibilityService.checkVisibility(boardId);
-            Boards boardInfo = boardService.getBoardByBoardId(boardId);
-            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+        String jwt = authHeader.substring(7);
+        String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
-            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        Boards boardInfo = boardService.getBoardByBoardId(boardId);
+        String boardOwnerName = boardInfo.getUsers().getUsername();
 
-            //if owner ให้เข้าเลย
+        //if owner ให้เข้าเลย
+        if (collabId != null) {
             if (usernameFromToken.equals(boardOwnerName)) {
-                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+                return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
             }
+        }
 
+        Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        boolean visibleValue = visibilityService.checkVisibility(boardId);
 
-            if (!visibleValue) {
-                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
-                    if (usernameFromToken != null) {
-                        if (boardService.getBoardByBoardId(boardId) != null) {
-                            return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
-                        }
-                    } else {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+        if (!visibleValue) {
+            if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                if (usernameFromToken != null) {
+                    if (boardService.getBoardByBoardId(boardId) != null) {
+                        return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
                     }
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
                 }
             }
+        }
 
-            if (visibleValue) {
-                if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
-                    if (usernameFromToken != null) {
+        if (visibleValue) {
+            if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
+                if (usernameFromToken != null) {
                         if (boardService.getBoardByBoardId(boardId) != null) {
                             return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
                         }
                     } else {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
                     }
-                }
-                }
-
+            }
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
     }
+
+//    @GetMapping("{boardId}/statuses/{statusId}/{collabId}")
+//    public ResponseEntity<Object> findStatusById(
+//            @RequestHeader("Authorization") String authHeader,
+//            @PathVariable String boardId,
+//            @PathVariable Integer statusId,
+//            @PathVariable String collabId) {
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            String jwt = authHeader.substring(7);
+//            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+//
+//            boolean visibleValue = visibilityService.checkVisibility(boardId);
+//            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+//            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+//
+//            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+//
+//            //if owner ให้เข้าเลย
+//            if (usernameFromToken.equals(boardOwnerName)) {
+//                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+//            }
+//
+//            if (!visibleValue) {
+//                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+//                    if (usernameFromToken != null) {
+//                        return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
+//                    } else {
+//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+//                    }
+//                }
+//            }
+//
+//            if (visibleValue) {
+//                if (usernameFromToken != null) {
+//                    return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
+//                } else {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+//                }
+//            }
+//        }
+//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//    }
 
     @GetMapping("{boardId}/statuses/{statusId}/{collabId}")
     public ResponseEntity<Object> findStatusById(
@@ -189,32 +284,38 @@ public class BoardControllerV3 {
             @PathVariable String boardId,
             @PathVariable Integer statusId,
             @PathVariable String collabId) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
-            boolean visibleValue = visibilityService.checkVisibility(boardId);
-            Boards boardInfo = boardService.getBoardByBoardId(boardId);
-            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        }
 
-            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        String jwt = authHeader.substring(7);
+        String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
-            //if owner ให้เข้าเลย
+        Boards boardInfo = boardService.getBoardByBoardId(boardId);
+        String boardOwnerName = boardInfo.getUsers().getUsername();
+
+        if (collabId != null) {
             if (usernameFromToken.equals(boardOwnerName)) {
-                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+                return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
             }
+        }
 
-            if (!visibleValue) {
-                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+        Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        boolean visibleValue = visibilityService.checkVisibility(boardId);
+
+        if (!visibleValue) {
+            if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                     if (usernameFromToken != null) {
                         return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
                     } else {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
                     }
                 }
-            }
+        }
 
-            if (visibleValue) {
+        if (visibleValue) {
+            if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
                     return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
                 } else {
@@ -222,7 +323,7 @@ public class BoardControllerV3 {
                 }
             }
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        return ResponseEntity.ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
     }
 
     @PostMapping("/{boardId}/statuses")
@@ -321,6 +422,51 @@ public class BoardControllerV3 {
     }
 
     // ================================Task=====================================
+//    @GetMapping("{boardId}/tasks/{collabId}")
+//    public ResponseEntity<Object> getAllTaskByBoardId(
+//            @RequestHeader("Authorization") String authHeader,
+//            @PathVariable String boardId,
+//            @PathVariable String collabId,
+//            @RequestParam(required = false) List<String> filterStatuses,
+//            @RequestParam(required = false, defaultValue = "") String[] sortBy,
+//            @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection
+//    ) {
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            String jwt = authHeader.substring(7);
+//            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+//
+//            boolean visibleValue = visibilityService.checkVisibility(boardId);
+//            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+//            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+//
+//            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+//
+//            //if owner ให้เข้าเลย
+//            if (usernameFromToken.equals(boardOwnerName)) {
+//                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+//            }
+//
+//            if (!visibleValue) {
+//                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+//                    if (usernameFromToken != null) {
+//                        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+//                    } else {
+//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+//                    }
+//                }
+//            }
+//
+//            if (visibleValue) {
+//                if (usernameFromToken != null) {
+//                    return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+//                } else {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+//                }
+//            }
+//        }
+//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//    }
+
     @GetMapping("{boardId}/tasks/{collabId}")
     public ResponseEntity<Object> getAllTaskByBoardId(
             @RequestHeader("Authorization") String authHeader,
@@ -330,32 +476,38 @@ public class BoardControllerV3 {
             @RequestParam(required = false, defaultValue = "") String[] sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection
     ) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        }
 
-            boolean visibleValue = visibilityService.checkVisibility(boardId);
-            Boards boardInfo = boardService.getBoardByBoardId(boardId);
-            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+        String jwt = authHeader.substring(7);
+        String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
-            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        Boards boardInfo = boardService.getBoardByBoardId(boardId);
+        String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
 
-            //if owner ให้เข้าเลย
+        //if owner ให้เข้าเลย
+        if (collabId != null) {
             if (usernameFromToken.equals(boardOwnerName)) {
-                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+                return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
             }
+        }
 
-            if (!visibleValue) {
-                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
-                    if (usernameFromToken != null) {
-                        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
-                    } else {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
-                    }
+        Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        // Check board visibility
+        boolean visibleValue = visibilityService.checkVisibility(boardId);
+        if (!visibleValue) {
+            if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                if (usernameFromToken != null) {
+                    return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
                 }
             }
+        }
 
-            if (visibleValue) {
+        if (visibleValue) {
+            if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
                     return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
                 } else {
@@ -363,8 +515,53 @@ public class BoardControllerV3 {
                 }
             }
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
     }
+
+//    @GetMapping("{boardId}/tasks/{id}/{collabId}")
+//    public ResponseEntity<Object> findTaskByBoardId(
+//            @RequestHeader("Authorization") String authHeader,
+//            @PathVariable Integer id,
+//            @PathVariable String boardId,
+//            @PathVariable String collabId) {
+//
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            String jwt = authHeader.substring(7);
+//            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+//
+//            boolean visibleValue = visibilityService.checkVisibility(boardId);
+//            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+//            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+//
+//            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+//
+//            //if owner ให้เข้าเลย
+//            if (usernameFromToken.equals(boardOwnerName)) {
+//                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+//            }
+//
+//            if (!visibleValue) {
+//                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+//                    if (usernameFromToken != null) {
+//                        TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+//                        return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
+//                    } else {
+//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+//                    }
+//                }
+//            }
+//
+//            if (visibleValue) {
+//                if (usernameFromToken != null) {
+//                    TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+//                    return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
+//                } else {
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+//                }
+//            }
+//        }
+//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+//    }
 
     @GetMapping("{boardId}/tasks/{id}/{collabId}")
     public ResponseEntity<Object> findTaskByBoardId(
@@ -373,42 +570,50 @@ public class BoardControllerV3 {
             @PathVariable String boardId,
             @PathVariable String collabId) {
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        }
 
-            boolean visibleValue = visibilityService.checkVisibility(boardId);
-            Boards boardInfo = boardService.getBoardByBoardId(boardId);
-            String boardOwnerName = boardInfo.getUsers().getUsername();  // Board owner's username
+        String jwt = authHeader.substring(7);
+        String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
-            Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        Boards boardInfo = boardService.getBoardByBoardId(boardId);
+        String boardOwnerName = boardInfo.getUsers().getUsername();
 
-            //if owner ให้เข้าเลย
+        //if owner ให้เข้าเลย
+        if (collabId != null) {
             if (usernameFromToken.equals(boardOwnerName)) {
-                return new ResponseEntity<>(boardInfo, HttpStatus.OK);
+                TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+                return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
             }
+        }
 
-            if (!visibleValue) {
-                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
-                    if (usernameFromToken != null) {
-                        TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+        Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        boolean visibleValue = visibilityService.checkVisibility(boardId);
+
+        if (!visibleValue) {
+            if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                if (usernameFromToken != null) {
+                    TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
                         return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
-                    } else {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
-                    }
+                }else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION ON THIS BOARD");
                 }
             }
+        }
 
-            if (visibleValue) {
+        if (visibleValue) {
+            if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
                     TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
                     return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
-                } else {
+                }else {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
                 }
             }
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
+        return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
     }
 
     @PostMapping("/{boardId}/tasks")
