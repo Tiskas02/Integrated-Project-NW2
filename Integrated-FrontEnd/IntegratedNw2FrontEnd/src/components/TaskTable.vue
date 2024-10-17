@@ -36,14 +36,31 @@ const showVisibility = ref(false);
 const defaultStatus = ref({
   statusId: null,
 });
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1]
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+      })
+      .join("")
+  )
+  return JSON.parse(jsonPayload)
+}
+const receiveToken = localStorage.getItem("token")
+const token = parseJwt(receiveToken)
 onMounted(async () => {
-  const board = await boardStore.fetchBoards();
-  const data = await tasksStore.fetchTasks(routerId.value);
+  await boardStore.fetchBoards(token.oid);
+  const data = await tasksStore.fetchTasks(routerId.value,token.oid);
   const matchedBoard = boardStore.matchUserBoard(routerId.value);
   matchedBoards.value = matchedBoard;
   nameboard.value = matchedBoards.value.name;
   storeVisibility.value = matchedBoards.value.visibilities;
   storeTasks.value = data;
+  console.log(storeVisibility.value);
+  
 });
 
 onMounted(async () => {
@@ -205,6 +222,8 @@ const setCloseVisibility = (value) => {
 };
 const EditVisibilities = async (value) => {
   const data = await boardStore.updateVisibility(routerId.value, value.visibilities);
+   console.log(value.visibilities);
+   console.log(data);
    
   if (data === value.visibilities) {
     storeVisibility.value = data
@@ -313,6 +332,7 @@ const ClearStatuses = () => {
                 class="toggle border-blue-500 bg-blue-500 [--tglbg:red] hover:bg-blue-700"
                 value="storeVisibility"
                 @click="setVisibility(storeVisibility)"
+                :checked="storeVisibility === 'public'"
               />
             </label>
           </div>
@@ -555,7 +575,7 @@ const ClearStatuses = () => {
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ task?.status.name }}
+                        {{ task?.status?.name  }}
                       </div>
                     </div>
                     <div

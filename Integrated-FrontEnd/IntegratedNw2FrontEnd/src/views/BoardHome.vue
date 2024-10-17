@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useStoreBoard } from "@/stores/boardStore"
+import { useStoreCollab } from "@/stores/collabStore"
 import LoadingScreen from "@/shared/LoadingScreen.vue"
 import Logo from "@/shared/Logo.vue"
 import BaseBtn from "@/shared/BaseBtn.vue"
@@ -12,9 +13,12 @@ const route = useRoute()
 const router = useRouter()
 const dataLoaded = ref(true)
 const boardStore = useStoreBoard()
+const collabStore = useStoreCollab()
 const toasterStore = useToasterStore()
 const { boards } = storeToRefs(boardStore)
+const { collabs } = storeToRefs(collabStore)
 const showModal = ref(false)
+
 const parseJwt = (token) => {
   const base64Url = token.split(".")[1]
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
@@ -28,14 +32,12 @@ const parseJwt = (token) => {
   )
   return JSON.parse(jsonPayload)
 }
-
 const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
-
-
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
-  console.log(data)
+  const collab = await collabStore.fetchCollabs(token.oid)
+  console.log(collab)
   if (boardStore.boards.length > 0 || data) {
     dataLoaded.value = true
   } else {
@@ -64,8 +66,8 @@ const addBoard = async (newBoard) => {
     })
   }
 }
-const navigateToBoardTasks = (boardId) => {
-  router.push({ name: "Task", params: { id: boardId } })
+const navigateToBoardTasks = (paramId) => {
+  router.push({ name: "Task", params: { id: paramId } })
 }
 </script>
 
@@ -179,6 +181,7 @@ const navigateToBoardTasks = (boardId) => {
         </div>
       </div>
     </div>
+    <!-- collabboard -->
     <div class="w-full font-rubik font-medium text-4xl text-white text-center my-6">Collab board</div>
     <div class="w-full flex justify-center mt-6">
       <div class="shadow-2xl rounded-md w-[95%] h-[50%] shadow-blue-500/30">
@@ -210,7 +213,7 @@ const navigateToBoardTasks = (boardId) => {
             </div>
           </div>
           <div
-            v-if="boardStore.length <= 0"
+            v-if="collabStore.length <= 0"
             class="w-full border bg-white h-[60lvh] rounded-b-box"
           >
             <div class="flex justify-center items-center h-full">
@@ -220,7 +223,7 @@ const navigateToBoardTasks = (boardId) => {
             </div>
           </div>
           <div v-else class="w-full h-[250px] overflow-auto rounded-b-box">
-            <div v-for="(board, index) in boards" :key="board.id">
+            <div v-for="(collab, index) in collabs" :key="collabs.boardId">
               <div
                 class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
               >
@@ -230,20 +233,27 @@ const navigateToBoardTasks = (boardId) => {
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[30%] px-6 py-4 whitespace-nowrap text-center"
-                      @click="navigateToBoardTasks(board.id)"
+                      @click="navigateToBoardTasks(collab.boardId)"
                     >
                       {{ index + 1 }}
                     </div>
                     <div
                       class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
+                      @click="navigateToBoardTasks(collab.boardId)"
                     >
-                      {{ board.name }}
+                      {{ collab.boardName }}
                     </div>
                     <div
-                      class="itbkk-assignees w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
-                    ></div>
+                      class="itbkk-assignees w-[15%] px-1 py-4 whitespace-nowrap overflow-x-auto"
+                      @click="navigateToBoardTasks(collab.boardId)"
+                    >
+                    {{ collab.ownerBoard }}
+                  </div>
+                    <div
+                      class="itbkk-assignees w-[15%] px-6 py-4 whitespace-nowrap overflow-x-auto text-center "
+                      @click="navigateToBoardTasks(collab.boardId)"
+                    >{{ collab.accessRight }}</div>
+
                     <div
                       class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
                     >
@@ -251,7 +261,7 @@ const navigateToBoardTasks = (boardId) => {
                         class="itbkk-button-delete btn btn-outline btn-error"
                         @click=""
                       >
-                        Delete
+                        Leave
                       </div>
                     </div>
                   </div>

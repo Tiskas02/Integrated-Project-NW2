@@ -5,17 +5,29 @@ import {
   deleteItemById,
   editTask,
   getTaskDataInBoardId,
+  getBoardByBoardId
 } from "../libs/api/task/fetchUtilTask.js"
 
 export const useStoreTasks = defineStore("tasks", () => {
   const tasks = ref([])
-  async function fetchTasks(id) {
+  async function fetchTasks(id,collabId) {
     try {
       tasks.value = []
-      const taskData = await getTaskDataInBoardId(id)
-      taskData.forEach((task) => {
-        tasks.value.push(task)
-      })
+      const taskData = await getTaskDataInBoardId(id,collabId)
+      const boardData = await getBoardByBoardId(id,collabId)
+      tasks.value = taskData
+      tasks.value.map
+      
+      // boardData.forEach((board) => {
+      //   tasks.value.push(board.visibility)
+      // })
+      
+
+      // boardData.forEach((task) => {
+      //   tasks.value.push(task)
+      // } )
+      console.log(tasks.value);
+      
     } catch (error) {
       console.error("Error fetching data:", error)
     }

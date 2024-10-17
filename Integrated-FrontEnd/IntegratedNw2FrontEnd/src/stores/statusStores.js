@@ -10,10 +10,10 @@ import {
 
 export const useStoreStatus = defineStore("status", () => {
   const statuses = ref([])
-  async function fetchStatus(id) {
+  async function fetchStatus(id,collabId) {
     try {
       statuses.value = []
-      const statusData = await getStatusData(id)
+      const statusData = await getStatusData(id,collabId)
       statuses.value = statusData ?? []
       return statuses.value
     } catch (error) {

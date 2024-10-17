@@ -4,10 +4,10 @@ function getToken() {
   return localStorage.getItem("token")
 }
 
-async function getStatusData(id) {
+async function getStatusData(id,collabId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${id}/statuses`,{
+    const res = await fetch(`${url}/v3/boards/${id}/statuses/${collabId}`,{
       headers: {
         Authorization: `Bearer ${token}`
       },

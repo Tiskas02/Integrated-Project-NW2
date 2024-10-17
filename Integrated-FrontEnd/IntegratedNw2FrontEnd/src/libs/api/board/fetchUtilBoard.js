@@ -62,7 +62,7 @@ async function updateBoardVisibility(id, visibility) {
     if (!res.ok) {
       throw new Error("There is a problem. Please try again later.")
     }
-    const updatedBoard = await res.json()
+    const updatedBoard = res.json()
     return updatedBoard
   } catch (error) {
     console.error("Error updating data:", error)
