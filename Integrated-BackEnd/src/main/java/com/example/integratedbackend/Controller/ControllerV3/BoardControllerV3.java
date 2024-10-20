@@ -712,7 +712,7 @@ public class BoardControllerV3 {
             if (username != null) {
                 List<Collab> collabs = collabService.getAllCollaborator(boardId);
                 List<CollabDTO> collabDTOS = collabs.stream().map(collab -> {
-                    User user = userService.getUserById(collabs.get(0).getUserId());
+                    User user = userService.getUserById(collab.getUserId());
                     CollabDTO collabDTO = modelMapper.map(collab, CollabDTO.class);
                     modelMapper.map(user, collabDTO);
                     return collabDTO;
