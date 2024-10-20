@@ -18,6 +18,7 @@ const tasksStore = useStoreTasks();
 const statusStore = useStoreStatus();
 const toasterStore = useToasterStore();
 const { boards } = storeToRefs(boardStore);
+const { nameCollab } = storeToRefs(boardStore);
 const { tasks } = storeToRefs(tasksStore);
 const showDetail = ref(false);
 const storeMode = ref("");
@@ -52,12 +53,21 @@ const parseJwt = (token) => {
 const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
 onMounted(async () => {
-  await boardStore.fetchBoardsByCollabId(routerId.value,token.oid)
   const board = await boardStore.fetchBoards(token.oid);
   const data = await tasksStore.fetchTasks(routerId.value,token.oid);
   const matchedBoard = boardStore.matchUserBoard(routerId.value);
-  matchedBoards.value = matchedBoard;
-  nameboard.value = matchedBoards.value.name;
+  if (matchedBoard !== "Board not found") { 
+    matchedBoards.value = matchedBoard;
+    nameboard.value = matchedBoards.value.name;
+  }else{
+    const nameCollab = await boardStore.fetchBoardsByCollabId(routerId.value,token.oid)
+    matchedBoards.value = nameCollab;
+    console.log(matchedBoards.value);
+    
+    nameboard.value = matchedBoards.value[0].name;
+    console.log(nameboard.value);
+    
+  }
   storeVisibility.value = matchedBoards.value.visibilities;
   storeTasks.value = data;
   

@@ -4,6 +4,7 @@ import { getBoardData, addBoard,updateBoardVisibility,getBoardDataByCollabId } f
 
 export const useStoreBoard = defineStore("boards", () => {
   const boards = ref([])
+  const nameCollab = ref([])
   async function fetchBoards() {
     try {
       const noData = "No data"
@@ -26,15 +27,13 @@ export const useStoreBoard = defineStore("boards", () => {
   async function fetchBoardsByCollabId(boardId,collabId) {
     try {
       const noData = "No data"
-      boards.value = []
+      nameCollab.value = []
       const boardData = await getBoardDataByCollabId(boardId,collabId)
-      boardData.forEach((board) => {
-        boards.value.push(board)
-      })
-      if (boards.value.length === 0) {
+        nameCollab.value.push(boardData)
+      if (nameCollab.value.length === 0) {
         return noData
       } else {
-        return boards.value
+        return nameCollab.value
       }
     } catch (error) {
       console.error("Error fetching data:", error)
