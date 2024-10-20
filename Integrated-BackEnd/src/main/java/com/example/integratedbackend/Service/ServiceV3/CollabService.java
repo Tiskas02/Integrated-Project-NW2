@@ -44,37 +44,6 @@ public class CollabService {
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found"));
     }
 
-//    public CollabBoardResponse getCollabBoard(String userId) {
-//        userRepository.findById(userId).orElseThrow(() ->
-//                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
-//
-//        List<Collab> collabs = collabRepositoriesV3.findByUserId(userId);
-//
-//        List<String> boardIds = collabs.stream()
-//                .map(Collab::getBoardId)
-//                .collect(Collectors.toList());
-//
-//        List<Boards> boards = boardsRepositoriesV3.findByIdIn(boardIds);
-//        System.out.println(boards);
-//
-//        Map<String, String> boardIdToNameMap = boards.stream()
-//                .collect(Collectors.toMap(Boards::getId, Boards::getName));
-//
-//        List<CollabBoardDto> collabBoardDtos = collabs.stream()
-//                .map(collab -> {
-//                    return new CollabBoardDto(
-//                            collab.getBoardId(),
-//                            boardIdToNameMap.get(collab.getBoardId()),
-//                            userId,
-//                            collab.getAddedOn(),
-//                            collab.getAccessRight()
-//                    );
-//                })
-//                .collect(Collectors.toList());
-//
-//        return new CollabBoardResponse(collabBoardDtos);
-//    }
-
     public CollabBoardResponse getCollabBoard(String userId) {
         userRepository.findById(userId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));

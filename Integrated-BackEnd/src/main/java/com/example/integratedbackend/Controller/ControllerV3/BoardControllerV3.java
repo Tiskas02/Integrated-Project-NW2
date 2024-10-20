@@ -6,6 +6,8 @@ import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.*;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.*;
+import com.example.integratedbackend.Service.UserService;
+import com.example.integratedbackend.Users.User;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
@@ -18,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("v3/boards")
@@ -41,6 +44,8 @@ public class BoardControllerV3 {
     private ListMapper listMapper;
     @Autowired
     private UserServiceV3 userServiceV3;
+    @Autowired
+    private UserService userService;
 
     // ================================Board=====================================
     @GetMapping("")
@@ -697,7 +702,7 @@ public class BoardControllerV3 {
     // ================================Collaborator=====================================
 
     @GetMapping("/{boardId}/collabs")
-    public ResponseEntity<List<Collab>> getAllCollabs(
+    public ResponseEntity<List<CollabDTO>> getAllCollabs(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -706,7 +711,13 @@ public class BoardControllerV3 {
 
             if (username != null) {
                 List<Collab> collabs = collabService.getAllCollaborator(boardId);
-                return ResponseEntity.ok(collabs);
+                List<CollabDTO> collabDTOS = collabs.stream().map(collab -> {
+                    User user = userService.getUserById(collabs.get(0).getUserId());
+                    CollabDTO collabDTO = modelMapper.map(collab, CollabDTO.class);
+                    modelMapper.map(user, collabDTO);
+                    return collabDTO;
+                }).collect(Collectors.toList());
+                return ResponseEntity.ok(collabDTOS);
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
