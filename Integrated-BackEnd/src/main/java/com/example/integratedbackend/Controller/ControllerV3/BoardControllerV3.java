@@ -747,7 +747,7 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("/{boardId}/collabs")
-    public ResponseEntity<Collab> addCollab(
+    public ResponseEntity<CollabDTO> addCollab(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId,
             @RequestBody CollabRequestDTO collabRequestDTO) {
@@ -757,7 +757,11 @@ public class BoardControllerV3 {
 
             if (username != null) {
                 Collab collab = collabService.addCollaborator(boardId, collabRequestDTO);
-                return new ResponseEntity<>(collab, HttpStatus.CREATED);
+                User user = userService.getUserById(collab.getUserId());
+                CollabDTO collabDTO = modelMapper.map(collab, CollabDTO.class);
+                modelMapper.map(user, collabDTO);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(collabDTO);
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");

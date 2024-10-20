@@ -10,6 +10,7 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Users;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.UsersRepositoriesV3;
+import com.example.integratedbackend.Service.UserService;
 import com.example.integratedbackend.Users.User;
 import com.example.integratedbackend.Users.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -30,6 +31,8 @@ public class CollabService {
     private BoardsRepositoriesV3 boardsRepositoriesV3;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
     @Autowired
     ModelMapper modelMapper;
     @Autowired
@@ -80,8 +83,8 @@ public class CollabService {
     public Collab addCollaborator(String boardId, CollabRequestDTO collabRequestDTO){
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
-        User user = userRepository.findByEmail(collabRequestDTO.getEmail()).orElseThrow(() ->
-                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
+
+        User user = userService.getUserByEmail(collabRequestDTO.getEmail());
 
         Collab collab = modelMapper.map(collabRequestDTO, Collab.class);
         collab.setBoardId(boardId);
