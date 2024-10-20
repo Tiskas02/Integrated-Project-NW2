@@ -90,13 +90,23 @@ const setModal = (value) => {
 
 <template>
   <div class="flex justify-end m-10">
+    <div class="mx-2">
     <BaseBtn>
       <router-link :to="{ name: 'Task' }">
         <template #default>
           <button class="p-4">Manage Task</button>
         </template>
       </router-link>
-    </BaseBtn>
+    </BaseBtn></div>
+    <div class="mx-2">
+        <BaseBtn>
+          <router-link :to="{ name: 'status' }">
+            <template #default>
+              <button class="itbkk-manage-status p-4">Manage Status</button>
+            </template>
+          </router-link>
+        </BaseBtn>
+      </div>
   </div>
   <div>
     <div class="w-full flex justify-center my-3">

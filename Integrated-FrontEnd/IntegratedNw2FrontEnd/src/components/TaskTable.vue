@@ -38,45 +38,43 @@ const defaultStatus = ref({
   statusId: null,
 });
 const parseJwt = (token) => {
-  const base64Url = token.split(".")[1]
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
       .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
       })
       .join("")
-  )
-  return JSON.parse(jsonPayload)
-}
-const receiveToken = localStorage.getItem("token")
-const token = parseJwt(receiveToken)
+  );
+  return JSON.parse(jsonPayload);
+};
+const receiveToken = localStorage.getItem("token");
+const token = parseJwt(receiveToken);
 onMounted(async () => {
   const board = await boardStore.fetchBoards(token.oid);
-  const data = await tasksStore.fetchTasks(routerId.value,token.oid);
+  const data = await tasksStore.fetchTasks(routerId.value, token.oid);
   const matchedBoard = boardStore.matchUserBoard(routerId.value);
-  if (matchedBoard !== "Board not found") { 
+  if (matchedBoard !== "Board not found") {
     matchedBoards.value = matchedBoard;
     nameboard.value = matchedBoards.value.name;
-  }else{
-    const nameCollab = await boardStore.fetchBoardsByCollabId(routerId.value,token.oid)
+  } else {
+    const nameCollab = await boardStore.fetchBoardsByCollabId(
+      routerId.value,
+      token.oid
+    );
     matchedBoards.value = nameCollab;
-    console.log(matchedBoards.value);
-    
     nameboard.value = matchedBoards.value[0].name;
-    console.log(nameboard.value);
-    
   }
   storeVisibility.value = matchedBoards.value.visibilities;
   storeTasks.value = data;
-  
-  
+  console.log(storeVisibility.value); 
   
 });
 
 onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value,token.oid);
+  allStatus.value = await statusStore.fetchStatus(routerId.value, token.oid);
   const noStatus = allStatus.value.find(
     (status) => status.name === "No Status"
   );
@@ -89,7 +87,7 @@ onMounted(async () => {
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
   storeTask.value = await getTaskById(routerId, id);
-  statusStore.value = await getStatusData(routerId,token.oid);
+  statusStore.value = await getStatusData(routerId, token.oid);
   if (storeMode.value === "add") {
     showDetail.value = true;
     router.push({ name: "addTask" });
@@ -233,15 +231,20 @@ const setCloseVisibility = (value) => {
   showVisibility.value = value;
 };
 const EditVisibilities = async (value) => {
-  const data = await boardStore.updateVisibility(routerId.value, value.visibilities);
-   console.log(value.visibilities);
-   console.log(data);
-   
+  const data = await boardStore.updateVisibility(
+    routerId.value,
+    value.visibilities
+  );
+  console.log(value.visibilities);
+  console.log(data);
+
   if (data === value.visibilities) {
-    storeVisibility.value = data
+    storeVisibility.value = data;
     toasterStore.success({ text: "Visibility updated successfully!" });
   } else {
-    toasterStore.error({ text: "An error occurred while updating visibility." });
+    toasterStore.error({
+      text: "An error occurred while updating visibility.",
+    });
   }
 };
 const setVisibility = (value) => {
@@ -344,7 +347,7 @@ const ClearStatuses = () => {
                 class="toggle border-blue-500 bg-blue-500 [--tglbg:red] hover:bg-blue-700"
                 value="storeVisibility"
                 @click="setVisibility(storeVisibility)"
-                :checked="storeVisibility === 'public'"
+                :checked="storeVisibility === 'PUBLIC'"
               />
             </label>
           </div>
@@ -587,7 +590,11 @@ const ClearStatuses = () => {
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ task?.status?.name ? task?.status?.name : task?.status?.statusName }}
+                        {{
+                          task?.status?.name
+                            ? task?.status?.name
+                            : task?.status?.statusName
+                        }}
                       </div>
                     </div>
                     <div
