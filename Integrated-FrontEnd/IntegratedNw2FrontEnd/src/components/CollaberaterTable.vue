@@ -2,131 +2,90 @@
 import { ref, onMounted } from "vue";
 import StatusModal from "./StatusModal.vue";
 import { useStoreStatus } from "@/stores/statusStores";
+import { useStoreCollab } from "@/stores/collabStore";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useStoreBoard } from "@/stores/boardStore";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useToasterStore } from "@/stores/notificationStores";
 import BaseBtn from "@/shared/BaseBtn.vue";
+import AddCollab from "./AddCollab.vue";
+import CollabDelete from "@/views/CollabDelete.vue";
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
+const showDeleteModal = ref(false);
 const storeMode = ref("");
 const boardStore = useStoreBoard();
 const statusStore = useStoreStatus();
+const collabStore = useStoreCollab();
 const { statuses } = storeToRefs(statusStore);
-const dataById = ref();
+const { collabs } = storeToRefs(collabStore);
+const dataCollab = ref();
+const deleteCollab = ref();
 const toasterStore = useToasterStore();
 const routeId = ref(route.params.id);
 const nameBoard = ref();
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
+};
+const receiveToken = localStorage.getItem("token");
+const token = parseJwt(receiveToken);
 onMounted(async () => {
-  await statusStore.fetchStatus(routeId.value);
+  await boardStore.fetchBoards(token.oid);
   const nameBoardf = boardStore.matchUserBoard(routeId.value);
-  nameBoard.value = nameBoardf;
+  console.log(nameBoardf);
+  const collab = collabStore.fetchCollabsByBoardId(routeId.value);
+  nameBoard.value = nameBoardf.name;
+  dataCollab.value = collab;
 });
-
-const addOrEditStatus = async (newStatus) => {
-  try {
-    const name = newStatus.name ? newStatus.name.trim() : newStatus.name;
-    const description = newStatus.description
-      ? newStatus.description.trim()
-      : newStatus.description;
-    if (newStatus.id === undefined) {
-      const check = await statusStore.createStatus(
-        {
-          name,
-          description,
-        },
-        routeId.value
-      );
-      if (check.id !== undefined) {
-        toasterStore.success({ text: "Status added successfully!" });
-      } else if (check.errors[0].message) {
-        toasterStore.error({
-          text: `Status Name ${check.errors[0].message} `,
-        });
-      } else if (check.status === 400) {
-        toasterStore.error({
-          text: "An error occurred while adding the status.",
-        });
-      }
+const deleteCollabFunc = async (collab) => {
+  if (collab === deleteCollab.value) {
+    const res = await collabStore.deleteCollab(collab.oid, routeId.value);    
+    if (res.status === 200) {
+      toasterStore.success({ text: "Collaberator deleted successfully!" });
     } else {
-      const check = await statusStore.updateStatus(
-        newStatus.id,
-        {
-          name,
-          description,
-        },
-        routeId.value
-      );
-      if (check.id !== undefined) {
-        toasterStore.success({ text: "Status edit successfully!" });
-      } else if (check.status === 400) {
-        toasterStore.error({
-          text: "An error occurred while editing the status.",
-        });
-      }
+      toasterStore.error({
+        text: "An error occurred while deleting the collaberator.",
+      });
     }
-  } catch (error) {
-    console.error("Error adding/editing status:", error);
   }
 };
-
-const deleteOne = async (id) => {
-  const status = await statusStore.deleteStatus(id);
-
-  if (status === 200) {
-    toasterStore.success({ text: "Status deleted successfully!" });
-  } else {
-    toasterStore.error({ text: "An error occurred while deleting the task." });
-  }
+const setDataCollab = (value,collab) => {
+  showDeleteModal.value = value;
+  deleteCollab.value = collab;
 };
-
-const deleteTranfer = async (value) => {
-  const status = await statusStore.tranferStatus(value.oldId, value.newId);
-  if (status === 200) {
-    toasterStore.success({ text: "Status tranfer successfully!" });
+const setClose = () => {
+  showModal.value = false;
+};
+const setCloseDelete = () => {
+  showDeleteModal.value = false;
+};
+const addCollab = async (newCollab) => {
+  const data = await collabStore.addCollab(newCollab,routeId.value)
+  if (data) {
+    toasterStore.success({ text: "Collaberator added successfully!" });
   } else {
     toasterStore.error({
-      text: "An error occurred while tranfering the task.",
+      text: "An error occurred while adding the collaberator.",
     });
   }
 };
 
-const setModal = async (value, mode, id) => {
-  showModal.value = value;
-  storeMode.value = mode;
-  if (storeMode.value === "add") {
-    router.push({ name: "addStatus" });
-  } else if (storeMode.value === "edit" && id !== null) {
-    router.push({ name: "editStatus", params: { editid: id } });
-  } else {
-    dataById.value = statusStore.statuses.find((status) => status.id === id);
-  }
-};
-
-const fetchById = async (id, mode) => {
-  if (!id) {
-    return alert("No id provided");
-  }
-  dataById.value = await getStatusDataById(routeId.value, id);
-  storeMode.value = mode;
-  if (storeMode.value === "edit" && id !== null) {
-    router.push({ name: "editStatus", params: { editid: id } });
-  }
-  if (dataById.value.status == "404") {
-    alert("The requested status does not exist");
-    router.replace({ name: "status" });
-    showModal.value = false;
-    return;
-  }
-
-  showModal.value = true;
-};
-
-const setClose = (value) => {
+const setModal = (value) => {
   showModal.value = value;
 };
+
 </script>
 
 <template>
@@ -161,7 +120,7 @@ const setClose = (value) => {
         <div class="font-bold text-slate-700">Tool Bar :</div>
         <div
           class="itbkk-button-add btn btn-outline flex mx-8"
-          @click="setModal(true, 'add', null)"
+          @click="setModal(true)"
         >
           <svg
             width="20"
@@ -222,65 +181,55 @@ const setClose = (value) => {
               Action
             </div>
           </div>
-          <div v-if="statuses.length <= 0" class="w-full border bg-white h-24">
+          <div
+            v-if="collabStore.length <= 0"
+            class="w-full border bg-white h-[60lvh] rounded-b-box"
+          >
             <div class="flex justify-center items-center h-full">
               <p class="text-xl font-bold animate-bounce text-slate-500">
-                No Status
+                Board is empty
               </p>
             </div>
           </div>
-          <div class="w-full h-[500px] overflow-auto rounded">
-            <div v-for="(status, index) in statuses" :key="status.id">
+          <div v-else class="w-full h-[250px] overflow-auto rounded-b-box">
+            <div v-for="(collab, index) in collabs" :key="collabs.boardId">
               <div
                 class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
               >
-                <div class="w-full max-h-[550px]">
-                  <div
-                    class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 odd:bg-white even:bg-slate-50"
-                  >
-                    <div class="flex hover:shadow-inner hover:bg-slate-50">
-                      <div class="w-[10%] px-6 py-4 whitespace-nowrap">
-                        {{ index + 1 }}
-                      </div>
+                <div
+                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
+                >
+                  <div class="flex hover:shadow-inner hover:bg-slate-50">
+                    <div
+                      class="w-[30%] px-6 py-4 whitespace-nowrap text-center"
+                    >
+                      {{ index + 1 }}
+                    </div>
+                    <div
+                      class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
+                    >
+                      {{ collab.name }}
+                    </div>
+                    <div
+                      class="itbkk-assignees w-[15%] px-1 py-4 whitespace-nowrap overflow-x-auto"
+                    >
+                      {{ collab.email }}
+                    </div>
+                    <div
+                      class="itbkk-assignees w-[15%] px-6 py-4 whitespace-nowrap overflow-x-auto text-center"
+                    >
+                      {{ collab.accessRight }}
+                    </div>
+
+                    <div
+                      class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
+                    >
                       <div
-                        class="itbkk-status-name w-[20%] itbkk-title px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      >
-                        {{ status.name }}
-                      </div>
-                      <div
-                        class="w-[20%] itbkk-description px-6 py-4 whitespace-nowrap overflow-x-auto break-all italic"
-                      >
-                        {{
-                          status?.description == "" ||
-                          status?.description === null
-                            ? "No Description Provided"
-                            : status?.description
-                        }}
-                      </div>
-                      <div
-                        class="w-[20%] itbkk-description px-6 py-4 whitespace-nowrap overflow-x-auto break-all italic"
-                      >
-                        Email
-                      </div>
-                      <div
-                        class="w-[20%] itbkk-description px-6 py-4 whitespace-nowrap overflow-x-auto break-all italic m-auto"
-                      >
-                        <select name="cars" id="cars" class="itbkk-status select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500">
-                          <option value="volvo">Volvo</option>
-                          <option value="saab">Saab</option>
-                          <option value="opel">Opel</option>
-                          <option value="audi">Audi</option>
-                        </select>
-                      </div>
-                      <div
-                        class="w-[20%] px-6 py-4 whitespace-nowrap flex gap-4"
-                      ><div
                         class="itbkk-button-delete btn btn-outline btn-error"
-                        @click="setModal(true, 'delete', status.id)"
+                        @click="setDataCollab(true,collab)"
                       >
                         Delete
-                      </div></div>
-                      
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -291,14 +240,20 @@ const setClose = (value) => {
       </div>
     </div>
     <teleport to="#body">
-      <StatusModal
+      <AddCollab
         v-if="showModal"
         @close="setClose"
-        :statusMode="storeMode"
-        :status="dataById"
-        @newStatus="addOrEditStatus"
-        @deleteId="deleteOne"
-        @sentTranferId="deleteTranfer"
+        @newCollab="addCollab"
+        class="itbkk-modal-task"
+      />
+    </teleport>
+    <teleport to="#body">
+      <CollabDelete
+        v-if="showDeleteModal"
+        @close="setCloseDelete"
+        :collab="deleteCollab"
+        @savedDelete="deleteCollabFunc"
+        class="itbkk-modal-task"
       />
     </teleport>
   </div>

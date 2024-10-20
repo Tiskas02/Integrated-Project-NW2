@@ -21,6 +21,22 @@ async function getBoardData() {
     return null
   }
 }
+async function getBoardDataByCollabId(boardId,collabId) {
+  try {
+    const token = getToken()
+    const res = await fetch(`${url}/v3/boards/${boardId}/${collabId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const data = await res.json()
+    console.log(`data from fetch : ${data}`);
+    return data
+  } catch (error) {
+    console.error("Error fetching data:", error)
+    return null
+  }
+}
 
 async function addBoard(newBoard) {
   try {
@@ -69,4 +85,4 @@ async function updateBoardVisibility(id, visibility) {
   }
 }
 
-export { getBoardData, addBoard,updateBoardVisibility }
+export { getBoardData, addBoard,updateBoardVisibility,getBoardDataByCollabId }

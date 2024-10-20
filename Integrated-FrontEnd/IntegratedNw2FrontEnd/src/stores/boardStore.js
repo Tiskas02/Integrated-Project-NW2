@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { getBoardData, addBoard,updateBoardVisibility } from "@/libs/api/board/fetchUtilBoard"
+import { getBoardData, addBoard,updateBoardVisibility,getBoardDataByCollabId } from "@/libs/api/board/fetchUtilBoard"
 
 export const useStoreBoard = defineStore("boards", () => {
   const boards = ref([])
@@ -23,7 +23,24 @@ export const useStoreBoard = defineStore("boards", () => {
       console.error("Error fetching data:", error)
     }
   }
-
+  async function fetchBoardsByCollabId(boardId,collabId) {
+    try {
+      const noData = "No data"
+      boards.value = []
+      const boardData = await getBoardDataByCollabId(boardId,collabId)
+      boardData.forEach((board) => {
+        boards.value.push(board)
+      })
+      if (boards.value.length === 0) {
+        return noData
+      } else {
+        return boards.value
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error)
+      }
+    }
+  
   async function createBoard(newBoard) {
     try {
       const addedBoard = await addBoard(newBoard)
@@ -60,6 +77,7 @@ export const useStoreBoard = defineStore("boards", () => {
     fetchBoards,
     createBoard,
     matchUserBoard,
-    updateVisibility
+    updateVisibility,
+    fetchBoardsByCollabId
   }
 })

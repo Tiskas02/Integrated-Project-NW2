@@ -35,9 +35,10 @@ const parseJwt = (token) => {
 const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
 onMounted(async () => {
+  await boardStore.fetchBoards(token.oid)
   await statusStore.fetchStatus(routeId.value,token.oid)
   const nameBoardf = boardStore.matchUserBoard(routeId.value)
-  nameBoard.value = nameBoardf
+  nameBoard.value = nameBoardf.name
 })
 
 const addOrEditStatus = async (newStatus) => {

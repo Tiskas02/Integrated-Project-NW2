@@ -14,7 +14,7 @@ export const useStoreTasks = defineStore("tasks", () => {
     try {
       tasks.value = []
       const taskData = await getTaskDataInBoardId(id,collabId)
-      const boardData = await getBoardByBoardId(id,collabId)
+      // const boardData = await getBoardByBoardId(id,collabId)
       tasks.value = taskData
       tasks.value.map
       

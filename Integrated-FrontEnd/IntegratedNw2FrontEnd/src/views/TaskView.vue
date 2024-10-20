@@ -8,6 +8,8 @@ const props = defineProps({
 const getRandomColor = () => {
   return "#" + Math.floor(Math.random() * 16777215).toString(16)
 }
+console.log(props.task);
+
 </script>
 
 <template>
@@ -25,7 +27,7 @@ const getRandomColor = () => {
               <div
                 class="itbkk-title text-xl font-semibold text-slate-800 my-4 break-all"
               >
-                {{ task?.title }}
+                {{ task.title }}
               </div>
             </div>
             <div class="flex my-1">
@@ -35,7 +37,7 @@ const getRandomColor = () => {
                   class="itbkk-status text-lg"
                   :style="{ color: getRandomColor() }"
                 >
-                  {{ task?.status.statusName }}
+                  {{ task?.status?.name }}
                 </div>
               </div>
             </div>

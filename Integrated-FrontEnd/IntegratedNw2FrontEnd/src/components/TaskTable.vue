@@ -52,19 +52,21 @@ const parseJwt = (token) => {
 const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
 onMounted(async () => {
-  await boardStore.fetchBoards(token.oid);
+  await boardStore.fetchBoardsByCollabId(routerId.value,token.oid)
+  const board = await boardStore.fetchBoards(token.oid);
   const data = await tasksStore.fetchTasks(routerId.value,token.oid);
   const matchedBoard = boardStore.matchUserBoard(routerId.value);
   matchedBoards.value = matchedBoard;
   nameboard.value = matchedBoards.value.name;
   storeVisibility.value = matchedBoards.value.visibilities;
   storeTasks.value = data;
-  console.log(storeVisibility.value);
+  
+  
   
 });
 
 onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value);
+  allStatus.value = await statusStore.fetchStatus(routerId.value,token.oid);
   const noStatus = allStatus.value.find(
     (status) => status.name === "No Status"
   );
@@ -77,7 +79,7 @@ onMounted(async () => {
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
   storeTask.value = await getTaskById(routerId, id);
-  statusStore.value = await getStatusData(routerId.value);
+  statusStore.value = await getStatusData(routerId,token.oid);
   if (storeMode.value === "add") {
     showDetail.value = true;
     router.push({ name: "addTask" });
@@ -575,7 +577,7 @@ const ClearStatuses = () => {
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ task?.status?.name  }}
+                        {{ task?.status?.name ? task?.status?.name : task?.status?.statusName }}
                       </div>
                     </div>
                     <div
