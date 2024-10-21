@@ -96,6 +96,7 @@ const navigateToBoardTasks = (paramId) => {
         </template>
       </BaseBtn>
     </div>
+
     <div class="w-full flex justify-center mt-6">
       <div class="shadow-2xl rounded-md w-[95%] h-[50%] shadow-blue-500/30">
         <div class="min-w-full divide-y divide-gray-200 overflow-auto">

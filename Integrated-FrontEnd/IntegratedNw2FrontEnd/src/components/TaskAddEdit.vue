@@ -44,6 +44,7 @@ const newTask = ref({
     : defaultStatus.value.statusId,
 })
 
+
 const titleCharCount = computed(() =>
   newTask.value.title ? newTask.value.title.length : 0
 )

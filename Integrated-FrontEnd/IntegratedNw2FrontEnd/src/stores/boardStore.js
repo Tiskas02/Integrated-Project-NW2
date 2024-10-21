@@ -13,11 +13,9 @@ export const useStoreBoard = defineStore("boards", () => {
       boardData.forEach((board) => {
         boards.value.push(board)
       })
-      console.log(boards.value);
       if (boards.value.length === 0) {
         return noData
       } else {
-        console.log(boards.value);
         return boards.value
       }
     } catch (error) {
