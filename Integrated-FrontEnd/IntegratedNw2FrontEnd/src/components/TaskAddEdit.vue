@@ -22,6 +22,7 @@ const props = defineProps({
     },
   },
 })
+console.log(props.task);
 
 const defaultStatus = ref({
   statusId: null,

@@ -86,7 +86,8 @@ onMounted(async () => {
 
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
-  storeTask.value = await getTaskById(routerId, id);
+  storeTask.value = await getTaskById(routerId, id,token.oid);
+  console.log(storeTask.value);
   statusStore.value = await getStatusData(routerId, token.oid);
   if (storeMode.value === "add") {
     showDetail.value = true;

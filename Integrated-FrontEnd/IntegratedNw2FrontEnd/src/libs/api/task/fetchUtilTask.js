@@ -21,10 +21,10 @@ async function getTaskDataInBoardId(id,collabid) {
   }
 }
 
-async function getTaskById(routeId, id) {
+async function getTaskById(routeId, id,userId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${routeId}/tasks/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${routeId}/tasks/${id}/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       },
