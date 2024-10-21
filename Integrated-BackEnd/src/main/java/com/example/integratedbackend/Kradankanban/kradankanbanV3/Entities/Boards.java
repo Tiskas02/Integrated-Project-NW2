@@ -40,4 +40,7 @@ public class Boards {
     @JoinColumn(name = "oid", referencedColumnName = "oid")
     private Users users;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Collab> collaborators;
+
 }

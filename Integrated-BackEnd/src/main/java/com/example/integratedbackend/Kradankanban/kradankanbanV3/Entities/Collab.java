@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -32,5 +33,9 @@ public class Collab {
     @Enumerated(EnumType.STRING)
     private AccessRight accessRight = AccessRight.READ;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_boardId", insertable = false, updatable = false)
+    private Boards board;
 
 }
