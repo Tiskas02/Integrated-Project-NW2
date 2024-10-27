@@ -311,7 +311,7 @@ const ClearStatuses = () => {
         <BaseBtn>
           <router-link :to="{ name: 'collab' }">
             <template #default>
-              <button class="itbkk-manage-status">Manage Collaberator</button>
+              <button>Manage Collaberator</button>
             </template>
           </router-link>
         </BaseBtn>
@@ -557,12 +557,12 @@ const ClearStatuses = () => {
           <div class="w-full h-[500px] overflow-auto rounded">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div
-                class="itbkk-item item bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+                class="itbkk-item bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
               >
                 <div
                   class="cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
-                  <div class="flex hover:shadow-inner hover:bg-slate-50">
+                  <div class="itbkk-item flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[10%] px-6 py-4 whitespace-nowrap"
                       @click="fetchDataById(routerId, task.id, 'view')"

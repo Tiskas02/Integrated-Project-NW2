@@ -45,7 +45,7 @@ onMounted(async () => {
           </div>
           <div class="border-b my-3"></div>
           <div class="break-all itbkk-message">
-            Do you want to delete the Status name "{{ status.name }}" ?
+            'Do you want to delete the {{ status.name }} status'
           </div>
           <div v-if="shouldDeleteOrTransfer">
             <div class="flex justify-start items-center">

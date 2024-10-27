@@ -36,7 +36,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 3] Should redirect to the new board and add task"my first task".',()=>{
-        cy.contains('ITBKK KITTIWUT personal board').click();
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
 
         cy.get('.itbkk-button-add').should('exist').click() ;
         cy.wait(100)
@@ -49,6 +49,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 4] Should have "No Description Provided","Unassigned" and "No Status".',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-title').contains('my first task').click()
         cy.wait(200)
 
@@ -61,6 +62,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
       })
 
       it('[Step 5] Should change status of "my first task" to "To Do".',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-title').contains('my first task')
         cy.get('.itbkk-title').contains("my first task").parents(".itbkk-item").as("item")
         cy.get('@item').find('.itbkk-button-action').click().as('action')
@@ -76,6 +78,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
       })
 
       it('[Step 6] Should delete "my first task" and should not have "my first task".',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-title').contains('my first task')
         cy.get('.itbkk-title').contains("my first task").parents(".itbkk-item").as("item")
         cy.get('@item').find('.itbkk-status').contains('To Do')
@@ -93,24 +96,33 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
       })
 
       it('[Step 7] Should have "Manage Status" and click to open the Status list page',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) 
+
+        cy.get('.itbkk-status-name').contains("To Review").parents(".itbkk-item").as("item")
+        cy.get('@item').find('.itbkk-button-delete').click()
+        cy.wait(100) ;
+
+        cy.get('.itbkk-message').contains('Do you want to delete the To Review status')
+        cy.get('.itbkk-button-confirm').click()
 
         cy.get('.itbkk-item').should('have.length',4) ;
         cy.get('.itbkk-item').eq(0).as('item')
         cy.get('@item').contains('.itbkk-status-name',"No Status")
 
         cy.get('.itbkk-item').eq(1).as('item')
-        cy.get('@item').contains('.itbkk-status-name',"To Do")
+        cy.get('@item').contains('.itbkk-status-name',"Done")
 
         cy.get('.itbkk-item').eq(2).as('item')
-        cy.get('@item').contains('.itbkk-status-name',"Doing")
+        cy.get('@item').contains('.itbkk-status-name',"To Do")
 
         cy.get('.itbkk-item').eq(3).as('item')
-        cy.get('@item').contains('.itbkk-status-name',"Done")
+        cy.get('@item').contains('.itbkk-status-name',"Doing")
     })
 
     it('[Step 8] Should add the "To Review" status with no description and click the save button.',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) ;
 
@@ -129,6 +141,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 9] Should change the "To Do" status to "In Progress" and click the save button.',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) ;
 
@@ -149,6 +162,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 10] Should delete the "To Review" status and should not in the the status page.',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) ;
 
@@ -166,7 +180,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 11] Should redirect to the new board and add task"my first task".',()=>{
-        cy.contains('ITBKK KITTIWUT personal board')
+        cy.contains('ITBKK KITTIWUT Personal Board')
 
         cy.get('.itbkk-button-add').should('exist').click() ;
         cy.wait(100)

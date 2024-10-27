@@ -133,7 +133,7 @@ const navigateToBoardTasks = (paramId) => {
               </p>
             </div>
           </div>
-          <div v-else class="w-full h-[300px] overflow-auto rounded-b-box">
+          <div class="w-full h-[300px] overflow-auto rounded-b-box">
             <div v-for="(board, index) in boards" :key="board.id">
               <div
                 class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
