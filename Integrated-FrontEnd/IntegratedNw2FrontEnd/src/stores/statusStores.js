@@ -49,9 +49,9 @@ export const useStoreStatus = defineStore("status", () => {
     }
   }
 
-  async function deleteStatus(id) {
+  async function deleteStatus(boardId,id) {
     try {
-      const res = await deleteOneStatus(id)
+      const res = await deleteOneStatus(boardId,id)
       statuses.value.splice(
         statuses.value.findIndex((status) => status.id === id),
         1
@@ -62,9 +62,9 @@ export const useStoreStatus = defineStore("status", () => {
     }
   }
 
-  async function tranferStatus(oldId, newId) {
+  async function tranferStatus(boardId,oldId, newId) {
     try {
-      const res = await deleteTranferStatus(oldId, newId)
+      const res = await deleteTranferStatus(boardId,oldId, newId)
       statuses.value.splice(
         statuses.value.findIndex((status) => status.id === oldId),
         1

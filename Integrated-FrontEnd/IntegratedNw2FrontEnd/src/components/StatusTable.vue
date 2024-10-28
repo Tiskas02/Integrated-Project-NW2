@@ -89,7 +89,7 @@ const addOrEditStatus = async (newStatus) => {
 };
 
 const deleteOne = async (id) => {
-  const status = await statusStore.deleteStatus(id);
+  const status = await statusStore.deleteStatus(routeId.value,id);
 
   if (status === 200) {
     toasterStore.success({ text: "Status deleted successfully!" });
@@ -99,7 +99,7 @@ const deleteOne = async (id) => {
 };
 
 const deleteTranfer = async (value) => {
-  const status = await statusStore.tranferStatus(value.oldId, value.newId);
+  const status = await statusStore.tranferStatus(routeId.value,value.oldId, value.newId);
   if (status === 200) {
     toasterStore.success({ text: "Status tranfer successfully!" });
   } else {
