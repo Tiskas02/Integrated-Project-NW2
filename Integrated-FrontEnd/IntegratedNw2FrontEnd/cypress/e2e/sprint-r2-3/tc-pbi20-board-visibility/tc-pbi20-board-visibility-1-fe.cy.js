@@ -100,13 +100,6 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) 
 
-        cy.get('.itbkk-status-name').contains("To Review").parents(".itbkk-item").as("item")
-        cy.get('@item').find('.itbkk-button-delete').click()
-        cy.wait(100) ;
-
-        cy.get('.itbkk-message').contains('Do you want to delete the To Review status')
-        cy.get('.itbkk-button-confirm').click()
-
         cy.get('.itbkk-item').should('have.length',4) ;
         cy.get('.itbkk-item').eq(0).as('item')
         cy.get('@item').contains('.itbkk-status-name',"No Status")

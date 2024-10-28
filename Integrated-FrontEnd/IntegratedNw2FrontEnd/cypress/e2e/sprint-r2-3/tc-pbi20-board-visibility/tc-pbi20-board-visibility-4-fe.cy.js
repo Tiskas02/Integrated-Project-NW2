@@ -18,6 +18,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 2] Should have board visibility button and click',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-board-visibility').should('exist').as('visibility')
         cy.wait(100) 
 
@@ -25,6 +26,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 2] Should show modal "Do you want to change board visibility to public?".',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-board-visibility').should('exist').as('visibility')
         cy.wait(100) 
 
@@ -36,6 +38,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     })
 
     it('[Step 3] Should click "Confirm" button and board visibility should show "public".".',()=>{
+        cy.contains('ITBKK KITTIWUT Personal Board').click();
         cy.get('.itbkk-board-visibility').should('exist').as('visibility')
         cy.wait(100) 
 

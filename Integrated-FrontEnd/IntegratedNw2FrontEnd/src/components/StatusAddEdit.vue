@@ -102,7 +102,7 @@ const descriptionCharCount = computed(() =>
                     }
                   "
                   :disabled="
-                    storeData.name.trim() === '' ||
+                    storeData.name?.trim() === '' ||
                     (storeData.name === status?.name &&
                       storeData.description === status?.description &&
                       storeData.id === status?.id)

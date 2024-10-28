@@ -311,7 +311,7 @@ const ClearStatuses = () => {
         <BaseBtn>
           <router-link :to="{ name: 'collab' }">
             <template #default>
-              <button>Manage Collaberator</button>
+              <button>Manage Collaborator</button>
             </template>
           </router-link>
         </BaseBtn>
@@ -338,14 +338,14 @@ const ClearStatuses = () => {
       <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
         <div class="font-bold text-slate-700">Tool Bar :</div>
         <div>
-          <div class="form-control">
+          <div class=" form-control">
             <label class="label cursor-pointer">
               <span class="label-text mx-2">
                 {{ storeVisibility === "PUBLIC" ? "public" : "private" }}
               </span>
               <input
                 type="checkbox"
-                class="toggle border-blue-500 bg-blue-500 [--tglbg:red] hover:bg-blue-700"
+                class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:red] hover:bg-blue-700"
                 value="storeVisibility"
                 @click="setVisibility(storeVisibility)"
                 :checked="storeVisibility === 'PUBLIC'"

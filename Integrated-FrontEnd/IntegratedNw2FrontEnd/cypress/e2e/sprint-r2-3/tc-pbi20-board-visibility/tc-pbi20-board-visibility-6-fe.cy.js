@@ -17,7 +17,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
     it('[Step 1] Should open the /board/:id page', () => {
     })
 
-    it('[Step 2.1] First item should be "my frist task" with "No Status" status.',()=>{
+    it('[Step 2.1] First item should be "my first task" with "No Status" status.',()=>{
         cy.get('.itbkk-item').eq(0).as('item')
         cy.get('@item').contains('.itbkk-title',"my first task") 
         cy.get('@item').contains('.itbkk-assignees',"Unassigned")
