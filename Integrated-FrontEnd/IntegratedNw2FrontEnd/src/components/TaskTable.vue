@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, Teleport } from "vue";
+import { ref, onMounted, computed, Teleport,watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useStoreBoard } from "@/stores/boardStore";
@@ -34,6 +34,7 @@ const nameboard = ref();
 const boardVisibility = ref();
 const storeVisibility = ref();
 const showVisibility = ref(false);
+const checkToggle = ref(false);
 const defaultStatus = ref({
   statusId: null,
 });
@@ -67,7 +68,7 @@ onMounted(async () => {
     matchedBoards.value = nameCollab;
     nameboard.value = matchedBoards.value[0].name;
   }
-  storeVisibility.value = matchedBoards.value.visibilities;
+  storeVisibility.value = matchedBoards.value.visibilities === "PUBLIC";
   storeTasks.value = data;
   console.log(storeVisibility.value); 
   
@@ -83,6 +84,15 @@ onMounted(async () => {
     defaultStatus.value.statusId = noStatus.id;
   }
 });
+watch(
+  () => storeVisibility.value,
+  (newVisibility) => {
+    checkToggle.value = newVisibility === "PUBLIC";
+    console.log(checkToggle.value);
+    
+  },
+  { immediate: true }
+);
 
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
@@ -229,18 +239,19 @@ const setClose = (value) => {
   showDetail.value = value;
 };
 const setCloseVisibility = (value) => {
+  storeVisibility.value = !storeVisibility.value;
   showVisibility.value = value;
 };
 const EditVisibilities = async (value) => {
+  console.log(value);
+  
   const data = await boardStore.updateVisibility(
     routerId.value,
     value.visibilities
   );
-  console.log(value.visibilities);
-  console.log(data);
-
   if (data === value.visibilities) {
-    storeVisibility.value = data;
+    storeVisibility.value = data === "PUBLIC";
+    matchedBoards.value.visibilities = data;
     toasterStore.success({ text: "Visibility updated successfully!" });
   } else {
     toasterStore.error({
@@ -248,17 +259,9 @@ const EditVisibilities = async (value) => {
     });
   }
 };
-const setVisibility = (value) => {
-  if (value === "PUBLIC") {
-    showVisibility.value = true;
-    // storeVisibility.value = value;
-    // showVisibility.value = false;
-  } else {
-    showVisibility.value = true;
-    // storeVisibility.value = value;
-
-    // showVisibility.value = true;
-  }
+const setVisibility = () => {
+  // checkToggle.value = !checkToggle.value;
+  showVisibility.value = true;
 };
 
 const SortOrder = async () => {
@@ -341,19 +344,18 @@ const ClearStatuses = () => {
           <div class=" form-control">
             <label class="label cursor-pointer">
               <span class="label-text mx-2">
-                {{ storeVisibility === "PUBLIC" ? "public" : "private" }}
+                {{ storeVisibility  ? "public" : "private" }}
               </span>
               <input
                 type="checkbox"
-                class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:red] hover:bg-blue-700"
-                value="storeVisibility"
-                @click="setVisibility(storeVisibility)"
-                :checked="storeVisibility === 'PUBLIC'"
+                class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
+                v-model="storeVisibility"
+                @click="setVisibility()"
+                :checked="checkToggle"
               />
             </label>
           </div>
         </div>
-        {{ storeVisibility === "PUBLIC" ? "public" : "private" }}
         <div class="my-2 flex">
           <div
             class="itbkk-button-add btn btn-outline mx-5"

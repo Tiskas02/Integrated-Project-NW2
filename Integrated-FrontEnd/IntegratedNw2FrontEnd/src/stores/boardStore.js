@@ -52,6 +52,7 @@ export const useStoreBoard = defineStore("boards", () => {
 
   async function updateVisibility(id, visibility) {
     try {
+      
       const updatedBoard = await updateBoardVisibility(id, visibility)
       const index = boards.value.findIndex((board) => board.id === id)
       boards.value[index] = updatedBoard

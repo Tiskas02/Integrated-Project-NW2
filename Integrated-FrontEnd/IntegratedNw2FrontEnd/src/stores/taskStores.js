@@ -14,20 +14,7 @@ export const useStoreTasks = defineStore("tasks", () => {
     try {
       tasks.value = []
       const taskData = await getTaskDataInBoardId(id,collabId)
-      // const boardData = await getBoardByBoardId(id,collabId)
       tasks.value = taskData
-      tasks.value.map
-      
-      // boardData.forEach((board) => {
-      //   tasks.value.push(board.visibility)
-      // })
-      
-
-      // boardData.forEach((task) => {
-      //   tasks.value.push(task)
-      // } )
-      console.log(tasks.value);
-      
     } catch (error) {
       console.error("Error fetching data:", error)
     }

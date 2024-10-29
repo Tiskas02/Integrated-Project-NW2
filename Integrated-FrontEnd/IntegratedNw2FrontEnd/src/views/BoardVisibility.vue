@@ -9,7 +9,6 @@ const props = defineProps({
 const newBoard = ref({ ...props.board })
 
 console.log(props.board)
-console.log(`call visibilities`)
 
 const toggleVisibility = () => {
   // Toggle the visibilities field
@@ -36,7 +35,7 @@ const toggleVisibility = () => {
             </div>
             <div class="border-b my-3"></div>
             <div
-              v-if="board.visibilities === 'public'"
+              v-if="board.visibilities === 'PRIVATE'"
               class="itbkk-message break-all"
             >
               "Do you want to change board visibility to public?"

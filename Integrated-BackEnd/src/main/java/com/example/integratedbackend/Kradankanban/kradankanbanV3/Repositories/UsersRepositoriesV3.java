@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface UsersRepositoriesV3  extends JpaRepository<Users, String> {
     List<Users> findAllByUsername(String username);
+
 }
