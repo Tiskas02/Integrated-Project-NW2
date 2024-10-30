@@ -19,7 +19,7 @@ public class Boards {
     @Column(name = "boardId", nullable = false)
     private String id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "visibilities", nullable = false)
@@ -40,7 +40,6 @@ public class Boards {
     @JoinColumn(name = "oid", referencedColumnName = "oid")
     private Users users;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Collab> collaborators;
-
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Collab> collab;
 }

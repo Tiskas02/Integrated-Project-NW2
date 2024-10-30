@@ -55,7 +55,15 @@ public class BoardControllerV3 {
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (username != null) {
                 List<Boards> boards = boardService.getBoardByUserId(username);
-                return new ResponseEntity<>(boards, HttpStatus.OK);
+
+                List<BoardResponse> boardResponses = boards.stream().map(board -> {
+                    BoardResponse boardResponse = modelMapper.map(board, BoardResponse.class);
+                    boardResponse.setCollab(board.getCollab());
+                    return boardResponse;
+                }).collect(Collectors.toList());
+
+                System.out.println(boardResponses);
+                return new ResponseEntity<>(boardResponses, HttpStatus.OK);
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
@@ -723,8 +731,8 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @GetMapping("/{boardId}/collab/{callabId}")
-    public ResponseEntity<Collab> getCollab(
+    @GetMapping("/{boardId}/collabs/{callabId}")
+    public ResponseEntity<CollabDTO> getCollab(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId,
             @PathVariable String callabId) {
@@ -734,7 +742,11 @@ public class BoardControllerV3 {
 
             if (username != null) {
                 Collab collab = collabService.getCollaborator(boardId, callabId);
-                return ResponseEntity.ok(collab);
+                User user = userService.getUserById(collab.getUserId());
+                CollabDTO collabDTO = modelMapper.map(collab, CollabDTO.class);
+                modelMapper.map(user, collabDTO);
+
+                return ResponseEntity.ok(collabDTO);
             }
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
