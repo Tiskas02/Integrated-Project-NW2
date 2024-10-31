@@ -4,6 +4,7 @@ import com.example.integratedbackend.DTO.DTOV3.CollabBoardDto;
 import com.example.integratedbackend.DTO.DTOV3.CollabBoardResponse;
 import com.example.integratedbackend.DTO.DTOV3.CollabRequestDTO;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.AccessRight;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Collab;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Users;
@@ -40,6 +41,16 @@ public class CollabService {
 
     public List<Collab> getAllCollaborator(String boardId){
         return collabRepositoriesV3.findByBoardId(boardId);
+    }
+
+    public AccessRight getCollabRight(String userId) {
+        List<Collab> userCollabs = collabRepositoriesV3.findByUserId(userId);
+
+        if (userCollabs == null || userCollabs.isEmpty()) {
+            return null;
+        }
+
+        return userCollabs.get(0).getAccessRight();
     }
 
     public Collab getCollaborator(String boardId, String userId){

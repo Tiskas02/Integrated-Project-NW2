@@ -88,12 +88,12 @@ public class BoardControllerV3 {
         // if owner ให้เข้าเลย
         if (collabId != null) {
             if (usernameFromToken.equals(boardOwnerName)) {
-
                 return new ResponseEntity<>(boardInfo, HttpStatus.OK);
             }
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+
         // Check board visibility
         boolean visibleValue = visibilityService.checkVisibility(boardId);
         if (!visibleValue) {
@@ -305,8 +305,11 @@ public class BoardControllerV3 {
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        AccessRight accessRight = collabService.getCollabRight(collabId);
         boolean visibleValue = visibilityService.checkVisibility(boardId);
-
+        if (accessRight == AccessRight.READ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+        }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -387,8 +390,12 @@ public class BoardControllerV3 {
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        AccessRight accessRight = collabService.getCollabRight(collabId);
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
+        if (accessRight == AccessRight.READ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+        }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -464,8 +471,12 @@ public class BoardControllerV3 {
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        AccessRight accessRight = collabService.getCollabRight(collabId);
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
+        if (accessRight == AccessRight.READ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+        }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -534,8 +545,12 @@ public class BoardControllerV3 {
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        AccessRight accessRight = collabService.getCollabRight(collabId);
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
+        if (accessRight == AccessRight.READ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+        }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -607,6 +622,7 @@ public class BoardControllerV3 {
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
         // Check board visibility
         boolean visibleValue = visibilityService.checkVisibility(boardId);
+
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -734,8 +750,12 @@ public class BoardControllerV3 {
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        AccessRight accessRight = collabService.getCollabRight(collabId);
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
+        if (accessRight == AccessRight.READ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+        }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -806,8 +826,12 @@ public class BoardControllerV3 {
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        AccessRight accessRight = collabService.getCollabRight(collabId);
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
+        if (accessRight == AccessRight.READ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+        }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -879,8 +903,12 @@ public class BoardControllerV3 {
         }
 
         Collab collabAccess = collabService.getCollaborator(boardId, collabId);
+        AccessRight accessRight = collabService.getCollabRight(collabId);
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
+        if (accessRight == AccessRight.READ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+        }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
