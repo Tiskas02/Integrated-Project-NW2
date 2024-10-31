@@ -18,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -94,8 +95,17 @@ public class CollabService {
     public Collab addCollaborator(String boardId, CollabRequestDTO collabRequestDTO){
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
-
         User user = userService.getUserByEmail(collabRequestDTO.getEmail());
+//        if (collabRequestDTO.getAccessRight() == null) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access right is required");
+//        }
+//        if (user.getOid().equals(userService.getCurrentUser().getOid())){
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Board owner cannot be collaborator");
+//        }
+//
+//        if (collabRepositoriesV3.findByBoardIdAndUserId(boardId, user.getOid()).isPresent()) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Collaborator is exist");
+//        }
 
         Collab collab = modelMapper.map(collabRequestDTO, Collab.class);
         collab.setBoardId(boardId);

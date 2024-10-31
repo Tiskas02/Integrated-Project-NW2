@@ -1039,14 +1039,6 @@ public class BoardControllerV3 {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
-            Boards boardInfo = boardService.getBoardByBoardId(boardId);
-            String boardOwnerName = boardInfo.getUsers().getUsername();
-
-//            if (boardOwnerName != username) {
-//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "YOR ARE NOT THE BOARD OWNER");
-//            }
-
-
             if (username != null) {
                 Collab collab = collabService.addCollaborator(boardId, collabRequestDTO);
                 User user = userService.getUserById(collab.getUserId());
