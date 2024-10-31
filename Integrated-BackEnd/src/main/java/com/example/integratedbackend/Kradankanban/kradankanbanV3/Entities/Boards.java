@@ -24,7 +24,7 @@ public class Boards {
 
     @Column(name = "visibilities", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Visibilities visibilities = Visibilities.PRIVATE;
+    private Visibilities visibility = Visibilities.PRIVATE;
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")

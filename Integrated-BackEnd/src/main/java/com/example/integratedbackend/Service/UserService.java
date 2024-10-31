@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Service;
 
+import com.example.integratedbackend.ErrorHandle.NonExistEmail;
 import com.example.integratedbackend.Users.User;
 import com.example.integratedbackend.Users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class UserService implements UserDetailsService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new NonExistEmail(HttpStatus.NOT_FOUND, "User not found"));
     }
 
 }

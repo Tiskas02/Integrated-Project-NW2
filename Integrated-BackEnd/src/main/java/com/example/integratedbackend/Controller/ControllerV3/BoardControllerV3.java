@@ -4,6 +4,7 @@ import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.DTO.DTOV3.*;
 import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.*;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.UsersRepositoriesV3;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.*;
 import com.example.integratedbackend.Service.UserService;
@@ -18,8 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,6 +46,8 @@ public class BoardControllerV3 {
     private UserServiceV3 userServiceV3;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UsersRepositoriesV3 usersRepositoriesV3;
 
     // ================================Board=====================================
     @GetMapping("")
@@ -54,7 +56,7 @@ public class BoardControllerV3 {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
             if (username != null) {
-                List<Boards> boards = boardService.getBoardByUserId(username);
+                List<Boards> boards = boardService.getBoardByUserName(username);
 
                 List<BoardResponse> boardResponses = boards.stream().map(board -> {
                     BoardResponse boardResponse = modelMapper.map(board, BoardResponse.class);
@@ -971,7 +973,7 @@ public class BoardControllerV3 {
 
         // if owner ให้เข้าเลย
         if (usernameFromToken.equals(boardOwnerName)) {
-            Visibilities updatedVisibility = visibilityService.changeVisibility(boardId, newVisibility);
+            VisibilityDTO updatedVisibility = visibilityService.changeVisibility(boardId, newVisibility);
             return ResponseEntity.ok(updatedVisibility);
         }
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "You are not the board owner");
@@ -1005,13 +1007,13 @@ public class BoardControllerV3 {
     public ResponseEntity<CollabDTO> getCollab(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId,
-            @PathVariable String callabId) {
+            @PathVariable String collabId) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
             if (username != null) {
-                Collab collab = collabService.getCollaborator(boardId, callabId);
+                Collab collab = collabService.getCollaborator(boardId, collabId);
                 User user = userService.getUserById(collab.getUserId());
                 CollabDTO collabDTO = modelMapper.map(collab, CollabDTO.class);
                 modelMapper.map(user, collabDTO);
@@ -1036,6 +1038,14 @@ public class BoardControllerV3 {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
+
+            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+            String boardOwnerName = boardInfo.getUsers().getUsername();
+
+//            if (boardOwnerName != username) {
+//                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "YOR ARE NOT THE BOARD OWNER");
+//            }
+
 
             if (username != null) {
                 Collab collab = collabService.addCollaborator(boardId, collabRequestDTO);

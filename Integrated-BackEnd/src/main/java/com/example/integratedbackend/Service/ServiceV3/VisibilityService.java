@@ -2,7 +2,6 @@ package com.example.integratedbackend.Service.ServiceV3;
 
 import com.example.integratedbackend.DTO.DTOV3.VisibilityDTO;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Visibilities;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +21,16 @@ public class VisibilityService {
 
         //ถ้าvisibility = private return true, other return false
 //        return boards.getVisibilities() == Visibilities.PRIVATE;
-        return "private".equals(boards.getVisibilities());
+        return "private".equals(boards.getVisibility());
     }
 
-    public Visibilities changeVisibility(String boardId, VisibilityDTO newVisibilities) {
+    public VisibilityDTO changeVisibility(String boardId, VisibilityDTO newVisibilities) {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new IllegalArgumentException("Board not found"));
 
-        boards.setVisibilities(newVisibilities.getVisibility());
+        boards.setVisibility(newVisibilities.getVisibility());
         boardsRepositoriesV3.save(boards);
-//        modelMapper.map(boards, Visibilities.class);
-        return boards.getVisibilities();
+        return modelMapper.map(boards, VisibilityDTO.class);
 
     }
 

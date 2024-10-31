@@ -4,8 +4,10 @@ import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.TaskNameDuplicatedException;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Collab;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Users;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.BoardsRepositoriesV3;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.UsersRepositoriesV3;
 import io.viascom.nanoid.NanoId;
 import org.modelmapper.ModelMapper;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +24,8 @@ public class BoardService {
     @Autowired
     private BoardsRepositoriesV3 boardsRepositoriesV3;
     @Autowired
+    private CollabRepositoriesV3 collabRepositoriesV3;
+    @Autowired
     private UsersRepositoriesV3 usersRepositoriesV3;
     @Autowired
     private StatusServiceV3 statusServiceV3;
@@ -28,7 +33,7 @@ public class BoardService {
     ModelMapper modelMapper;
 
 
-    public List<Boards> getBoardByUserId(String userName) {
+    public List<Boards> getBoardByUserName(String userName) {
         List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
         Users user = users.get(0);
         List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
@@ -65,6 +70,24 @@ public class BoardService {
         statusServiceV3.createDefaultStatus(savedBoard.getId());
         return savedBoard;
     }
+
+    public List<Boards> getBoardsByCollaboratorUserId(String userId) {
+        List<Collab> collaborators = collabRepositoriesV3.findCollabByUserId(userId);
+        List<Boards> collaboratorDetails = new ArrayList<>();
+
+        collaborators.forEach(collab -> {
+            String boardId= collab.getBoardId();
+            Optional<Boards> board =boardsRepositoriesV3.findById(boardId);
+
+            if (board.isPresent()){
+                collaboratorDetails.add(board.get());
+            }
+        });
+//        List<Boards> boardsCollabs = boardsRepositoriesV3.findBoardsByCollab((Collab) collaborators);
+
+        return collaboratorDetails;
+    }
+
 }
 
 
