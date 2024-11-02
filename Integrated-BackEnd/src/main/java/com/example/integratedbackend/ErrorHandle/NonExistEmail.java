@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class NonExistEmail extends RuntimeException {
-    public NonExistEmail(HttpStatus forbidden, String message) {
+    public NonExistEmail(HttpStatus notFound, String message) {
         super(message);
     }
 }

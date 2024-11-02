@@ -3,6 +3,7 @@ package com.example.integratedbackend.Service.ServiceV3;
 import com.example.integratedbackend.DTO.DTOV3.CollabBoardDto;
 import com.example.integratedbackend.DTO.DTOV3.CollabBoardResponse;
 import com.example.integratedbackend.DTO.DTOV3.CollabRequestDTO;
+import com.example.integratedbackend.ErrorHandle.CollaboratorExistException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.AccessRight;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
@@ -23,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +41,8 @@ public class CollabService {
     ModelMapper modelMapper;
     @Autowired
     private UsersRepositoriesV3 usersRepositoriesV3;
+    @Autowired
+    private UserServiceV3 userServiceV3;
 
     public List<Collab> getAllCollaborator(String boardId){
         return collabRepositoriesV3.findByBoardId(boardId);
@@ -92,20 +96,22 @@ public class CollabService {
     }
 
 
-    public Collab addCollaborator(String boardId, CollabRequestDTO collabRequestDTO){
+    public Collab addCollaborator(String userId, String boardId, CollabRequestDTO collabRequestDTO){
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
+
+        if (collabRequestDTO.getAccessRight() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access right is required");
+        }
         User user = userService.getUserByEmail(collabRequestDTO.getEmail());
-//        if (collabRequestDTO.getAccessRight() == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access right is required");
-//        }
-//        if (user.getOid().equals(userService.getCurrentUser().getOid())){
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Board owner cannot be collaborator");
-//        }
-//
-//        if (collabRepositoriesV3.findByBoardIdAndUserId(boardId, user.getOid()).isPresent()) {
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Collaborator is exist");
-//        }
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id is needed");
+        }else if (user.getOid().equals(userId)){
+            throw new CollaboratorExistException(HttpStatus.CONFLICT, "Board owner cannot be collaborator");
+        }
+        if (collabRepositoriesV3.findByBoardIdAndUserId(boardId, user.getOid()).isPresent()) {
+            throw new CollaboratorExistException(HttpStatus.CONFLICT, "Collaborator already exists");
+        }
 
         Collab collab = modelMapper.map(collabRequestDTO, Collab.class);
         collab.setBoardId(boardId);

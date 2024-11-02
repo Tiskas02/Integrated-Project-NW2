@@ -1,13 +1,11 @@
 package com.example.integratedbackend.Service;
 
+
 import com.example.integratedbackend.ErrorHandle.NonExistEmail;
 import com.example.integratedbackend.Users.User;
 import com.example.integratedbackend.Users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,13 +38,20 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public static User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof User) {
-            return (User) authentication.getPrincipal();
-        }
-        return null;
-    }
+//    public static User getCurrentUser() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.getDetails() instanceof User) {
+//            return (User) authentication.getPrincipal();
+//        }
+//        return null;
+//    }
+//
+//    public static String getUserId() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.getPrincipal() != null) {
+//            return ((User) authentication.getPrincipal()).getUsername();
+//        }
+//    }
 
     public User getUserById(String userId) {
         return userRepository.findById(userId).orElseThrow(() ->
@@ -57,5 +62,4 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NonExistEmail(HttpStatus.NOT_FOUND, "User not found"));
     }
-
 }

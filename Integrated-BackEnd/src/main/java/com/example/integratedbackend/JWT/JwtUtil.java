@@ -94,8 +94,8 @@ public class JwtUtil {
 
     private String createRefreshToken(Map<String, Object> claims, String subject, long tokenValidity) {
         return Jwts.builder()
-                .setHeaderParam("typ", "JWT").
-                setClaims(claims)
+                .setHeaderParam("typ", "JWT")
+                .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValidity))

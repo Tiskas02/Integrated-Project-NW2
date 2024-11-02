@@ -2,6 +2,7 @@ package com.example.integratedbackend.Controller.ControllerV3;
 
 import com.example.integratedbackend.DTO.*;
 import com.example.integratedbackend.DTO.DTOV3.*;
+import com.example.integratedbackend.ErrorHandle.AccessRightNotAllow;
 import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.*;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.UsersRepositoriesV3;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("v3/boards")
-@CrossOrigin(origins = { "http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "*" })
+@CrossOrigin(origins = {"http://ip23nw2.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "*"})
 public class BoardControllerV3 {
     @Autowired
     private BoardService boardService;
@@ -1038,17 +1039,39 @@ public class BoardControllerV3 {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
+            String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
+
+            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+            String boardOwnerName = boardInfo.getUsers().getUsername();
+            AccessRight accessRight = collabService.getCollabRight(userId);
+            if (username.equals(boardOwnerName)) {
+                if (username != null) {
+                    Collab collab = collabService.addCollaborator(userId, boardId, collabRequestDTO);
+                    User user = userService.getUserById(collab.getUserId());
+                    CollabDTO collabDTO = modelMapper.map(collab, CollabDTO.class);
+                    modelMapper.map(user, collabDTO);
+
+                    return ResponseEntity.status(HttpStatus.CREATED).body(collabDTO);
+                }
+            }
+
+
+            if (accessRight == null) {
+                throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "AccessRight is not allow");
+            }
 
             if (username != null) {
-                Collab collab = collabService.addCollaborator(boardId, collabRequestDTO);
+                Collab collab = collabService.addCollaborator(userId, boardId, collabRequestDTO);
                 User user = userService.getUserById(collab.getUserId());
                 CollabDTO collabDTO = modelMapper.map(collab, CollabDTO.class);
                 modelMapper.map(user, collabDTO);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(collabDTO);
             }
+
+
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error here");
     }
 
     @DeleteMapping("/{boardId}/collab/{callabId}")
