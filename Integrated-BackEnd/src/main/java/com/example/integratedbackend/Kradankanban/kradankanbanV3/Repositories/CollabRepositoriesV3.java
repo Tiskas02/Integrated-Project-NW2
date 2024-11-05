@@ -16,4 +16,8 @@ public interface CollabRepositoriesV3 extends JpaRepository<Collab, CollabId> {
     List<Collab> findByUserId(String userId);
 
     List<Collab> findCollabByUserId(String userId);
+
+    boolean existsByBoardIdAndUserId(String boardId, String userId);
+
+    boolean existsCollabByUserId(String userId);
 }
