@@ -1,9 +1,6 @@
 package com.example.integratedbackend.Service.ServiceV3;
 
-import com.example.integratedbackend.DTO.DTOV3.CollabBoardDto;
-import com.example.integratedbackend.DTO.DTOV3.CollabBoardResponse;
-import com.example.integratedbackend.DTO.DTOV3.CollabDTO;
-import com.example.integratedbackend.DTO.DTOV3.CollabRequestDTO;
+import com.example.integratedbackend.DTO.DTOV3.*;
 import com.example.integratedbackend.ErrorHandle.CollaboratorExistException;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.NonCollaboratorException;
@@ -14,16 +11,15 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.Us
 import com.example.integratedbackend.Service.UserService;
 import com.example.integratedbackend.Users.User;
 import com.example.integratedbackend.Users.UserRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,6 +53,7 @@ public class CollabService {
 
         return collabDTO;
     }
+
     public List<CollabDTO> getAllCollaborator(String boardId, String userId) {
         Boards board = boardsRepositoriesV3.findById(boardId)
                 .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
@@ -83,7 +80,6 @@ public class CollabService {
     }
 
 
-
     public AccessRight getCollabRight(String userId) {
         List<Collab> userCollabs = collabRepositoriesV3.findByUserId(userId);
 
@@ -94,7 +90,29 @@ public class CollabService {
         return userCollabs.get(0).getAccessRight();
     }
 
-    public CollabDTO getCollaborator(String boardId, String userId){
+    public accessRightDTO changeAccessRight(String boardId, String userId, String collabId, accessRightDTO newAccessRight) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
+                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
+
+        Collab collab = collabRepositoriesV3.findByBoardIdAndUserId(boardId, collabId)
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collab not found"));
+
+        if (collab.getAccessRight() != AccessRight.READ && collab.getAccessRight() != AccessRight.WRITE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access Denied");
+        }
+
+        collab.setAccessRight(newAccessRight.getAccessRight());
+        collabRepositoriesV3.save(collab);
+        return modelMapper.map(collab, accessRightDTO.class);
+
+    }
+
+    public CollabDTO getCollaborator(String boardId, String userId) {
         Boards board = boardsRepositoriesV3.findById(boardId)
                 .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
         Collab collab = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId)
@@ -112,7 +130,7 @@ public class CollabService {
         return collab;
     }
 
-    public CollabDTO getCollaboratorOfBoard(String boardId, String collabId,String userId){
+    public CollabDTO getCollaboratorOfBoard(String boardId, String collabId, String userId) {
         Boards board = boardsRepositoriesV3.findById(boardId)
                 .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
 
@@ -189,6 +207,7 @@ public class CollabService {
         Collab collab = modelMapper.map(collabRequestDTO, Collab.class);
         collab.setBoardId(boardId);
         collab.setUserId(user.getOid());
+
         collab.setAccessRight(collabRequestDTO.getAccessRight());
         collabRepositoriesV3.save(collab);
 
@@ -203,21 +222,31 @@ public class CollabService {
         return collabDTO;
     }
 
-
-    public Collab deleteCollaborator(String boardId, String userId){
-        Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
+    @Transactional
+    public Collab deleteCollaborator(String boardId, String userId) {
+        boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
-        Users users = usersRepositoriesV3.findById(userId).orElseThrow(() ->
+        usersRepositoriesV3.findById(userId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
 
-        Collab collaboratorToDelete = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId).orElseThrow(() ->
-                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found"));
+        Collab collaboratorToDelete = collabRepositoriesV3.getByBoardIdAndUserId(boardId, userId);
+        if (collaboratorToDelete == null) {
+            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found");
+        }
+
         collabRepositoriesV3.delete(collaboratorToDelete);
+
+        //check existing collab after deleted
+        boolean existsAfterDelete = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId).isPresent();
+        if (existsAfterDelete) {
+            throw new RuntimeException("Deletion failed: Collaborator still exists");
+        }
         return modelMapper.map(collaboratorToDelete, Collab.class);
     }
 
+
     public boolean isCollaborator(String boardId, String userId) {
         Optional<Collab> collab = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId);
-            return collab.isPresent();
+        return collab.isPresent();
     }
 }
