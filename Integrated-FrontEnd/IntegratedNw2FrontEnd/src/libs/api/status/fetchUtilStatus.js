@@ -7,7 +7,7 @@ function getToken() {
 async function getStatusData(id,collabId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${id}/statuses/${collabId}`,{
+    const res = await fetch(`${url}/v3/boards/${id}/statuses`,{
       headers: {
         Authorization: `Bearer ${token}`
       },

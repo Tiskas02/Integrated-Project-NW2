@@ -4,10 +4,10 @@ function getToken() {
   return localStorage.getItem("token")
 }
 
-async function getTaskDataInBoardId(id,collabid) {
+async function getTaskDataInBoardId(id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${id}/tasks/${collabid}`, {
+    const res = await fetch(`${url}/v3/boards/${id}/tasks`, {
       headers: {
         Authorization: `Bearer ${token}`
       },
@@ -20,10 +20,10 @@ async function getTaskDataInBoardId(id,collabid) {
   }
 }
 
-async function getTaskById(routeId, id,userId) {
+async function getTaskById(routeId, id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${routeId}/tasks/${id}/${userId}`, {
+    const res = await fetch(`${url}/v3/boards/${routeId}/tasks/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       },

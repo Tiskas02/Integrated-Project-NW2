@@ -19,12 +19,12 @@ async function getBoardData() {
     return null
   }
 }
-async function getBoardDataByCollabId(boardId,collabId) {
+async function getBoardDataByCollabId(boardId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${boardId}/${collabId}`, {
+    const res = await fetch(`${url}/v3/boards/${boardId}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, 
       },
     })
     const data = await res.json()

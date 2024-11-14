@@ -67,6 +67,8 @@ const addBoard = async (newBoard) => {
   }
 }
 const navigateToBoardTasks = (paramId) => {
+  console.log(paramId);
+  
   router.push({ name: "Task", params: { id: paramId } })
 }
 </script>
@@ -134,7 +136,7 @@ const navigateToBoardTasks = (paramId) => {
             </div>
           </div>
           <div class="w-full h-[300px] overflow-auto rounded-b-box">
-            <div v-for="(board, index) in boards" :key="board.id">
+            <div v-for="(board, index) in boards" :key="board.boards.id">
               <div
                 class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
               >
@@ -144,19 +146,20 @@ const navigateToBoardTasks = (paramId) => {
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[30%] px-6 py-4 whitespace-nowrap text-center"
-                      @click="navigateToBoardTasks(board.id)"
+                      @click="navigateToBoardTasks(board.boards.id)"
                     >
+                    
                       {{ index + 1 }}
                     </div>
                     <div
                       class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
-                    >
-                      {{ board.name }}
+                      @click="navigateToBoardTasks(board.boards.id)"
+                    > 
+                      {{ board.boards.name }}
                     </div>
                     <div
                       class="itbkk-assignees w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
+                      @click="navigateToBoardTasks(board.boards.id)"
                     ></div>
                     <div
                       class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"

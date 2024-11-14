@@ -174,7 +174,6 @@ router.beforeEach(async (to, from, next) => {
   if (token) {
     const jwtPayload = parseJwt(token)
     const jwtPayloadRefresh = parseJwt(refreshToken)
-
     if (jwtPayload && jwtPayload.exp >= Date.now() / 1000) {
       isAuthenticated = true
     } else if (
