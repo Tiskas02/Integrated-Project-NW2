@@ -12,9 +12,11 @@ export default {
       },
     },
     screens: {
-      'mobile':'320px',
-      'tablet':'425px'
-    }
+      'mobile': '100px',
+      'tablet': '640px',
+      'laptop': '1024px',
+      'desktop': '1280px',
+    },
   },
   plugins: [
     require("daisyui"),
