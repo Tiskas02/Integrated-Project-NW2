@@ -66,6 +66,8 @@ onMounted(async () => {
       token.oid
     );
     matchedBoards.value = nameCollab;
+    console.log(matchedBoards.value);
+    
     nameboard.value = matchedBoards.value[0].name;
   }
   storeVisibility.value = matchedBoards.value.visibilities === "PUBLIC";
@@ -243,8 +245,6 @@ const setCloseVisibility = (value) => {
   showVisibility.value = value;
 };
 const EditVisibilities = async (value) => {
-  console.log(value);
-  
   const data = await boardStore.updateVisibility(
     routerId.value,
     value.visibilities

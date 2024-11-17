@@ -22,7 +22,7 @@ async function getBoardData() {
 async function getBoardDataByCollabId(boardId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${boardId}`, {
+    const res = await fetch(`${url}/v3/boards/collabs/${boardId}`, {
       headers: {
         Authorization: `Bearer ${token}`, 
       },
