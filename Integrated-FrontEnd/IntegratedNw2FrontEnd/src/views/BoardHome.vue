@@ -36,8 +36,9 @@ const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
-  const collab = await collabStore.fetchCollabs(token.oid)
-  console.log(collab)
+  const dataCollab = collabStore.addCollabDataInBoard(data[0].collabIn)
+  console.log(dataCollab);
+  // const collab = await collabStore.fetchCollabs(token.oid)
   if (boardStore.boards.length > 0 || data) {
     dataLoaded.value = true
   } else {
@@ -245,13 +246,13 @@ const navigateToBoardTasks = (paramId) => {
                       class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
                       @click="navigateToBoardTasks(collab.boardId)"
                     >
-                      {{ collab.boardName }}
+                      {{ collab.name }}
                     </div>
                     <div
                       class="itbkk-assignees w-[15%] px-1 py-4 whitespace-nowrap overflow-x-auto"
                       @click="navigateToBoardTasks(collab.boardId)"
                     >
-                    {{ collab.ownerBoard }}
+                    {{ collab.ownerName }}
                   </div>
                     <div
                       class="itbkk-assignees w-[15%] px-6 py-4 whitespace-nowrap overflow-x-auto text-center "
