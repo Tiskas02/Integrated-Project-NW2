@@ -9,6 +9,7 @@ import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
 import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
 import TaskModal from "../components/TaskModal.vue";
 import BaseBtn from "@/shared/BaseBtn.vue";
+import NavBar from "@/shared/NavBar.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 import Boardvisibility from "@/views/BoardVisibility.vue";
 const route = useRoute();

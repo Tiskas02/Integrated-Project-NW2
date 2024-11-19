@@ -1,5 +1,7 @@
 <script setup>
 import { ref, defineProps, watchEffect } from "vue";
+import {  useRouter } from "vue-router";
+const router = useRouter();
 const props = defineProps({
   mode: String,
 });
@@ -31,31 +33,31 @@ const userPayload = localStorage.getItem("token")
   : null;
 
 const logout = () => {
-  localStorage.removeItem("token")
-  localStorage.removeItem("refresh_token")
-  router.push("/")
-}
+  localStorage.removeItem("token");
+  localStorage.removeItem("refresh_token");
+  router.push("/");
+};
 </script>
 <template>
   <div
-    class="text-white"
+    class="text-white bg-white"
     :class="{ 'backdrop-blur-md': isMenuOpen, 'backdrop-blur-0': !isMenuOpen }"
   >
     <!-- Top Navigation Menu -->
     <div
-      class="topnav relative bg-white h-[60px] flex flex-col tablet:flex-row items-start tablet:items-center justify-between"
+      class="topnav relative laptop:mx-24 h-[60px] flex flex-col tablet:flex-row items-start tablet:items-center justify-between"
     >
       <!-- Logo -->
       <div class="flex flex-row">
         <img
           src="/icon.png"
           alt="icon"
-          class="w-[15%] m-2 hover:animate-pulse"
+          class="w-[15%] tablet:w-[10%] m-2 hover:animate-pulse"
         />
         <div
-          class="flex items-center justify-start font-chivo font-medium text-md text-slate-500 mx-1"
+          class="flex items-center justify-start font-bold text-md text-slate-500 mx-1"
         >
-          IT-Bangmod Kradan Kanban {{ mode }}
+          IT-Bangmod Kradan Kanban
         </div>
       </div>
       <!-- Hamburger Menu (visible only on mobile) -->
@@ -67,7 +69,7 @@ const logout = () => {
         <RouterLink
           v-if="mode === 'board'"
           to="/board"
-          class="block py-4 hover:bg-gray-600 border-b-[1px] text-center"
+          class="block py-4 hover:bg-gray-600 font-semibold border-b-[1px] text-center"
         >
           {{ userPayload.name }}
         </RouterLink>
@@ -76,19 +78,19 @@ const logout = () => {
         <template v-else>
           <RouterLink
             to="/board/:id/task"
-            class="block py-3 hover:bg-gray-600 border-b-[1px] text-center text-lg"
+            class="block py-2 hover:bg-gray-600 font-semibold border-b-[1px] text-center text-lg"
           >
             Task
           </RouterLink>
           <RouterLink
             to="/board/:id/status"
-            class="block py-3 hover:bg-gray-600 border-b-[1px] text-center text-lg"
+            class="block py-2 hover:bg-gray-600 font-semibold border-b-[1px] text-center text-lg"
           >
             Status
           </RouterLink>
           <RouterLink
             to="/board/:id/collab"
-            class="block py-3 hover:bg-gray-600 border-b-[1px] text-center text-lg"
+            class="block py-2 hover:bg-gray-600 font-semibold border-b-[1px] text-center text-lg"
           >
             Collaborator
           </RouterLink>
@@ -97,7 +99,7 @@ const logout = () => {
         <!-- Always show the Logout link -->
         <RouterLink
           to="/login"
-          class="block py-3 hover:bg-gray-600 text-center text-lg pb-4"
+          class="block py-2 hover:bg-gray-600 font-semibold text-center text-lg pb-4"
           @click="logout"
         >
           Logout
@@ -136,22 +138,55 @@ const logout = () => {
         </svg>
       </button>
       <!-- Pill Navigation (visible only on tablets and larger) -->
-      <div class="hidden tablet:flex space-x-4">
-        <a
-          href="#news"
-          class="py-2 px-4 bg-gray-600 hover:bg-gray-500 rounded-full"
-          >News</a
-        >
-        <a
-          href="#contact"
-          class="py-2 px-4 bg-gray-600 hover:bg-gray-500 rounded-full"
-          >Contact</a
-        >
-        <a
-          href="#about"
-          class="py-2 px-4 bg-gray-600 hover:bg-gray-500 rounded-full"
-          >About</a
-        >
+      <div class="hidden tablet:flex space-x-4 items-center">
+        <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
+        <div v-if="mode !== 'board'" class="flex flex-row space-x-8">
+          <RouterLink
+            to="/board/:id/task"
+            class="block py-2 hover:bg-gray-600 font-semibold  text-center  text-slate-500"
+          >
+            Task
+          </RouterLink>
+          <RouterLink
+            to="/board/:id/status"
+            class="block py-2 hover:bg-gray-600 font-semibold  text-center text-slate-500"
+          >
+            Status
+          </RouterLink>
+          <RouterLink
+            to="/board/:id/collab"
+            class="block py-2 hover:bg-gray-600 font-semibold  text-center text-slate-500"
+          >
+            Collaborator
+          </RouterLink>
+        </div>
+
+        <!-- Profile and Logout -->
+        <div class="flex items-center space-x-4">
+          <div class="mx-2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.99992 10C9.08325 10 8.29853 9.67362 7.64575 9.02084C6.99297 8.36807 6.66659 7.58334 6.66659 6.66668C6.66659 5.75001 6.99297 4.96529 7.64575 4.31251C8.29853 3.65973 9.08325 3.33334 9.99992 3.33334C10.9166 3.33334 11.7013 3.65973 12.3541 4.31251C13.0069 4.96529 13.3333 5.75001 13.3333 6.66668C13.3333 7.58334 13.0069 8.36807 12.3541 9.02084C11.7013 9.67362 10.9166 10 9.99992 10ZM3.33325 16.6667V14.3333C3.33325 13.8611 3.45492 13.4272 3.69825 13.0317C3.94159 12.6361 4.26436 12.3339 4.66659 12.125C5.5277 11.6945 6.4027 11.3717 7.29159 11.1567C8.18047 10.9417 9.08325 10.8339 9.99992 10.8333C10.9166 10.8328 11.8194 10.9406 12.7083 11.1567C13.5971 11.3728 14.4721 11.6956 15.3333 12.125C15.736 12.3333 16.0591 12.6356 16.3024 13.0317C16.5458 13.4278 16.6671 13.8617 16.6666 14.3333V16.6667H3.33325Z"
+                fill="black"
+              />
+            </svg>
+          </div>
+          <div class="text-black font-rubik text-lg font-bold">
+            {{ userPayload ? userPayload.name : "User" }}
+          </div>
+          <button
+            class="btn bg-red-400 rounded-md shadow-md text-white hover:bg-gradient-to-r from-red-700 to-red-400 transition-all duration-1000 ease-in-out px-4 py-2"
+            @click="logout"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   </div>

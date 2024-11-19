@@ -81,15 +81,13 @@ const addBoard = async (newBoard) => {
   }
 };
 const navigateToBoardTasks = (paramId) => {
-  console.log(paramId);
-
   router.push({ name: "Task", params: { id: paramId } });
 };
 </script>
 
 <template>
   <NavBar :mode="storeModeNavBar" />
-  <div class="">
+  <div class=" laptop:mx-24">
     <LoadingScreen v-if="!dataLoaded" />
     <div class="flex m-4">
       <div class="justify-start">
@@ -172,7 +170,7 @@ const navigateToBoardTasks = (paramId) => {
         </div>
       </div>
     </div>
-    <div class="px-4 text-xl font-bold">{{ storeBoardType }} Board</div>
+    <div class="px-4 text-xl font-bold mb-4">{{ storeBoardType }} Board</div>
     <div v-if="storeBoardType === 'Personal'">
       <div>
         <div
@@ -190,27 +188,82 @@ const navigateToBoardTasks = (paramId) => {
             v-for="(board, index) in boards"
             :key="board.boards.id"
             class="m-2"
+            @click="navigateToBoardTasks(board.boards.id)"
           >
             <div
-              class="w-44 h-40 bg-gray-100 rounded-xl shadow-lg p-4 flex flex-col justify-between"
+              class="btn border-0 w-44 h-40 bg-slate-200 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
             >
               <!-- Title -->
               <div>
-                <h1 class="text-lg font-bold text-gray-900">{{ index + 1 }} : {{ board.boards.name }}</h1>
-                <p class="text-md font-medium text-gray-700">Personal Board</p>
+                <h1 class="text-lg font-bold text-gray-900 text-left">
+                  {{ index + 1 }} : {{ board.boards.name }}
+                </h1>
+                <p class="text-sm font-medium text-gray-700">
+                  Visibility : {{ board.boards.visibility }}
+                </p>
               </div>
               <!-- Button -->
-              <button
-                class="px-4 py-2 rounded-full bg-gradient-to-r from-green-400 to-green-200 text-gray-900 text-sm font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
+              <!-- <button
+                class="btn border-0 bg-gradient-to-r from-green-400 to-green-200 text-gray-900 text-sm font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
               >
-                PUBLIC{{ board.boards }}
-              </button>
+                
+              </button> -->
+              <div class="flex space-x-2 ">
+                <button class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white">Edit</button>
+                <button class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white">Delete</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-else>asdfasdfa</div>
+    <div v-else>
+      <div>
+        <div
+          v-if="boardStore.length <= 0"
+          class="w-full border bg-white h-[60lvh] rounded-b-box"
+        >
+          <div class="flex justify-center items-center h-full">
+            <p class="text-xl font-bold animate-bounce text-slate-500">
+              Board is empty
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-row flex-wrap justify-start mx-2">
+          <div
+            v-for="(collab, index) in collabs" :key="collabs.boardId"
+            class="m-2"
+            @click="navigateToBoardTasks(collab.boardId)"
+          >
+            <div
+              class="btn border-0 w-44 h-[13rem] bg-slate-200 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
+            >
+              <!-- Title -->
+              <div>
+                <h1 class="text-lg font-bold text-gray-900 text-left">
+                  {{ index + 1 }} : {{ collab.name }}
+                </h1>
+                <p class="text-sm font-medium text-gray-700 text-left">
+                  Owner Board : <br/>{{ collab.ownerName }}
+                </p>
+                <p class="text-sm font-medium text-gray-700 text-left">
+                  Access Right : <br/>{{ collab.accessRight }}
+                </p>
+              </div>
+              <!-- Button -->
+              <!-- <button
+                class="btn border-0 bg-gradient-to-r from-green-400 to-green-200 text-gray-900 text-sm font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
+              >
+                
+              </button> -->
+              <div class="flex space-x-2 justify-end w-full">
+                <button class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white">Leave</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- <div class="w-full flex justify-center mt-6">
       <div class="shadow-2xl rounded-md w-[95%] h-[50%] shadow-blue-500/30">
