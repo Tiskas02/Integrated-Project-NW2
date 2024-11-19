@@ -12,6 +12,7 @@ export const useStoreCollab = defineStore("collabs", () => {
     collabData.boards.forEach((collab) => {
         collabs.value.push(collab);
     });
+    console.log(collabs.value)
       if (collabs.value.length === 0) {
         return noData
       } else {
@@ -54,13 +55,18 @@ export const useStoreCollab = defineStore("collabs", () => {
       console.error("Error fetching data:", error)
     }
   }
+
   async function deleteCollab(collabId,routeId) {
     try {
       const res = await deleteCollabUtil(collabId,routeId)
+      console.log(collabs.value)
+      console.log("Collab ID:", collabId)
+      console.log("collab.oid", collabs.oid)
       collabs.value.splice(
         collabs.value.findIndex((collab) => collab.oid === collabId),
         1
       )
+      console.log("Response data:", res)
       return res
     } catch (error) {
       throw new Error(error.message)

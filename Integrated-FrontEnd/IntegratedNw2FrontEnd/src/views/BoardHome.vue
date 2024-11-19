@@ -34,6 +34,7 @@ const parseJwt = (token) => {
 }
 const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
+
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
   const dataCollab = collabStore.addCollabDataInBoard(data[0].collabIn)
@@ -44,6 +45,7 @@ onMounted(async () => {
   } else {
     dataLoaded.value = false
   }
+  console.log(data)
 })
 
 const setModal = () => {
