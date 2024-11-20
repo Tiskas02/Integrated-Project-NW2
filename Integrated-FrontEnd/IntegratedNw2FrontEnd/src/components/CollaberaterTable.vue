@@ -41,30 +41,35 @@ const parseJwt = (token) => {
 };
 const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
+
 onMounted(async () => {
   await boardStore.fetchBoards(token.oid);
   const nameBoardf = boardStore.matchUserBoard(routeId.value);
-  console.log(nameBoardf);
+  console.log(nameBoardf.boards);
   const collab = collabStore.fetchCollabsByBoardId(routeId.value);
-  nameBoard.value = nameBoardf.name;
+  nameBoard.value = nameBoardf.boards.name;
   dataCollab.value = collab;
 });
-const deleteCollabFunc = async (collab) => {
-  if (collab === deleteCollab.value) {
-    const res = await collabStore.deleteCollab(collab.oid, routeId.value);    
-    if (res.status === 200) {
-      toasterStore.success({ text: "Collaberator deleted successfully!" });
-    } else {
-      toasterStore.error({
-        text: "An error occurred while deleting the collaberator.",
-      });
-    }
-  }
-};
+
 const setDataCollab = (value,collab) => {
   showDeleteModal.value = value;
   deleteCollab.value = collab;
 };
+
+const deleteCollabFunc = async (collab) => {
+  console.log(collab)
+  if (collab === deleteCollab.value) {
+    const res = await collabStore.deleteCollab(collab.oid, routeId.value);    
+    if (res.status === 200) {
+      toasterStore.success({ text: "Collaborator deleted successfully!" });
+    } else {
+      toasterStore.error({
+        text: "An error occurred while deleting the collaborator.",
+      });
+    }
+  }
+};
+
 const setClose = () => {
   showModal.value = false;
 };
@@ -73,6 +78,7 @@ const setCloseDelete = () => {
 };
 const addCollab = async (newCollab) => {
   const data = await collabStore.addCollab(newCollab,routeId.value)
+  console.log(data)
   if (data) {
     toasterStore.success({ text: "Collaberator added successfully!" });
   } else {

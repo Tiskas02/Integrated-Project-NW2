@@ -38,7 +38,7 @@ onMounted(async () => {
   await boardStore.fetchBoards(token.oid);
   await statusStore.fetchStatus(routeId.value, token.oid);
   const nameBoardf = boardStore.matchUserBoard(routeId.value);
-  nameBoard.value = nameBoardf.name;
+  nameBoard.value = nameBoardf.boards.name;
 });
 
 const addOrEditStatus = async (newStatus) => {

@@ -1,146 +1,145 @@
 <script setup>
-import { ref, onMounted, computed, Teleport,watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
-import { useStoreBoard } from "@/stores/boardStore";
-import { useStoreTasks } from "../stores/taskStores.js";
-import { useStoreStatus } from "../stores/statusStores.js";
-import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
-import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
-import TaskModal from "../components/TaskModal.vue";
-import BaseBtn from "@/shared/BaseBtn.vue";
-import NavBar from "@/shared/NavBar.vue";
-import { useToasterStore } from "@/stores/notificationStores";
-import Boardvisibility from "@/views/BoardVisibility.vue";
-const route = useRoute();
-const router = useRouter();
-const boardStore = useStoreBoard();
-const tasksStore = useStoreTasks();
-const statusStore = useStoreStatus();
-const toasterStore = useToasterStore();
-const { boards } = storeToRefs(boardStore);
-const { nameCollab } = storeToRefs(boardStore);
-const { tasks } = storeToRefs(tasksStore);
-const showDetail = ref(false);
-const storeMode = ref("");
-const storeTask = ref({});
-const storeTasks = ref({});
-const storeIndex = ref(0);
-const sortOrder = ref("DEFAULT");
-const selectFilter = ref([]);
-const routerId = ref(route.params.id);
-const allStatus = ref([]);
-const matchedBoards = ref();
-const nameboard = ref();
-const boardVisibility = ref();
-const storeVisibility = ref();
-const showVisibility = ref(false);
-const checkToggle = ref(false);
+import { ref, onMounted, computed, Teleport, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { storeToRefs } from "pinia"
+import { useStoreBoard } from "@/stores/boardStore"
+import { useStoreTasks } from "../stores/taskStores.js"
+import { useStoreStatus } from "../stores/statusStores.js"
+import { getTaskById } from "@/libs/api/task/fetchUtilTask.js"
+import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js"
+import TaskModal from "../components/TaskModal.vue"
+import BaseBtn from "@/shared/BaseBtn.vue"
+import { useToasterStore } from "@/stores/notificationStores"
+import Boardvisibility from "@/views/BoardVisibility.vue"
+const route = useRoute()
+const router = useRouter()
+const boardStore = useStoreBoard()
+const tasksStore = useStoreTasks()
+const statusStore = useStoreStatus()
+const toasterStore = useToasterStore()
+const { boards } = storeToRefs(boardStore)
+const { nameCollab } = storeToRefs(boardStore)
+const { tasks } = storeToRefs(tasksStore)
+const showDetail = ref(false)
+const storeMode = ref("")
+const storeTask = ref({})
+const storeTasks = ref({})
+const storeIndex = ref(0)
+const sortOrder = ref("DEFAULT")
+const selectFilter = ref([])
+const routerId = ref(route.params.id)
+const allStatus = ref([])
+const matchedBoards = ref()
+const nameboard = ref()
+const boardVisibility = ref()
+const storeVisibility = ref()
+const showVisibility = ref(false)
+const checkToggle = ref(false)
 const defaultStatus = ref({
   statusId: null,
-});
+})
 const parseJwt = (token) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const base64Url = token.split(".")[1]
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
       .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
       })
       .join("")
-  );
-  return JSON.parse(jsonPayload);
-};
-const receiveToken = localStorage.getItem("token");
-const token = parseJwt(receiveToken);
+  )
+  return JSON.parse(jsonPayload)
+}
+const receiveToken = localStorage.getItem("token")
+const token = parseJwt(receiveToken)
+
 onMounted(async () => {
-  const board = await boardStore.fetchBoards(token.oid);
-  const data = await tasksStore.fetchTasks(routerId.value, token.oid);
-  const matchedBoard = boardStore.matchUserBoard(routerId.value);
+  await boardStore.fetchBoards(token.oid)
+  const data = await tasksStore.fetchTasks(routerId.value, token.oid)
+  const matchedBoard = boardStore.matchUserBoard(routerId.value)
+
   if (matchedBoard !== "Board not found") {
-    matchedBoards.value = matchedBoard;
-    nameboard.value = matchedBoards.value.name;
+    matchedBoards.value = matchedBoard
+    nameboard.value = matchedBoards.value.boards.name
   } else {
     const nameCollab = await boardStore.fetchBoardsByCollabId(
       routerId.value,
       token.oid
-    );
-    matchedBoards.value = nameCollab;
-    console.log(matchedBoards.value);
-    
-    nameboard.value = matchedBoards.value[0].name;
+    )
+    matchedBoards.value = nameCollab
+    console.log(matchedBoards.value)
+    nameboard.value = matchedBoards.value[0].name
   }
-  storeVisibility.value = matchedBoards.value.visibilities === "PUBLIC";
-  storeTasks.value = data;
-  console.log(storeVisibility.value); 
+  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC"
+  console.log(storeVisibility.value);
   
-});
+  storeTasks.value = data
+  console.log(storeVisibility.value)
+})
 
-onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value, token.oid);
-  const noStatus = allStatus.value.find(
-    (status) => status.name === "No Status"
-  );
-  // If found, assign its statusId to defaultStatus.value.statusId
-  if (noStatus) {
-    defaultStatus.value.statusId = noStatus.id;
-  }
-});
 watch(
   () => storeVisibility.value,
   (newVisibility) => {
-    checkToggle.value = newVisibility === "PUBLIC";
-    console.log(checkToggle.value);
-    
+    checkToggle.value = newVisibility === "PUBLIC"
+    console.log(checkToggle.value)
   },
   { immediate: true }
-);
+)
+
+onMounted(async () => {
+  allStatus.value = await statusStore.fetchStatus(routerId.value, token.oid)
+  const noStatus = allStatus.value.find((status) => status.name === "No Status")
+  // If found, assign its statusId to defaultStatus.value.statusId
+  if (noStatus) {
+    defaultStatus.value.statusId = noStatus.id
+  }
+})
 
 const fetchDataById = async (routerId, id, mode) => {
-  storeMode.value = mode;
-  storeTask.value = await getTaskById(routerId, id,token.oid);
-  console.log(storeTask.value);
-  statusStore.value = await getStatusData(routerId, token.oid);
+  storeMode.value = mode
+  storeTask.value = await getTaskById(routerId, id, token.oid)
+  console.log(storeTask.value)
+  statusStore.value = await getStatusData(routerId, token.oid)
   if (storeMode.value === "add") {
-    showDetail.value = true;
-    router.push({ name: "addTask" });
+    showDetail.value = true
+    router.push({ name: "addTask" })
   } else if (
     Object.keys(storeTask.value).length > 0 &&
     storeMode.value === "edit"
   ) {
-    showDetail.value = true;
-    router.push({ name: "editTask", params: { editid: id } });
+    showDetail.value = true
+    router.push({ name: "editTask", params: { editid: id } })
   } else if (
     Object.keys(storeTask.value).length > 0 &&
     storeMode.value === "view"
   ) {
-    showDetail.value = true;
-    router.push({ name: "taskDetail", params: { taskid: id } });
+    showDetail.value = true
+    router.push({ name: "taskDetail", params: { taskid: id } })
   } else if (storeMode.value === "delete") {
-    showDetail.value = true;
+    showDetail.value = true
   } else {
-    showDetail.value = false;
+    showDetail.value = false
   }
   if (storeTask.value.status == "404") {
-    toasterStore.error({ text: "An error occurred redirect to task home" });
-    router.replace({ name: "task" });
-    showDetail.value = false;
+    toasterStore.error({ text: "An error occurred redirect to task home" })
+    router.replace({ name: "task" })
+    showDetail.value = false
   }
-};
+}
 
 const removeTask = async (id) => {
-  const res = await tasksStore.deleteTask(routerId.value, id);
+  const res = await tasksStore.deleteTask(routerId.value, id)
   if (res !== 404) {
-    toasterStore.success({ text: "Task deleted successfully!" });
+    toasterStore.success({ text: "Task deleted successfully!" })
   } else if (res === 404) {
-    toasterStore.error({ text: "An error occurred while deleting the task." });
+    toasterStore.error({ text: "An error occurred while deleting the task." })
   }
-};
+}
 
 const setIndex = (indexes) => {
-  storeIndex.value = indexes;
-};
+  storeIndex.value = indexes
+}
 
 const addEditTask = async (newTask) => {
   if (newTask.id === undefined) {
@@ -157,13 +156,13 @@ const addEditTask = async (newTask) => {
             : newTask.description,
         },
         routerId.value
-      );
+      )
       if (data.id) {
-        toasterStore.success({ text: "Task added successfully!" });
+        toasterStore.success({ text: "Task added successfully!" })
       } else if (!data.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        });
+        })
       }
     } else {
       const data = await tasksStore.createTask(
@@ -178,13 +177,13 @@ const addEditTask = async (newTask) => {
             : newTask.description,
         },
         routerId.value
-      );
+      )
       if (data.id) {
-        toasterStore.success({ text: "Task added successfully!" });
+        toasterStore.success({ text: "Task added successfully!" })
       } else if (!data.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        });
+        })
       }
     }
   } else {
@@ -197,13 +196,13 @@ const addEditTask = async (newTask) => {
         description: newTask.descriptio
           ? newTask.description.trim()
           : newTask.description,
-      });
+      })
       if (dataEdit.id) {
-        toasterStore.success({ text: "Task Updated successfully!" });
+        toasterStore.success({ text: "Task Updated successfully!" })
       } else if (dataEdit.id === undefined) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        });
+        })
       }
     } else {
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
@@ -214,89 +213,90 @@ const addEditTask = async (newTask) => {
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
-      });
+      })
       if (dataEdit.id) {
-        toasterStore.success({ text: "Task Updated successfully!" });
+        toasterStore.success({ text: "Task Updated successfully!" })
       } else if (!dataEdit.id) {
         toasterStore.error({
           text: "An error occurred while saving the task.",
-        });
+        })
       }
     }
   }
-};
+}
 
 const setDetail = (value, id, mode) => {
-  showDetail.value = value;
-  storeMode.value = mode;
+  showDetail.value = value
+  storeMode.value = mode
   if (storeMode.value === "add") {
-    router.push({ name: "addTask" });
+    router.push({ name: "addTask" })
   } else if (storeMode.value === "edit") {
-    router.push({ name: "editTask", params: { id: id } });
+    router.push({ name: "editTask", params: { id: id } })
   } else if (id !== null && storeMode.value !== "edit") {
-    router.push({ name: "taskDetail", params: { id: id } });
+    router.push({ name: "taskDetail", params: { id: id } })
   }
-};
+}
 
 const setClose = (value) => {
-  showDetail.value = value;
-};
+  showDetail.value = value
+}
 const setCloseVisibility = (value) => {
-  storeVisibility.value = !storeVisibility.value;
-  showVisibility.value = value;
-};
+  storeVisibility.value = !storeVisibility.value
+  showVisibility.value = value
+}
 const EditVisibilities = async (value) => {
   const data = await boardStore.updateVisibility(
-    routerId.value,
-    value.visibilities
-  );
-  if (data === value.visibilities) {
-    storeVisibility.value = data === "PUBLIC";
-    matchedBoards.value.visibilities = data;
-    toasterStore.success({ text: "Visibility updated successfully!" });
+    routerId.value,value.visibilities
+  )
+
+  if (data.visibility === value.visibilities) {
+    console.log(data.visibility)
+    storeVisibility.value = data.visibility === "PUBLIC" ? true : false
+    console.log(storeVisibility.value)
+    matchedBoards.value.visibilities = data
+    toasterStore.success({ text: "Visibility updated successfully!" })
   } else {
     toasterStore.error({
       text: "An error occurred while updating visibility.",
-    });
+    })
   }
-};
+}
 const setVisibility = () => {
-  // checkToggle.value = !checkToggle.value;
-  showVisibility.value = true;
-};
+  showVisibility.value = true
+}
 
 const SortOrder = async () => {
-  await tasksStore.sortTasksByStatus(sortOrder.value);
+  await tasksStore.sortTasksByStatus(sortOrder.value)
   if (sortOrder.value === "DEFAULT") {
-    sortOrder.value = "ASC";
+    sortOrder.value = "ASC"
   } else if (sortOrder.value === "ASC") {
-    sortOrder.value = "DESC";
+    sortOrder.value = "DESC"
   } else {
-    sortOrder.value = "DEFAULT";
+    sortOrder.value = "DEFAULT"
   }
-};
+}
 
 const updateFilterList = (filterName) => {
-  const filterIndex = selectFilter.value.indexOf(filterName);
+  const filterIndex = selectFilter.value.indexOf(filterName)
 
   if (filterIndex === -1) {
-    selectFilter.value.push(filterName);
+    selectFilter.value.push(filterName)
   } else {
-    selectFilter.value.splice(filterIndex, 1);
+    selectFilter.value.splice(filterIndex, 1)
   }
-};
+}
 
 const getFilterTask = computed(() => {
   return selectFilter.value.length > 0
     ? tasks.value.filter((task) =>
         selectFilter.value.includes(task.status.statusName)
       )
-    : tasks.value;
-});
+    : tasks.value
+})
 
 const ClearStatuses = () => {
-  selectFilter.value.splice(0, selectFilter.value.length);
-};
+  selectFilter.value.splice(0, selectFilter.value.length)
+}
 </script>
 
 <template>
@@ -343,10 +343,10 @@ const ClearStatuses = () => {
       <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
         <div class="font-bold text-slate-700">Tool Bar :</div>
         <div>
-          <div class=" form-control">
+          <div class="form-control">
             <label class="label cursor-pointer">
-              <span class="label-text mx-2">
-                {{ storeVisibility  ? "public" : "private" }}
+              <span class="label-text mx-2" >
+                {{ storeVisibility ? "public" : "private" }}
               </span>
               <input
                 type="checkbox"
@@ -566,7 +566,9 @@ const ClearStatuses = () => {
                 <div
                   class="cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
-                  <div class="itbkk-item flex hover:shadow-inner hover:bg-slate-50">
+                  <div
+                    class="itbkk-item flex hover:shadow-inner hover:bg-slate-50"
+                  >
                     <div
                       class="w-[10%] px-6 py-4 whitespace-nowrap"
                       @click="fetchDataById(routerId, task.id, 'view')"

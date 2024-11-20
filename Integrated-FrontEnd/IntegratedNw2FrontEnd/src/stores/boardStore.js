@@ -5,6 +5,7 @@ import { getBoardData, addBoard,updateBoardVisibility,getBoardDataByCollabId } f
 export const useStoreBoard = defineStore("boards", () => {
   const boards = ref([])
   const nameCollab = ref([])
+
   async function fetchBoards() {
     try {
       const noData = "No data"
@@ -22,6 +23,7 @@ export const useStoreBoard = defineStore("boards", () => {
       console.error("Error fetching data:", error)
     }
   }
+
   async function fetchBoardsByCollabId(boardId,collabId) {
     try {
       const noData = "No data"
@@ -61,14 +63,17 @@ export const useStoreBoard = defineStore("boards", () => {
       throw new Error(error.message)
     }
   }
+  
+
   function matchUserBoard(id) {
-    const matchedBoard = boards.value.find((board) => board.id === id)
+    const matchedBoard = boards.value.find((board) => board.boards.id === id)
     if (matchedBoard) {
       return matchedBoard
     } else {
       return "Board not found"
     }
   }
+
   
   return {
     boards,
