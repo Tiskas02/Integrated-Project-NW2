@@ -48,7 +48,9 @@ const logout = () => {
       class="topnav relative laptop:mx-24 h-[60px] flex flex-col tablet:flex-row items-start tablet:items-center justify-between"
     >
       <!-- Logo -->
+      <router-link :to="{ name: 'board' }" class="p-0">
       <div class="flex flex-row">
+        
         <img
           src="/icon.png"
           alt="icon"
@@ -59,7 +61,9 @@ const logout = () => {
         >
           IT-Bangmod Kradan Kanban
         </div>
+     
       </div>
+    </router-link>
       <!-- Hamburger Menu (visible only on mobile) -->
       <div
         id="myLinks"

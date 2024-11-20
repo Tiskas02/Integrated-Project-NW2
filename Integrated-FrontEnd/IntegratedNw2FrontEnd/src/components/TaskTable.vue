@@ -300,7 +300,8 @@ const ClearStatuses = () => {
 </script>
 
 <template>
-  <div>
+  
+  <!-- <div>
     <div class="flex justify-end m-10 mt-16">
       <div class="mx-2">
         <BaseBtn>
@@ -647,7 +648,7 @@ const ClearStatuses = () => {
         @saveDelete="removeTask"
       />
     </teleport>
-  </div>
+  </div> -->
 </template>
 
 <style scoped></style>
