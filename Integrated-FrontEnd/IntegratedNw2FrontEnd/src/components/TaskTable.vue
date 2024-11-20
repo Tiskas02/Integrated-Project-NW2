@@ -67,13 +67,13 @@ onMounted(async () => {
       routerId.value,
       token.oid
     )
-
     matchedBoards.value = nameCollab
     console.log(matchedBoards.value)
-
     nameboard.value = matchedBoards.value[0].name
   }
-  storeVisibility.value = matchedBoards.value.boards.visibilities === "PUBLIC"
+  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC"
+  console.log(storeVisibility.value);
+  
   storeTasks.value = data
   console.log(storeVisibility.value)
 })
