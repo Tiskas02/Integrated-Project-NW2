@@ -68,21 +68,16 @@ onMounted(async () => {
       token.oid
     )
     matchedBoards.value = nameCollab
-    console.log(matchedBoards.value)
     nameboard.value = matchedBoards.value[0].name
   }
   storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC"
-  console.log(storeVisibility.value);
-  
   storeTasks.value = data
-  console.log(storeVisibility.value)
 })
 
 watch(
   () => storeVisibility.value,
   (newVisibility) => {
     checkToggle.value = newVisibility === "PUBLIC"
-    console.log(checkToggle.value)
   },
   { immediate: true }
 )
@@ -99,7 +94,6 @@ onMounted(async () => {
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode
   storeTask.value = await getTaskById(routerId, id, token.oid)
-  console.log(storeTask.value)
   statusStore.value = await getStatusData(routerId, token.oid)
   if (storeMode.value === "add") {
     showDetail.value = true
@@ -250,9 +244,7 @@ const EditVisibilities = async (value) => {
   )
 
   if (data.visibility === value.visibilities) {
-    console.log(data.visibility)
     storeVisibility.value = data.visibility === "PUBLIC" ? true : false
-    console.log(storeVisibility.value)
     matchedBoards.value.visibilities = data
     toasterStore.success({ text: "Visibility updated successfully!" })
   } else {
@@ -261,6 +253,7 @@ const EditVisibilities = async (value) => {
     })
   }
 }
+
 const setVisibility = () => {
   showVisibility.value = true
 }

@@ -22,7 +22,6 @@ const props = defineProps({
     },
   },
 })
-console.log(props.task);
 
 const defaultStatus = ref({
   statusId: null,
@@ -144,13 +143,13 @@ computed(newTask.value, () => {
                   <textarea
                     class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic"
                     :placeholder="
-                      task?.assignee
+                      task?.assignees
                         ? 'Enter your assign here...'
                         : 'Unassigned'
                     "
                     maxlength="30"
                     v-model="newTask.assignees"
-                    >{{ task?.assignee }}</textarea
+                    >{{ task?.assignees }}</textarea
                   >
                 </div>
                 <div class="flex justify-end text-xs">
