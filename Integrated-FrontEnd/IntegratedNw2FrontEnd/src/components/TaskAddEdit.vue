@@ -38,11 +38,8 @@ onMounted(async () => {
 
 const newTask = ref({
   ...props.task,
-  statusId: props.task.status.statusId
-    ? props.task.status.statusId
-    : defaultStatus.value.statusId,
+  statusId: props.task?.status?.statusId ?? defaultStatus.value.statusId,
 })
-
 
 const titleCharCount = computed(() =>
   newTask.value.title ? newTask.value.title.length : 0
@@ -115,16 +112,7 @@ computed(newTask.value, () => {
                     class="itbkk-status select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     v-model="newTask.statusId"
                   >
-                    <!-- Default placeholder showing current status if no option is selected -->
-                    <option
-                      :disabled="true"
-                      :selected="!newTask.statusId"
-                      class="text-b"
-                    >
-                      {{ task?.status.statusName }}
-                    </option>
-
-                    <!-- Dynamic options from allStatus -->
+                    <option disabled :value="null">Select a Status</option>
                     <option
                       v-for="status in allStatus"
                       :key="status.id"
@@ -223,7 +211,7 @@ computed(newTask.value, () => {
                         (newTask.description ?? '') ===
                           (task?.description ?? '') &&
                         (newTask.statusId ?? '') ===
-                          (task?.status.statusId ?? '') &&
+                          (task?.status?.statusId ?? '') &&
                         (newTask.title ?? '') === (task?.title ?? ''))
                     "
                   >

@@ -65,7 +65,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
 
         cy.get('.itbkk-modal-alert').as('modal')
 
-        cy.get('@modal').find('.itbkk-message').contains("Do you want to change board visibility to private?")
+        cy.get('@modal').find('.itbkk-message').contains("Do you want to change board visibility to public ?")
         cy.get('@modal').find('.itbkk-button-confirm').click()
 
         cy.wait('@mockAPI').its('response.statusCode').should('eq',403)
@@ -90,7 +90,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
 
         cy.get('.itbkk-modal-alert').as('modal')
 
-        cy.get('@modal').find('.itbkk-message').contains("Do you want to change board visibility to private?")
+        cy.get('@modal').find('.itbkk-message').contains("Do you want to change board visibility to public ?")
         cy.get('@modal').find('.itbkk-button-confirm').click()
 
         cy.wait('@mockAPI').its('response.statusCode').should('eq',500)
@@ -114,7 +114,7 @@ describe(`TC-PBI20-BOARD-VISIBILITY-1-FE\n
 
         cy.get('.itbkk-modal-alert').as('modal')
 
-        cy.get('@modal').find('.itbkk-message').contains("Do you want to change board visibility to private?")
+        cy.get('@modal').find('.itbkk-message').contains("Do you want to change board visibility to public ?")
         cy.get('@modal').find('.itbkk-button-confirm').click()
 
         cy.wait('@mockAPI').its('response.statusCode').should('eq',401)
