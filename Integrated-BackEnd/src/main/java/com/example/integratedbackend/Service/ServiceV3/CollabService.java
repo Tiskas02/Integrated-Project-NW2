@@ -222,27 +222,41 @@ public class CollabService {
         return collabDTO;
     }
 
+//    @Transactional
+//    public Collab deleteCollaborator(String boardId, String userId) {
+//        boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
+//                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
+//        usersRepositoriesV3.findById(userId).orElseThrow(() ->
+//                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
+//
+//        Collab collaboratorToDelete = collabRepositoriesV3.getByBoardIdAndUserId(boardId, userId);
+//        if (collaboratorToDelete == null) {
+//            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found");
+//        }
+//
+//        collabRepositoriesV3.delete(collaboratorToDelete);
+//
+//        //check existing collab after deleted
+//        boolean existsAfterDelete = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId).isPresent();
+//        if (existsAfterDelete) {
+//            throw new RuntimeException("Deletion failed: Collaborator still exists");
+//        }
+//        return modelMapper.map(collaboratorToDelete, Collab.class);
+//    }
+
     @Transactional
     public Collab deleteCollaborator(String boardId, String userId) {
-        boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
+        Boards board = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
                 new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
-        usersRepositoriesV3.findById(userId).orElseThrow(() ->
-                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
+        Collab collab = collabRepositoriesV3.getCollabByBoardIdAndUserId(boardId, userId).orElseThrow(() ->
+                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found"));
 
-        Collab collaboratorToDelete = collabRepositoriesV3.getByBoardIdAndUserId(boardId, userId);
-        if (collaboratorToDelete == null) {
-            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found");
-        }
+        collabRepositoriesV3.deleteCollabByBoardIdAndUserId(collab.getBoardId(), collab.getUserId());
+        collabRepositoriesV3.flush();
 
-        collabRepositoriesV3.delete(collaboratorToDelete);
-
-        //check existing collab after deleted
-        boolean existsAfterDelete = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId).isPresent();
-        if (existsAfterDelete) {
-            throw new RuntimeException("Deletion failed: Collaborator still exists");
-        }
-        return modelMapper.map(collaboratorToDelete, Collab.class);
+        return collab;
     }
+
 
 
     public boolean isCollaborator(String boardId, String userId) {
