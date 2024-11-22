@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useStoreBoard } from "@/stores/boardStore"
+import { useStoreCollab } from "@/stores/collabStore"
 import LoadingScreen from "@/shared/LoadingScreen.vue"
 import Logo from "@/shared/Logo.vue"
 import BaseBtn from "@/shared/BaseBtn.vue"
@@ -12,9 +13,12 @@ const route = useRoute()
 const router = useRouter()
 const dataLoaded = ref(true)
 const boardStore = useStoreBoard()
+const collabStore = useStoreCollab()
 const toasterStore = useToasterStore()
 const { boards } = storeToRefs(boardStore)
+const { collabs } = storeToRefs(collabStore)
 const showModal = ref(false)
+
 const parseJwt = (token) => {
   const base64Url = token.split(".")[1]
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
@@ -28,20 +32,20 @@ const parseJwt = (token) => {
   )
   return JSON.parse(jsonPayload)
 }
-
 const receiveToken = localStorage.getItem("token")
 const token = parseJwt(receiveToken)
-console.log(token.name);
-
 
 onMounted(async () => {
   const data = await boardStore.fetchBoards()
-  console.log(data)
+  const dataCollab = collabStore.addCollabDataInBoard(data[0].collabIn)
+  console.log(dataCollab);
+  // const collab = await collabStore.fetchCollabs(token.oid)
   if (boardStore.boards.length > 0 || data) {
     dataLoaded.value = true
   } else {
     dataLoaded.value = false
   }
+  console.log(data)
 })
 
 const setModal = () => {
@@ -65,8 +69,10 @@ const addBoard = async (newBoard) => {
     })
   }
 }
-const navigateToBoardTasks = (boardId) => {
-  router.push({ name: "Task", params: { id: boardId } })
+const navigateToBoardTasks = (paramId) => {
+  console.log(paramId);
+  
+  router.push({ name: "Task", params: { id: paramId } })
 }
 </script>
 
@@ -95,8 +101,9 @@ const navigateToBoardTasks = (boardId) => {
         </template>
       </BaseBtn>
     </div>
+
     <div class="w-full flex justify-center mt-6">
-      <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/30">
+      <div class="shadow-2xl rounded-md w-[95%] h-[50%] shadow-blue-500/30">
         <div class="min-w-full divide-y divide-gray-200 overflow-auto">
           <div class="#4793AF bg-slate-800 flex rounded-md overflow-auto">
             <div
@@ -131,8 +138,8 @@ const navigateToBoardTasks = (boardId) => {
               </p>
             </div>
           </div>
-          <div v-else class="w-full h-[500px] overflow-auto rounded-b-box">
-            <div v-for="(board, index) in boards" :key="board.id">
+          <div class="w-full h-[300px] overflow-auto rounded-b-box">
+            <div v-for="(board, index) in boards" :key="board.boards.id">
               <div
                 class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
               >
@@ -142,19 +149,20 @@ const navigateToBoardTasks = (boardId) => {
                   <div class="flex hover:shadow-inner hover:bg-slate-50">
                     <div
                       class="w-[30%] px-6 py-4 whitespace-nowrap text-center"
-                      @click="navigateToBoardTasks(board.id)"
+                      @click="navigateToBoardTasks(board.boards.id)"
                     >
+                    
                       {{ index + 1 }}
                     </div>
                     <div
                       class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
-                    >
-                      {{ board.name }}
+                      @click="navigateToBoardTasks(board.boards.id)"
+                    > 
+                      {{ board.boards.name }}
                     </div>
                     <div
                       class="itbkk-assignees w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
-                      @click="navigateToBoardTasks(board.id)"
+                      @click="navigateToBoardTasks(board.boards.id)"
                     ></div>
                     <div
                       class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
@@ -170,6 +178,97 @@ const navigateToBoardTasks = (boardId) => {
                         @click=""
                       >
                         Delete
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- collabboard -->
+    <div class="w-full font-rubik font-medium text-4xl text-white text-center my-6">Collab board</div>
+    <div class="w-full flex justify-center mt-6">
+      <div class="shadow-2xl rounded-md w-[95%] h-[50%] shadow-blue-500/30">
+        <div class="min-w-full divide-y divide-gray-200 overflow-auto">
+          <div class="#4793AF bg-slate-800 flex rounded-md overflow-auto">
+            <div
+              class="w-[10%] m-auto text-start text-md font-bold text-white uppercase overflow-auto"
+            ></div>
+            <div
+              class="w-[18%] h-14 text-md font-bold text-white uppercase flex justify-center items-center"
+            >
+              <div class="w-full">No</div>
+            </div>
+            <div
+              class="w-[18%] h-14 text-md font-bold text-white uppercase flex justify-center items-center"
+            >
+              <div class="w-full">Name</div>
+            </div>
+            <div
+              class="w-[18%] h-14 text-center text-md font-bold text-white uppercase flex justify-center items-center"
+            >Owner</div>
+            <div
+              class="w-[18%] h-14 text-center text-md font-bold text-white uppercase flex justify-center items-center"
+            >Acess Right</div>
+            <div
+              class="w-[18%] h-14 text-left text-md font-bold text-white uppercase flex justify-center items-center"
+            >
+              <div class="w-full">Action</div>
+            </div>
+          </div>
+          <div
+            v-if="collabStore.length <= 0"
+            class="w-full border bg-white h-[60lvh] rounded-b-box"
+          >
+            <div class="flex justify-center items-center h-full">
+              <p class="text-xl font-bold animate-bounce text-slate-500">
+                Board is empty
+              </p>
+            </div>
+          </div>
+          <div v-else class="w-full h-[250px] overflow-auto rounded-b-box">
+            <div v-for="(collab, index) in collabs" :key="collabs.boardId">
+              <div
+                class="bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+              >
+                <div
+                  class="itbkk-item cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
+                >
+                  <div class="flex hover:shadow-inner hover:bg-slate-50">
+                    <div
+                      class="w-[30%] px-6 py-4 whitespace-nowrap text-center"
+                      @click="navigateToBoardTasks(collab.boardId)"
+                    >
+                      {{ index + 1 }}
+                    </div>
+                    <div
+                      class="itbkk-title w-[30%] px-6 py-4 whitespace-nowrap overflow-x-auto"
+                      @click="navigateToBoardTasks(collab.boardId)"
+                    >
+                      {{ collab.name }}
+                    </div>
+                    <div
+                      class="itbkk-assignees w-[15%] px-1 py-4 whitespace-nowrap overflow-x-auto"
+                      @click="navigateToBoardTasks(collab.boardId)"
+                    >
+                    {{ collab.ownerName }}
+                  </div>
+                    <div
+                      class="itbkk-assignees w-[15%] px-6 py-4 whitespace-nowrap overflow-x-auto text-center "
+                      @click="navigateToBoardTasks(collab.boardId)"
+                    >{{ collab.accessRight }}</div>
+
+                    <div
+                      class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
+                    >
+                      <div
+                        class="itbkk-button-delete btn btn-outline btn-error"
+                        @click=""
+                      >
+                        Leave
                       </div>
                     </div>
                   </div>

@@ -4,7 +4,7 @@ function getToken() {
   return localStorage.getItem("token")
 }
 
-async function getStatusData(id) {
+async function getStatusData(id,collabId) {
   try {
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${id}/statuses`,{
@@ -75,10 +75,10 @@ async function editStatus(id, editStatus, routerId) {
   }
 }
 
-async function shouldDeleteOrTransferStatus(id) {
+async function shouldDeleteOrTransferStatus(statusId,boardId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/statuses/${id}/indicator`,{
+    const res = await fetch(`${url}/v3/boards/${boardId}/statuses/${statusId}/indicator`,{
       headers: {
         Authorization: `Bearer ${token}`
       },
@@ -90,10 +90,10 @@ async function shouldDeleteOrTransferStatus(id) {
     return null
   }
 }
-async function deleteOneStatus(id) {
+async function deleteOneStatus(boardId,id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/statuses/${id}`, {
+    const res = await fetch(`${url}/v3/boards/${boardId}/statuses/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
@@ -106,11 +106,11 @@ async function deleteOneStatus(id) {
   }
 }
 
-async function deleteTranferStatus(oldStatusId, newStatusId) {
+async function deleteTranferStatus(boardId,oldStatusId, newStatusId) {
   try {
     const token = getToken()
     const res = await fetch(
-      `${url}/v3/boards/statuses/${oldStatusId}/${newStatusId}`,
+      `${url}/v3/boards/${boardId}/statuses/${oldStatusId}/${newStatusId}`,
       {
         method: "DELETE",
         headers: {

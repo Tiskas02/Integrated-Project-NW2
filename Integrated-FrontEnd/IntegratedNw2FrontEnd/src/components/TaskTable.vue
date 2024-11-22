@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, computed, Teleport, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useStoreBoard } from "@/stores/boardStore"
@@ -10,12 +10,15 @@ import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js"
 import TaskModal from "../components/TaskModal.vue"
 import BaseBtn from "@/shared/BaseBtn.vue"
 import { useToasterStore } from "@/stores/notificationStores"
+import Boardvisibility from "@/views/BoardVisibility.vue"
 const route = useRoute()
 const router = useRouter()
 const boardStore = useStoreBoard()
 const tasksStore = useStoreTasks()
 const statusStore = useStoreStatus()
 const toasterStore = useToasterStore()
+const { boards } = storeToRefs(boardStore)
+const { nameCollab } = storeToRefs(boardStore)
 const { tasks } = storeToRefs(tasksStore)
 const showDetail = ref(false)
 const storeMode = ref("")
@@ -26,21 +29,62 @@ const sortOrder = ref("DEFAULT")
 const selectFilter = ref([])
 const routerId = ref(route.params.id)
 const allStatus = ref([])
-const nameBoard = ref()
+const matchedBoards = ref()
+const nameboard = ref()
+const boardVisibility = ref()
+const storeVisibility = ref()
+const showVisibility = ref(false)
+const checkToggle = ref(false)
 const defaultStatus = ref({
   statusId: null,
 })
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1]
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/")
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+      })
+      .join("")
+  )
+  return JSON.parse(jsonPayload)
+}
+const receiveToken = localStorage.getItem("token")
+const token = parseJwt(receiveToken)
+
 onMounted(async () => {
-  const data = await tasksStore.fetchTasks(routerId.value)
-  const nameBoardf = boardStore.matchUserBoard(routerId.value)
-  nameBoard.value = nameBoardf
+  await boardStore.fetchBoards(token.oid)
+  const data = await tasksStore.fetchTasks(routerId.value, token.oid)
+  const matchedBoard = boardStore.matchUserBoard(routerId.value)
+
+  if (matchedBoard !== "Board not found") {
+    matchedBoards.value = matchedBoard
+    nameboard.value = matchedBoards.value.boards.name
+  } else {
+    const nameCollab = await boardStore.fetchBoardsByCollabId(
+      routerId.value,
+      token.oid
+    )
+    matchedBoards.value = nameCollab
+    nameboard.value = matchedBoards.value[0].name
+  }
+  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC"
   storeTasks.value = data
 })
 
-onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value)
-  const noStatus = allStatus.value.find((status) => status.name === "No Status")
+watch(
+  () => storeVisibility.value,
+  (newVisibility) => {
+    checkToggle.value = newVisibility === "PUBLIC"
+  },
+  { immediate: true }
+)
 
+onMounted(async () => {
+  allStatus.value = await statusStore.fetchStatus(routerId.value, token.oid)
+  const noStatus = allStatus.value.find((status) => status.name === "No Status")
   // If found, assign its statusId to defaultStatus.value.statusId
   if (noStatus) {
     defaultStatus.value.statusId = noStatus.id
@@ -49,8 +93,8 @@ onMounted(async () => {
 
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode
-  storeTask.value = await getTaskById(routerId, id)
-  statusStore.value = await getStatusData(routerId.value)
+  storeTask.value = await getTaskById(routerId, id, token.oid)
+  statusStore.value = await getStatusData(routerId, token.oid)
   if (storeMode.value === "add") {
     showDetail.value = true
     router.push({ name: "addTask" })
@@ -190,6 +234,29 @@ const setDetail = (value, id, mode) => {
 const setClose = (value) => {
   showDetail.value = value
 }
+const setCloseVisibility = (value) => {
+  storeVisibility.value = !storeVisibility.value
+  showVisibility.value = value
+}
+const EditVisibilities = async (value) => {
+  const data = await boardStore.updateVisibility(
+    routerId.value,value.visibilities
+  )
+
+  if (data.visibility === value.visibilities) {
+    storeVisibility.value = data.visibility === "PUBLIC" ? true : false
+    matchedBoards.value.visibilities = data
+    toasterStore.success({ text: "Visibility updated successfully!" })
+  } else {
+    toasterStore.error({
+      text: "An error occurred while updating visibility.",
+    })
+  }
+}
+
+const setVisibility = () => {
+  showVisibility.value = true
+}
 
 const SortOrder = async () => {
   await tasksStore.sortTasksByStatus(sortOrder.value)
@@ -228,19 +295,30 @@ const ClearStatuses = () => {
 <template>
   <div>
     <div class="flex justify-end m-10 mt-16">
-      <BaseBtn>
-        <router-link :to="{ name: 'status' }">
-          <template #default>
-            <button class="itbkk-manage-status ">Manage Status</button>
-          </template>
-        </router-link>
-      </BaseBtn>
+      <div class="mx-2">
+        <BaseBtn>
+          <router-link :to="{ name: 'status' }">
+            <template #default>
+              <button class="itbkk-manage-status">Manage Status</button>
+            </template>
+          </router-link>
+        </BaseBtn>
+      </div>
+      <div class="mx-2">
+        <BaseBtn>
+          <router-link :to="{ name: 'collab' }">
+            <template #default>
+              <button>Manage Collaborator</button>
+            </template>
+          </router-link>
+        </BaseBtn>
+      </div>
     </div>
     <div class="w-full flex justify-center my-3">
       <div
         class="itbkk-board-name font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
       >
-        Board name : {{ nameBoard }}
+        Board name : {{ nameboard }}
       </div>
     </div>
     <div class="w-full flex justify-center my-3">
@@ -256,6 +334,22 @@ const ClearStatuses = () => {
     >
       <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
         <div class="font-bold text-slate-700">Tool Bar :</div>
+        <div>
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <span class="label-text mx-2" >
+                {{ storeVisibility ? "public" : "private" }}
+              </span>
+              <input
+                type="checkbox"
+                class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
+                v-model="storeVisibility"
+                @click="setVisibility()"
+                :checked="checkToggle"
+              />
+            </label>
+          </div>
+        </div>
         <div class="my-2 flex">
           <div
             class="itbkk-button-add btn btn-outline mx-5"
@@ -459,12 +553,14 @@ const ClearStatuses = () => {
           <div class="w-full h-[500px] overflow-auto rounded">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div
-                class="itbkk-item item bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
+                class="itbkk-item bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
               >
                 <div
                   class="cursor-pointer hover:text-violet-600 hover:duration-200 bg-slate"
                 >
-                  <div class="flex hover:shadow-inner hover:bg-slate-50">
+                  <div
+                    class="itbkk-item flex hover:shadow-inner hover:bg-slate-50"
+                  >
                     <div
                       class="w-[10%] px-6 py-4 whitespace-nowrap"
                       @click="fetchDataById(routerId, task.id, 'view')"
@@ -493,7 +589,11 @@ const ClearStatuses = () => {
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
                       >
-                        {{ task?.status.name }}
+                        {{
+                          task?.status?.name
+                            ? task?.status?.name
+                            : task?.status?.statusName
+                        }}
                       </div>
                     </div>
                     <div
@@ -523,6 +623,14 @@ const ClearStatuses = () => {
         </div>
       </div>
     </div>
+    <teleport to="#body">
+      <Boardvisibility
+        v-if="showVisibility"
+        :board="matchedBoards"
+        @newBoard="EditVisibilities"
+        @close="setCloseVisibility"
+      />
+    </teleport>
     <teleport to="#body">
       <TaskModal
         v-if="showDetail"

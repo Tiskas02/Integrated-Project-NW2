@@ -1,0 +1,3 @@
+29-SEP-2024 v1.0 -- initial tc-pbi20-board-visibility
+30-SEP-2024 v1.1 -- comment cy.url().should('contain','/login')
+                 -- in tc-pbi20-board-visibility-2[,3,4,5,6]-fe.cy.js

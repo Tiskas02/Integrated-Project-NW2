@@ -41,6 +41,29 @@ async function getTaskById(routeId, id) {
   }
 }
 
+async function getBoardByBoardId(boardid,collabId){
+  try {
+    const token = getToken()
+    const res = await fetch(`${url}/v3/boards/${boardid}/${collabId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    })
+    if (!res.ok) {
+      alert("The requested task does not exist")
+      history.back()
+      return null
+    }
+    const data = await res.json()
+    console.log(data);
+    
+    return data
+  } catch (error) {
+    console.error("Error fetching data:", error)
+    return null
+  }
+}
+
 async function addTask(newTask, id) {
   try {
     const token = getToken()
@@ -77,7 +100,7 @@ async function deleteItemById(routerId, id) {
   }
 }
 
-async function editTask(routerId, id, editTask) {
+async function editTask(routerId, id,updatedTask) {
   try {
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${routerId}/tasks/${id}`, {
@@ -87,7 +110,7 @@ async function editTask(routerId, id, editTask) {
         Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
-        ...editTask,
+        ...updatedTask,
       }),
     })
     const editedTask = await res.json()
@@ -97,4 +120,4 @@ async function editTask(routerId, id, editTask) {
   }
 }
 
-export { getTaskDataInBoardId, getTaskById, addTask, deleteItemById, editTask }
+export { getTaskDataInBoardId,getBoardByBoardId, getTaskById, addTask, deleteItemById, editTask }

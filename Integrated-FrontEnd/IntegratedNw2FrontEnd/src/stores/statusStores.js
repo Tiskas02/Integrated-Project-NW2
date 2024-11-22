@@ -10,10 +10,10 @@ import {
 
 export const useStoreStatus = defineStore("status", () => {
   const statuses = ref([])
-  async function fetchStatus(id) {
+  async function fetchStatus(id,collabId) {
     try {
       statuses.value = []
-      const statusData = await getStatusData(id)
+      const statusData = await getStatusData(id,collabId)
       statuses.value = statusData ?? []
       return statuses.value
     } catch (error) {
@@ -39,19 +39,26 @@ export const useStoreStatus = defineStore("status", () => {
       const updatedStatus = await editStatus(id, status, routeId)
       const statusIndex = statuses.value.findIndex((status) => status.id === id)
 
-      updatedStatus.name = updatedStatus.statusName
-      delete updatedStatus.statusName
+      // updatedStatus.name = updatedStatus.statusName
+      // delete updatedStatus.statusName
+      // statuses.value[statusIndex] = updatedStatus
 
-      statuses.value[statusIndex] = updatedStatus
+      if (statusIndex !== -1) {
+        // Use Vue's reactivity system to ensure updates are tracked
+        statuses.value[statusIndex] = {
+          ...statuses.value[statusIndex],
+          ...updatedStatus,
+        };
+      }
       return updatedStatus
     } catch (error) {
       throw new Error(error.message)
     }
   }
 
-  async function deleteStatus(id) {
+  async function deleteStatus(boardId,id) {
     try {
-      const res = await deleteOneStatus(id)
+      const res = await deleteOneStatus(boardId,id)
       statuses.value.splice(
         statuses.value.findIndex((status) => status.id === id),
         1
@@ -62,9 +69,9 @@ export const useStoreStatus = defineStore("status", () => {
     }
   }
 
-  async function tranferStatus(oldId, newId) {
+  async function tranferStatus(boardId,oldId, newId) {
     try {
-      const res = await deleteTranferStatus(oldId, newId)
+      const res = await deleteTranferStatus(boardId,oldId, newId)
       statuses.value.splice(
         statuses.value.findIndex((status) => status.id === oldId),
         1

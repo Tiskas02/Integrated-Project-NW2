@@ -38,9 +38,7 @@ onMounted(async () => {
 
 const newTask = ref({
   ...props.task,
-  statusId: props.task.status.statusId
-    ? props.task.status.statusId
-    : defaultStatus.value.statusId,
+  statusId: props.task?.status?.statusId ?? defaultStatus.value.statusId,
 })
 
 const titleCharCount = computed(() =>
@@ -114,16 +112,7 @@ computed(newTask.value, () => {
                     class="itbkk-status select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     v-model="newTask.statusId"
                   >
-                    <!-- Default placeholder showing current status if no option is selected -->
-                    <option
-                      :disabled="true"
-                      :selected="!newTask.statusId"
-                      class="text-b"
-                    >
-                      {{ task?.status.statusName }}
-                    </option>
-
-                    <!-- Dynamic options from allStatus -->
+                    <option disabled :value="null">Select a Status</option>
                     <option
                       v-for="status in allStatus"
                       :key="status.id"
@@ -142,13 +131,13 @@ computed(newTask.value, () => {
                   <textarea
                     class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic"
                     :placeholder="
-                      task?.assignee
+                      task?.assignees
                         ? 'Enter your assign here...'
                         : 'Unassigned'
                     "
                     maxlength="30"
                     v-model="newTask.assignees"
-                    >{{ task?.assignee }}</textarea
+                    >{{ task?.assignees }}</textarea
                   >
                 </div>
                 <div class="flex justify-end text-xs">
@@ -222,7 +211,7 @@ computed(newTask.value, () => {
                         (newTask.description ?? '') ===
                           (task?.description ?? '') &&
                         (newTask.statusId ?? '') ===
-                          (task?.status.statusId ?? '') &&
+                          (task?.status?.statusId ?? '') &&
                         (newTask.title ?? '') === (task?.title ?? ''))
                     "
                   >

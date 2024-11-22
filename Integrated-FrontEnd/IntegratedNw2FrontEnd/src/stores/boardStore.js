@@ -1,9 +1,11 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { getBoardData, addBoard } from "@/libs/api/board/fetchUtilBoard"
+import { getBoardData, addBoard,updateBoardVisibility,getBoardDataByCollabId } from "@/libs/api/board/fetchUtilBoard"
 
 export const useStoreBoard = defineStore("boards", () => {
   const boards = ref([])
+  const nameCollab = ref([])
+
   async function fetchBoards() {
     try {
       const noData = "No data"
@@ -22,6 +24,22 @@ export const useStoreBoard = defineStore("boards", () => {
     }
   }
 
+  async function fetchBoardsByCollabId(boardId,collabId) {
+    try {
+      const noData = "No data"
+      nameCollab.value = []
+      const boardData = await getBoardDataByCollabId(boardId,collabId)
+        nameCollab.value.push(boardData)
+      if (nameCollab.value.length === 0) {
+        return noData
+      } else {
+        return nameCollab.value
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error)
+      }
+    }
+  
   async function createBoard(newBoard) {
     try {
       const addedBoard = await addBoard(newBoard)
@@ -34,19 +52,35 @@ export const useStoreBoard = defineStore("boards", () => {
     }
   }
 
+  async function updateVisibility(id, visibility) {
+    try {
+      
+      const updatedBoard = await updateBoardVisibility(id, visibility)
+      const index = boards.value.findIndex((board) => board.id === id)
+      boards.value[index] = updatedBoard
+      return updatedBoard
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
+  
+
   function matchUserBoard(id) {
-    const matchedBoard = boards.value.find((board) => board.id === id)
+    const matchedBoard = boards.value.find((board) => board.boards.id === id)
     if (matchedBoard) {
-      return matchedBoard.name
+      return matchedBoard
     } else {
       return "Board not found"
     }
   }
+
   
   return {
     boards,
     fetchBoards,
     createBoard,
     matchUserBoard,
+    updateVisibility,
+    fetchBoardsByCollabId
   }
 })

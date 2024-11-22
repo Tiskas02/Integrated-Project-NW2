@@ -2,7 +2,10 @@
 import { shouldDeleteOrTransferStatus } from "@/libs/api/status/fetchUtilStatus"
 import { defineProps, defineEmits, ref, watch, onMounted } from "vue"
 import { useStoreStatus } from "@/stores/statusStores"
+import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia"
+const route = useRoute();
+const routerId = ref(route.params.id);
 const statusStore = useStoreStatus()
 const { statuses } = storeToRefs(statusStore)
 const emit = defineEmits(["close", "sentDelete", "sentTranfer"])
@@ -16,13 +19,27 @@ const props = defineProps({
     },
   },
 })
-
+const parseJwt = (token) => {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
+};
+const receiveToken = localStorage.getItem("token");
+const token = parseJwt(receiveToken);
 const oldId = ref(props.status.id)
 const newId = ref(null)
 const shouldDeleteOrTransfer = ref(false)
 
 onMounted(async () => {
-  const deleted = await shouldDeleteOrTransferStatus(props.status.id)
+  const deleted = await shouldDeleteOrTransferStatus(props.status.id,routerId.value)
   if (deleted === true) {
     shouldDeleteOrTransfer.value = true
   } else {
@@ -45,7 +62,7 @@ onMounted(async () => {
           </div>
           <div class="border-b my-3"></div>
           <div class="break-all itbkk-message">
-            Do you want to delete the Status name "{{ status.name }}" ?
+            'Do you want to delete the {{ status.name }} status'
           </div>
           <div v-if="shouldDeleteOrTransfer">
             <div class="flex justify-start items-center">

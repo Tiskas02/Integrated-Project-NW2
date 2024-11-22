@@ -7,6 +7,7 @@ import TaskAddEdit from "@/components/TaskAddEdit.vue"
 import StatusAddEdit from "@/components/StatusAddEdit.vue"
 import Login from "@/components/Login.vue"
 import BoardHome from "@/views/BoardHome.vue"
+import CollaberaterTable from "@/components/CollaberaterTable.vue"
 const url = import.meta.env.VITE_BASE_URL
 
 function parseJwt(token) {
@@ -126,6 +127,32 @@ const routes = [
     ],
   },
   {
+    path: "/board/:id/collab",
+    name: "collab",
+    component: TaskHome,
+    meta: { requiresAuth: true },
+    // children: [
+    //   {
+    //     path: ":statusid",
+    //     name: "statusDetail",
+    //     component: StatusTable,
+    //     meta: { requiresAuth: true },
+    //   },
+    //   {
+    //     path: "add",
+    //     name: "addStatus",
+    //     component: StatusAddEdit,
+    //     meta: { requiresAuth: true },
+    //   },
+    //   {
+    //     path: ":editid/edit",
+    //     name: "editStatus",
+    //     component: StatusAddEdit,
+    //     meta: { requiresAuth: true },
+    //   },
+    // ],
+  },
+  {
     path: "/:notfoundpath(.*)",
     name: "NotFound",
     component: NotFound,
@@ -147,7 +174,6 @@ router.beforeEach(async (to, from, next) => {
   if (token) {
     const jwtPayload = parseJwt(token)
     const jwtPayloadRefresh = parseJwt(refreshToken)
-
     if (jwtPayload && jwtPayload.exp >= Date.now() / 1000) {
       isAuthenticated = true
     } else if (

@@ -45,7 +45,7 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
 
@@ -94,8 +94,8 @@ public class JwtUtil {
 
     private String createRefreshToken(Map<String, Object> claims, String subject, long tokenValidity) {
         return Jwts.builder()
-                .setHeaderParam("typ", "JWT").
-                setClaims(claims)
+                .setHeaderParam("typ", "JWT")
+                .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValidity))
