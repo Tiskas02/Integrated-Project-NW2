@@ -8,6 +8,8 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Collab
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
 import com.example.integratedbackend.Service.ServiceV3.BoardService;
 import com.example.integratedbackend.Service.ServiceV3.CollabService;
+import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
+import com.example.integratedbackend.Service.ServiceV3.TaskServiceV3;
 import com.example.integratedbackend.Service.UserService;
 import com.example.integratedbackend.Users.User;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,6 +42,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private BoardService boardService;
     @Autowired
     private CollabService collabService;
+    @Autowired
+    private TaskServiceV3 taskServiceV3;
+    @Autowired
+    private StatusServiceV3 statusServiceV3;
     @Autowired
     private CollabRepositoriesV3 collabRepositoriesV3;
 
@@ -134,54 +140,87 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void handleRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
-        String jwt = null;
-        jwt = authHeader.substring(7);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Missing or invalid Authorization header");
+        }
+        String jwt = authHeader.substring(7);
 
         String requestMethod = request.getMethod();
         String currentUser = (String) jwtUtil.extractAllClaims(jwt).get("oid");
         String boardId = extractBoardIdFromURI(request.getRequestURI());
 
         if (boardId == null) {
-            return;
+            return; // Allow requests without a boardId in the URI
         }
 
-        boolean isBoardExist = boardService.boardExists(boardId);
-        if (!isBoardExist && !requestMethod.equals("GET")) {
-            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board Not Found");
+        if (!boardService.boardExists(boardId)) {
+            if (!requestMethod.equals("GET")) {
+                throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board Not Found");
+            }
+            return; // Public boards can be accessed without further checks
         }
 
         boolean isPublic = boardService.isBoardPublic(boardId);
+        boolean isOwner = currentUser != null && boardService.isBoardOwner(boardId, currentUser);
+        boolean isCollaborator = currentUser != null && collabService.isCollaborator(boardId, currentUser);
 
-        if (currentUser != null) {
-            boolean isOwner = boardService.isBoardOwner(boardId, currentUser);
-            boolean isCollaborator = collabService.isCollaborator(boardId, currentUser);
+        // Owner has full access
+        if (isOwner) {
+            return;
+        }
 
-            if (isOwner) {
+        // Collaborators logic
+        if (isCollaborator) {
+            AccessRight accessRight = collabService.getCollab(boardId, currentUser).getAccessRight();
+
+            // Allow READ access for GET requests
+            if (accessRight == AccessRight.READ && requestMethod.equals("GET") || requestMethod.equals("DELETE")) {
                 return;
             }
 
-            if (isCollaborator) {
-                Collab collab = collabService.getCollab(boardId, currentUser);
-
-                AccessRight accessRight = collab.getAccessRight();
-                if (accessRight == null) {
-                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Access Right is null for collaborator");
+            // WRITE access logic
+            if (accessRight == AccessRight.WRITE) {
+                if (requestMethod.equals("PATCH")) {
+                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
                 }
-
-                if (accessRight.equals(AccessRight.READ) && requestMethod.equals("GET")) {
+                if (isAllowedForWriteAccess(requestMethod, request.getRequestURI())) {
                     return;
                 }
+                throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
+            }
 
-                if (accessRight.equals(AccessRight.READ) && !requestMethod.equals("GET") && !requestMethod.equals("DELETE")) {
-                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN");
-                }
+            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Collaborator does not have sufficient permissions");
+        }
+
+        // Non-collaborators
+        if (!isPublic || !requestMethod.equals("GET")) {
+            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN");
+        }
+//        if (request.getRequestURI().contains("/tasks/") && !taskServiceV3.isTaskAvailable(Integer.parseInt(request.getRequestURI().split("/")[5]), boardId)) {
+//            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Task not found");
+//        }
+//        if (request.getRequestURI().contains("/statuses/") && !request.getRequestURI().contains("/maximum-task") && !statusServiceV3.isStatusAvailable(Integer.parseInt(request.getRequestURI().split("/")[5]), boardId)) {
+//            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Status not found");
+//        }
+    }
+
+    private boolean isAllowedForWriteAccess(String method, String uri) {
+        // Define endpoints allowed for WRITE access
+        String[] allowedWriteEndpoints = {
+                "", "/statuses", "/tasks", "/collabs"
+        };
+
+        for (String endpoint : allowedWriteEndpoints) {
+            if (uri.contains(endpoint)) {
+                return true;
             }
         }
 
-        if (!isPublic || !requestMethod.equals("GET")) {
-            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN here");
-        }
+        // Additional logic for specific methods
+        return method.equals("POST") || method.equals("PUT") || method.equals("DELETE");
     }
+
+
 
 
     private void sendErrorResponse(HttpServletResponse response, int status, String message, String path) throws IOException {

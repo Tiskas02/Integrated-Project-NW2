@@ -1,5 +1,6 @@
 package com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories;
 
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.AccessRight;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Collab;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.CollabId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,15 +23,13 @@ public interface CollabRepositoriesV3 extends JpaRepository<Collab, CollabId> {
     @Query("DELETE FROM Collab c WHERE c.boardId = :boardId AND c.userId = :userId")
     void deleteCollabByBoardIdAndUserId(@Param("boardId") String boardId, @Param("userId") String userId);
 
-
-    Collab getByBoardIdAndUserId(String boardId, String userId);
-
     List<Collab> findByUserId(String userId);
 
     List<Collab> findCollabByUserId(String userId);
 
     boolean existsByBoardIdAndUserId(String boardId, String userId);
 
-    boolean existsCollabByUserId(String userId);
+    boolean existsByBoardIdAndUserIdAndAccessRight(String boardId, String userId, AccessRight accessRight);
+
 
 }

@@ -910,16 +910,18 @@ public class BoardControllerV3 {
         Boards boardInfo = boardService.getBoardByBoardId(boardId);
         String boardOwnerName = boardInfo.getUsers().getUsername();
 
+        // Allow owner to delete any collaborator
         if (usernameFromToken.equals(boardOwnerName)) {
             return ResponseEntity.ok(collabService.deleteCollaborator(boardId, collabId));
         }
-        if (userId == collabId) {
+
+        // Allow collaborator to delete themselves
+        if (userId.equals(collabId)) {
             return ResponseEntity.ok(collabService.deleteCollaborator(boardId, collabId));
         }
-        if (!userId.equals(boardInfo.getUsers().getOid()) || !boardInfo.getUsers().getOid().equals(collabId)) {
-            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "Access Right not allowed");
-        }
 
-        return ResponseEntity.ok(collabService.deleteCollaborator(boardId, userId));
+        // Deny all other requests
+        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "Access Right not allowed");
     }
+
 }

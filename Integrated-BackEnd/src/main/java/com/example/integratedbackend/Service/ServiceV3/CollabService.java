@@ -189,8 +189,8 @@ public class CollabService {
         Boards boards = boardsRepositoriesV3.findById(boardId)
                 .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
 
-        if (collabRequestDTO.getAccessRight() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access right is required");
+        if (collabRequestDTO.getAccessRight() == null || collabRequestDTO.getEmail() == null) {
+            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Access right is required");
         }
 
         User user = userService.getUserByEmail(collabRequestDTO.getEmail());
@@ -257,10 +257,12 @@ public class CollabService {
         return collab;
     }
 
-
-
     public boolean isCollaborator(String boardId, String userId) {
         Optional<Collab> collab = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId);
         return collab.isPresent();
+    }
+
+    public boolean isWriteAccess(String boardId, String userId) {
+        return collabRepositoriesV3.existsByBoardIdAndUserIdAndAccessRight(boardId, userId, AccessRight.WRITE);
     }
 }
