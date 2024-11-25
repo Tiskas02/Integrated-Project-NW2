@@ -386,7 +386,7 @@ public class BoardControllerV3 {
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
         if (accessRight == AccessRight.READ) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "YOU DON'T HAVE PERMISSION");
         }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
@@ -675,7 +675,7 @@ public class BoardControllerV3 {
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
         if (accessRight == AccessRight.READ) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "YOU DON'T HAVE PERMISSION");
         }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
