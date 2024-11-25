@@ -184,6 +184,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
                 }
                 if (isAllowedForWriteAccess(requestMethod, request.getRequestURI())) {
+                    validateTaskAndStatusExistence(request);
                     return;
                 }
                 throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
@@ -196,13 +197,49 @@ public class JwtFilter extends OncePerRequestFilter {
         if (!isPublic || !requestMethod.equals("GET")) {
             throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN");
         }
-//        if (request.getRequestURI().contains("/tasks/") && !taskServiceV3.isTaskAvailable(Integer.parseInt(request.getRequestURI().split("/")[5]), boardId)) {
-//            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Task not found");
-//        }
-//        if (request.getRequestURI().contains("/statuses/") && !request.getRequestURI().contains("/maximum-task") && !statusServiceV3.isStatusAvailable(Integer.parseInt(request.getRequestURI().split("/")[5]), boardId)) {
-//            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Status not found");
-//        }
     }
+
+    /**
+     * Validates if the task or status exists for specific PUT endpoints.
+     */
+    private void validateTaskAndStatusExistence(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String boardId = extractBoardIdFromURI(uri);
+
+        if (uri.matches(".*/tasks/\\d+$") && request.getMethod().equals("PUT")) {
+            // Validate Task
+            Integer taskId = extractIdFromURI(uri, "/tasks/");
+            if (taskId == null || !taskServiceV3.isTaskAvailable(taskId, boardId)) {
+                throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Task not found");
+            }
+        }
+
+        if (uri.matches(".*/statuses/\\d+$") && request.getMethod().equals("PUT")) {
+            // Validate Status
+            Integer statusId = extractIdFromURI(uri, "/statuses/");
+            if (statusId == null || !statusServiceV3.isStatusAvailable(statusId, boardId)) {
+                throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Status not found");
+            }
+        }
+    }
+
+    /**
+     * Extracts an ID from the URI based on the given segment.
+     */
+    private Integer extractIdFromURI(String uri, String segment) {
+        try {
+            // Split the URI at the segment to isolate the ID part
+            String[] parts = uri.split(segment);
+            if (parts.length > 1) {
+                String idPart = parts[1].split("/")[0];
+                return Integer.parseInt(idPart);
+            }
+        } catch (NumberFormatException e) {
+            throw new ItemNotFoundException(HttpStatus.BAD_REQUEST, "Invalid ID format in URI");
+        }
+        return null;
+    }
+
 
     private boolean isAllowedForWriteAccess(String method, String uri) {
         // Define endpoints allowed for WRITE access
