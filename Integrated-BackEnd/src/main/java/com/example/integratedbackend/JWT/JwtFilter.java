@@ -1,6 +1,7 @@
 package com.example.integratedbackend.JWT;
 
 import com.example.integratedbackend.DTO.DTOV3.CollabDTO;
+import com.example.integratedbackend.ErrorHandle.AccessRightNotAllow;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.NonCollaboratorException;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.AccessRight;
@@ -117,7 +118,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 } catch (ResponseStatusException e) {
                     sendErrorResponse(response, e.getStatusCode().value(), e.getMessage(), request.getRequestURI());
                     return;
-                } catch (Exception e) {
+                }  catch (Exception e) {
                     sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error during JWT processing", request.getRequestURI());
                     return;
                 }
@@ -150,37 +151,36 @@ public class JwtFilter extends OncePerRequestFilter {
         String boardId = extractBoardIdFromURI(request.getRequestURI());
 
         if (boardId == null) {
-            return; // Allow requests without a boardId in the URI
+            return;
         }
 
         if (!boardService.boardExists(boardId)) {
             if (!requestMethod.equals("GET")) {
                 throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board Not Found");
             }
-            return; // Public boards can be accessed without further checks
+            return;
         }
 
         boolean isPublic = boardService.isBoardPublic(boardId);
         boolean isOwner = currentUser != null && boardService.isBoardOwner(boardId, currentUser);
         boolean isCollaborator = currentUser != null && collabService.isCollaborator(boardId, currentUser);
 
-        // Owner has full access
         if (isOwner) {
             return;
         }
 
-        // Collaborators logic
         if (isCollaborator) {
             AccessRight accessRight = collabService.getCollab(boardId, currentUser).getAccessRight();
 
-            // Allow READ access for GET requests
             if (accessRight == AccessRight.READ && requestMethod.equals("GET") || requestMethod.equals("DELETE")) {
                 return;
             }
 
-            // WRITE access logic
             if (accessRight == AccessRight.WRITE) {
                 if (requestMethod.equals("PATCH")) {
+                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
+                }
+                if (requestMethod.equals("POST") && request.getRequestURI().contains("/collabs")) {
                     throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
                 }
                 if (isAllowedForWriteAccess(requestMethod, request.getRequestURI())) {
@@ -193,21 +193,16 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Collaborator does not have sufficient permissions");
         }
 
-        // Non-collaborators
         if (!isPublic || !requestMethod.equals("GET")) {
             throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN");
         }
     }
 
-    /**
-     * Validates if the task or status exists for specific PUT endpoints.
-     */
     private void validateTaskAndStatusExistence(HttpServletRequest request) {
         String uri = request.getRequestURI();
         String boardId = extractBoardIdFromURI(uri);
 
         if (uri.matches(".*/tasks/\\d+$") && request.getMethod().equals("PUT")) {
-            // Validate Task
             Integer taskId = extractIdFromURI(uri, "/tasks/");
             if (taskId == null || !taskServiceV3.isTaskAvailable(taskId, boardId)) {
                 throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Task not found");
@@ -215,7 +210,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (uri.matches(".*/statuses/\\d+$") && request.getMethod().equals("PUT")) {
-            // Validate Status
             Integer statusId = extractIdFromURI(uri, "/statuses/");
             if (statusId == null || !statusServiceV3.isStatusAvailable(statusId, boardId)) {
                 throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Status not found");
@@ -223,12 +217,8 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    /**
-     * Extracts an ID from the URI based on the given segment.
-     */
     private Integer extractIdFromURI(String uri, String segment) {
         try {
-            // Split the URI at the segment to isolate the ID part
             String[] parts = uri.split(segment);
             if (parts.length > 1) {
                 String idPart = parts[1].split("/")[0];
@@ -242,7 +232,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     private boolean isAllowedForWriteAccess(String method, String uri) {
-        // Define endpoints allowed for WRITE access
         String[] allowedWriteEndpoints = {
                 "", "/statuses", "/tasks", "/collabs"
         };
@@ -252,8 +241,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 return true;
             }
         }
-
-        // Additional logic for specific methods
         return method.equals("POST") || method.equals("PUT") || method.equals("DELETE");
     }
 

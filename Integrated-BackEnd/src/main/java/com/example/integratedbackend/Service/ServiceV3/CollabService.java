@@ -190,7 +190,7 @@ public class CollabService {
                 .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
 
         if (collabRequestDTO.getAccessRight() == null || collabRequestDTO.getEmail() == null) {
-            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Access right is required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access right is required");
         }
 
         User user = userService.getUserByEmail(collabRequestDTO.getEmail());
