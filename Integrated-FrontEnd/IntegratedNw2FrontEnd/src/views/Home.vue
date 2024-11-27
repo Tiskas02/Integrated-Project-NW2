@@ -24,11 +24,11 @@ watch(
 </script>
 <template>
   <div>
-    <NavBar/>
+    <NavBar class=""/>
     <div class="w-full h-screen flex justify-center items-center">
-      <div class="w-[95%] h-[90%]">
+      <div class="w-[100%] h-screen tablet:w-[85%] ">
         <div class="w-full h-full ">
-          <div class="w-[100%] h-full flex-col flex justify-center">
+          <div class="w-[100%] h-full tablet:my-12 my-4">
             <div v-if="usePath === 'status'" class="w-full">
               <StatusTable />
             </div>

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import NotFound from "../views/NotFound.vue"
-import TaskHome from "@/views/TaskHome.vue"
+import TaskHome from "@/views/Home.vue"
 import TaskModal from "@/components/TaskModal.vue"
 import StatusTable from "@/components/StatusTable.vue"
 import TaskAddEdit from "@/components/TaskAddEdit.vue"

@@ -41,7 +41,7 @@ onMounted(async () => {
   storeModeNavBar.value = "board";
   const data = await boardStore.fetchBoards();
   const dataCollab = collabStore.addCollabDataInBoard(data[0].collabIn);
-  console.log(dataCollab);
+  console.log(data);
   // const collab = await collabStore.fetchCollabs(token.oid)
   if (boardStore.boards.length > 0 || data) {
     dataLoaded.value = true;
@@ -83,11 +83,23 @@ const addBoard = async (newBoard) => {
 const navigateToBoardTasks = (paramId) => {
   router.push({ name: "Task", params: { id: paramId } });
 };
+function formatDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "UTC",
+  });
+}
 </script>
 
 <template>
   <NavBar :mode="storeModeNavBar" />
-  <div class=" laptop:mx-24">
+  <div class="laptop:mx-24">
     <LoadingScreen v-if="!dataLoaded" />
     <div class="flex m-4">
       <div class="justify-start">
@@ -137,7 +149,7 @@ const navigateToBoardTasks = (paramId) => {
         <!-- Dropdown menu -->
         <div
           v-if="isDropdownOpen"
-          class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="origin-top-right absolute right-0 laptop:right-[110px] mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
@@ -174,8 +186,8 @@ const navigateToBoardTasks = (paramId) => {
     <div v-if="storeBoardType === 'Personal'">
       <div>
         <div
-          v-if="boardStore.length <= 0"
-          class="w-full border bg-white h-[60lvh] rounded-b-box"
+          v-if="boards.length <= 0"
+          class="w-full h-[60lvh] "
         >
           <div class="flex justify-center items-center h-full">
             <p class="text-xl font-bold animate-bounce text-slate-500">
@@ -191,26 +203,35 @@ const navigateToBoardTasks = (paramId) => {
             @click="navigateToBoardTasks(board.boards.id)"
           >
             <div
-              class="btn border-0 w-44 h-40 bg-slate-200 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
+              class="btn border-0 w-[380px] h-60 laptop:w-[350px] rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
+              style="
+                background-image: url('/images/Background.jpg');
+                background-size: cover;
+                background-position: center;
+              "
             >
-              <!-- Title -->
               <div>
-                <h1 class="text-lg font-bold text-gray-900 text-left">
-                  {{ index + 1 }} : {{ board.boards.name }}
+                <h1 class="text-3xl font-bold text-gray-900 text-left">
+                  {{ board.boards.name }}
                 </h1>
-                <p class="text-sm font-medium text-gray-700">
-                  Visibility : {{ board.boards.visibility }}
+                <p class="text-sm font-medium text-gray-700 text-left">
+                  Board Visibility : {{ board.boards.visibility }}
+                </p>
+                <p class="text-sm font-medium text-gray-700 text-left">
+                  Created : {{ formatDate(board.boards.createdOn) }}
                 </p>
               </div>
-              <!-- Button -->
-              <!-- <button
-                class="btn border-0 bg-gradient-to-r from-green-400 to-green-200 text-gray-900 text-sm font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
-              >
-                
-              </button> -->
-              <div class="flex space-x-2 ">
-                <button class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white">Edit</button>
-                <button class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white">Delete</button>
+              <div class="flex space-x-2 w-full">
+                <button
+                  class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white"
+                >
+                  Edit
+                </button>
+                <button
+                  class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>
@@ -220,23 +241,29 @@ const navigateToBoardTasks = (paramId) => {
     <div v-else>
       <div>
         <div
-          v-if="boardStore.length <= 0"
-          class="w-full border bg-white h-[60lvh] rounded-b-box"
+          v-if="collabs.length <= 0"
+          class="w-full h-[60lvh] "
         >
           <div class="flex justify-center items-center h-full">
             <p class="text-xl font-bold animate-bounce text-slate-500">
-              Board is empty
+              Collaberator Board is empty
             </p>
           </div>
         </div>
         <div class="flex flex-row flex-wrap justify-start mx-2">
           <div
-            v-for="(collab, index) in collabs" :key="collabs.boardId"
+            v-for="(collab, index) in collabs"
+            :key="collabs.boardId"
             class="m-2"
             @click="navigateToBoardTasks(collab.boardId)"
           >
             <div
-              class="btn border-0 w-44 h-[13rem] bg-slate-200 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
+              class="btn border-0 w-[380px] h-60 laptop:w-[350px] rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
+              style="
+                background-image: url('/images/Collab.jpg');
+                background-size: cover;
+                background-position: center;
+              "
             >
               <!-- Title -->
               <div>
@@ -244,10 +271,10 @@ const navigateToBoardTasks = (paramId) => {
                   {{ index + 1 }} : {{ collab.name }}
                 </h1>
                 <p class="text-sm font-medium text-gray-700 text-left">
-                  Owner Board : <br/>{{ collab.ownerName }}
+                  Owner Board : {{ collab.ownerName }}
                 </p>
                 <p class="text-sm font-medium text-gray-700 text-left">
-                  Access Right : <br/>{{ collab.accessRight }}
+                  Access Right : {{ collab.accessRight }}
                 </p>
               </div>
               <!-- Button -->
@@ -257,7 +284,11 @@ const navigateToBoardTasks = (paramId) => {
                 
               </button> -->
               <div class="flex space-x-2 justify-end w-full">
-                <button class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white">Leave</button>
+                <button
+                  class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
+                >
+                  Leave
+                </button>
               </div>
             </div>
           </div>

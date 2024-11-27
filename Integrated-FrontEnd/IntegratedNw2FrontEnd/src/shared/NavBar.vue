@@ -1,7 +1,10 @@
 <script setup>
 import { ref, defineProps, watchEffect } from "vue";
-import {  useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
+const route = useRoute();
+
+const boardId = route.params.id ? route.params.id : 1;
 const props = defineProps({
   mode: String,
 });
@@ -45,66 +48,69 @@ const logout = () => {
   >
     <!-- Top Navigation Menu -->
     <div
-      class="topnav relative laptop:mx-24 h-[60px] flex flex-col tablet:flex-row items-start tablet:items-center justify-between"
+      class="topnav relative laptop:mx-24 h-[65px] flex flex-col tablet:flex-row items-start tablet:items-center justify-between"
     >
       <!-- Logo -->
       <router-link :to="{ name: 'board' }" class="p-0">
-      <div class="flex flex-row">
-        
-        <img
-          src="/icon.png"
-          alt="icon"
-          class="w-[15%] tablet:w-[10%] m-2 hover:animate-pulse"
-        />
-        <div
-          class="flex items-center justify-start font-bold text-md text-slate-500 mx-1"
-        >
-          IT-Bangmod Kradan Kanban
+        <div class="flex flex-row">
+          <img
+            src="/icon.png"
+            alt="icon"
+            class="w-[15%] tablet:w-[10%] m-2 hover:animate-pulse"
+          />
+          <div
+            class="flex items-center justify-start font-bold text-md text-slate-500 mx-1"
+          >
+            IT-Bangmod Kradan Kanban
+          </div>
         </div>
-     
-      </div>
-    </router-link>
+      </router-link>
+      <!-- Hamburger Menu (visible only on mobile) -->
       <!-- Hamburger Menu (visible only on mobile) -->
       <div
         id="myLinks"
         :class="{ absolute: isMenuOpen, hidden: !isMenuOpen }"
         class="transition-all animate-fade-down animate-once animate-ease-in-out animate-duration-[600ms] animate-fill-both w-full bg-[#81B2D6] tablet:hidden flex flex-col mt-[60px] space-y-2 rounded-b-2xl shadow-md"
       >
+        <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
+        <template v-if="mode !== 'board'">
+          <router-link
+            :to="{ name: 'Task', params: { id: boardId } }"
+            class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center text-lg text-white"
+            @click="isMenuOpen = false"
+          >
+            Task
+          </router-link>
+          <router-link
+            :to="{ name: 'status', params: { id: boardId } }"
+            class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center text-lg"
+            @click="isMenuOpen = false"
+          >
+            Status
+          </router-link>
+          <router-link
+            :to="{ name: 'collab', params: { id: boardId } }"
+            class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center text-lg"
+            @click="isMenuOpen = false"
+          >
+            Collaborator
+          </router-link>
+        </template>
         <RouterLink
-          v-if="mode === 'board'"
           to="/board"
-          class="block py-4 hover:bg-gray-600 font-semibold border-b-[1px] text-center"
+          class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center"
+          @click="isMenuOpen = false"
         >
           {{ userPayload.name }}
         </RouterLink>
-
-        <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
-        <template v-else>
-          <RouterLink
-            to="/board/:id/task"
-            class="block py-2 hover:bg-gray-600 font-semibold border-b-[1px] text-center text-lg"
-          >
-            Task
-          </RouterLink>
-          <RouterLink
-            to="/board/:id/status"
-            class="block py-2 hover:bg-gray-600 font-semibold border-b-[1px] text-center text-lg"
-          >
-            Status
-          </RouterLink>
-          <RouterLink
-            to="/board/:id/collab"
-            class="block py-2 hover:bg-gray-600 font-semibold border-b-[1px] text-center text-lg"
-          >
-            Collaborator
-          </RouterLink>
-        </template>
-
         <!-- Always show the Logout link -->
         <RouterLink
           to="/login"
-          class="block py-2 hover:bg-gray-600 font-semibold text-center text-lg pb-4"
-          @click="logout"
+          class="block py-2 hover:bg-sky-800 font-medium text-center text-lg pb-4"
+          @click="
+            logout;
+            isMenuOpen = false;
+          "
         >
           Logout
         </RouterLink>
@@ -145,24 +151,27 @@ const logout = () => {
       <div class="hidden tablet:flex space-x-4 items-center">
         <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
         <div v-if="mode !== 'board'" class="flex flex-row space-x-8">
-          <RouterLink
-            to="/board/:id/task"
-            class="block py-2 hover:bg-gray-600 font-semibold  text-center  text-slate-500"
+          <router-link
+            :to="{ name: 'Task', params: { id: boardId } }"
+            class="block py-2 hover:text-blue-700 font-semibold text-center text-slate-500 tooltip tooltip-bottom"
+            data-tip="Manage your tasks"
           >
             Task
-          </RouterLink>
-          <RouterLink
-            to="/board/:id/status"
-            class="block py-2 hover:bg-gray-600 font-semibold  text-center text-slate-500"
+          </router-link>
+          <router-link
+            :to="{ name: 'status', params: { id: boardId } }"
+            class="block py-2 hover:text-blue-700 font-semibold text-center text-slate-500 tooltip tooltip-bottom"
+            data-tip="Manage your status"
           >
             Status
-          </RouterLink>
-          <RouterLink
-            to="/board/:id/collab"
-            class="block py-2 hover:bg-gray-600 font-semibold  text-center text-slate-500"
+          </router-link>
+          <router-link
+            :to="{ name: 'collab', params: { id: boardId } }"
+            class="block py-2 hover:text-blue-700 font-semibold text-center text-slate-500 tooltip tooltip-bottom"
+            data-tip="Manage your Collaborator"
           >
             Collaborator
-          </RouterLink>
+          </router-link>
         </div>
 
         <!-- Profile and Logout -->

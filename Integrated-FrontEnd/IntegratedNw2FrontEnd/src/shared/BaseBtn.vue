@@ -8,7 +8,7 @@
     >
       <slot name="default"> Save </slot>
     </botton>
-    <botton v-if="$slots.cancel" class="btn btn-error text-white shadow-md">
+    <botton v-if="$slots.cancel" class="btn bg-gradient-to-r from-red-700 to-red-400 text-white shadow-md border-none">
       <slot name="cancel"> Cancle </slot>
     </botton>
     <botton v-if="$slots.save" class="btn btn-accent text-white shadow-md">
