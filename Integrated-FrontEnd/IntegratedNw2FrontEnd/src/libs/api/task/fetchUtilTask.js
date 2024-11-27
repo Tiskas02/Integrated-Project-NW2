@@ -34,7 +34,6 @@ async function getTaskById(routeId, id) {
       return null
     }
     const data = await res.json()
-    console.log(data);
     return data
   } catch (error) {
     console.error("Error fetching data:", error)
@@ -101,7 +100,7 @@ async function deleteItemById(routerId, id) {
   }
 }
 
-async function editTask(routerId, id, editTask) {
+async function editTask(routerId, id,updatedTask) {
   try {
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${routerId}/tasks/${id}`, {
@@ -111,7 +110,7 @@ async function editTask(routerId, id, editTask) {
         Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
-        ...editTask,
+        ...updatedTask,
       }),
     })
     const editedTask = await res.json()

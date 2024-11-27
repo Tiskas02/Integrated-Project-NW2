@@ -34,6 +34,7 @@ const parseJwt = (token) => {
 };
 const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
+
 onMounted(async () => {
   await boardStore.fetchBoards(token.oid);
   await statusStore.fetchStatus(routeId.value, token.oid);
@@ -47,6 +48,7 @@ const addOrEditStatus = async (newStatus) => {
     const description = newStatus.description
       ? newStatus.description.trim()
       : newStatus.description;
+
     if (newStatus.id === undefined) {
       const check = await statusStore.createStatus(
         {
@@ -57,6 +59,7 @@ const addOrEditStatus = async (newStatus) => {
       );
       if (check.id !== undefined) {
         toasterStore.success({ text: "Status added successfully!" });
+        await statusStore.fetchStatus(routeId.value, token.oid);
       } else if (check.errors[0].message) {
         toasterStore.error({
           text: `Status Name ${check.errors[0].message} `,

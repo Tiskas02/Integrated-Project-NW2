@@ -66,23 +66,18 @@ onMounted(async () => {
     const nameCollab = await boardStore.fetchBoardsByCollabId(
       routerId.value,
       token.oid
-    );
-    matchedBoards.value = nameCollab;
-    console.log(matchedBoards.value);
-    nameboard.value = matchedBoards.value[0].name;
+    )
+    matchedBoards.value = nameCollab
+    nameboard.value = matchedBoards.value[0].name
   }
-  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC";
-  console.log(storeVisibility.value);
-
-  storeTasks.value = data;
-  console.log(storeVisibility.value);
-});
+  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC"
+  storeTasks.value = data
+})
 
 watch(
   () => storeVisibility.value,
   (newVisibility) => {
-    checkToggle.value = newVisibility === "PUBLIC";
-    console.log(checkToggle.value);
+    checkToggle.value = newVisibility === "PUBLIC"
   },
   { immediate: true }
 );
@@ -99,10 +94,9 @@ onMounted(async () => {
 });
 
 const fetchDataById = async (routerId, id, mode) => {
-  storeMode.value = mode;
-  storeTask.value = await getTaskById(routerId, id, token.oid);
-  console.log(storeTask.value);
-  statusStore.value = await getStatusData(routerId, token.oid);
+  storeMode.value = mode
+  storeTask.value = await getTaskById(routerId, id, token.oid)
+  statusStore.value = await getStatusData(routerId, token.oid)
   if (storeMode.value === "add") {
     showDetail.value = true;
     router.push({ name: "addTask" });
@@ -253,17 +247,16 @@ const EditVisibilities = async (value) => {
   );
 
   if (data.visibility === value.visibilities) {
-    console.log(data.visibility);
-    storeVisibility.value = data.visibility === "PUBLIC" ? true : false;
-    console.log(storeVisibility.value);
-    matchedBoards.value.visibilities = data;
-    toasterStore.success({ text: "Visibility updated successfully!" });
+    storeVisibility.value = data.visibility === "PUBLIC" ? true : false
+    matchedBoards.value.visibilities = data
+    toasterStore.success({ text: "Visibility updated successfully!" })
   } else {
     toasterStore.error({
       text: "An error occurred while updating visibility.",
     });
   }
-};
+}
+
 const setVisibility = () => {
   showVisibility.value = true;
 };

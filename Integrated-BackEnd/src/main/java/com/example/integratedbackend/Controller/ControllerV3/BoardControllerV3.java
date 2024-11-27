@@ -873,17 +873,17 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @DeleteMapping("/{boardId}/collab/{callabId}")
+    @DeleteMapping("/{boardId}/collab/{collabId}")
     public ResponseEntity<Collab> deleteCollab(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId,
-            @PathVariable String callabId) {
+            @PathVariable String collabId) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
 
             if (username != null) {
-                Collab collab = collabService.deleteCollaborator(boardId, callabId);
+                Collab collab = collabService.deleteCollaborator(boardId, collabId);
                 return ResponseEntity.ok(collab);
             }
         }

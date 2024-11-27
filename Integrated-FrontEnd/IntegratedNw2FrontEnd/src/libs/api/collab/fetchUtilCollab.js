@@ -67,10 +67,10 @@ async function addCollabData(newCollab, routeId) {
     return null
   }
 }
-async function deleteCollabUtil(callabId, routeId) {
+async function deleteCollabUtil(collabId, routeId) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${routeId}/collab/${callabId}`, {
+    const res = await fetch(`${url}/v3/boards/${routeId}/collab/${collabId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
