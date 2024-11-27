@@ -36,6 +36,7 @@ export const useStoreStatus = defineStore("status", () => {
 
   async function updateStatus(id, status, routeId) {
     try {
+      console.log(status);
       const updatedStatus = await editStatus(id, status, routeId)
       const statusIndex = statuses.value.findIndex((status) => status.id === id)
 
@@ -44,11 +45,10 @@ export const useStoreStatus = defineStore("status", () => {
       // statuses.value[statusIndex] = updatedStatus
 
       if (statusIndex !== -1) {
-        // Use Vue's reactivity system to ensure updates are tracked
-        statuses.value[statusIndex] = {
-          ...statuses.value[statusIndex],
-          ...updatedStatus,
-        };
+        statuses.value[statusIndex].id = id
+        statuses.value[statusIndex].name = status.name
+        statuses.value[statusIndex].description = status.description
+        
       }
       return updatedStatus
     } catch (error) {

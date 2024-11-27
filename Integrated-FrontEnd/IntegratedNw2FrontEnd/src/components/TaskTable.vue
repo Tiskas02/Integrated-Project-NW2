@@ -380,26 +380,6 @@ const clearStatuses = () => {
   </div>
 
   <div>
-    <div class="flex justify-end m-10 mt-16">
-      <div class="mx-2">
-        <BaseBtn>
-          <router-link :to="{ name: 'status' }">
-            <template #default>
-              <button class="itbkk-manage-status">Manage Status</button>
-            </template>
-          </router-link>
-        </BaseBtn>
-      </div>
-      <div class="mx-2">
-        <BaseBtn>
-          <router-link :to="{ name: 'collab' }">
-            <template #default>
-              <button>Manage Collaborator</button>
-            </template>
-          </router-link>
-        </BaseBtn>
-      </div>
-    </div>
     <div class="w-full flex justify-center my-3">
       <div
         class="itbkk-board-name font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"

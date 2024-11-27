@@ -18,17 +18,17 @@ const selectAccessRight = (option) => {
     <div>
     <div>
       <div
-        class="itbkk-modal-new bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-20"
+        class="itbkk-modal-new bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-16 tablet:pt-20"
         style="translate: transform(-50%, -50%)"
       >
-        <div class="w-[60%] m-[auto] max-h-screen">
+        <div class=" tablet:w-[60%] m-[auto] max-h-screen">
           <div
-            class="overflow-auto max-h-screen flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
+            class="overflow-auto max-h-screen flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-b-xl tablet:rounded-lg shadow-xl"
           >
             <div class="itbkk-modal-new">
-              <div class="text-xl font-bold my-3">Add Collaborator</div>
+              <div class="text-xl font-bold my-3 text-white">Add Collaborator</div>
               <div class="border-b my-2"></div>
-              <div class="text-lg z-0">Collaborator email</div>
+              <div class="text-lg z-0 text-white">Collaborator email</div>
               <div>
                 <textarea
                   class="itbkk-title itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
@@ -42,7 +42,7 @@ const selectAccessRight = (option) => {
             <div>
               <label
                 for="accessright"
-                class="block text-sm font-medium text-gray-700"
+                class="block text-sm font-medium text-white"
                 >Select Access Right</label
               >
               <div class="dropdown">

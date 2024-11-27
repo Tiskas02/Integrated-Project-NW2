@@ -215,7 +215,7 @@ const setClose = (value) => {
                 background-position: center;
               "
             >
-            <div>
+            <div class="w-[187px] laptop:w-60">
                 <h1 class="text-3xl font-bold text-gray-900 text-left">
                   {{ status.name }}
                 </h1>
@@ -223,7 +223,7 @@ const setClose = (value) => {
                   <div class="font-bold">
                     Description 
                   </div>
-                  <div>
+                  <div class=" w-5/6 overflow-y-auto">
                   {{
                     status?.description == "" || status?.description === null
                       ? "No Description Provided"
