@@ -7,10 +7,8 @@ import com.example.integratedbackend.ErrorHandle.NonCollaboratorException;
 import com.example.integratedbackend.JWT.JwtUtil;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.*;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.UsersRepositoriesV3;
 import com.example.integratedbackend.Service.ListMapper;
 import com.example.integratedbackend.Service.ServiceV3.*;
-import com.example.integratedbackend.Service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
@@ -388,7 +386,7 @@ public class BoardControllerV3 {
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
         if (accessRight == AccessRight.READ) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "YOU DON'T HAVE PERMISSION");
         }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
@@ -677,7 +675,7 @@ public class BoardControllerV3 {
         boolean visibleValue = visibilityService.checkVisibility(boardId);
 
         if (accessRight == AccessRight.READ) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "YOU DON'T HAVE PERMISSION");
+            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "YOU DON'T HAVE PERMISSION");
         }
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
@@ -873,7 +871,31 @@ public class BoardControllerV3 {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
-    @DeleteMapping("/{boardId}/collab/{collabId}")
+    @PatchMapping("/{boardId}/collabs/{collabId}")
+    public ResponseEntity<Object> updateCollab(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
+            @PathVariable String collabId,
+            @RequestBody accessRightDTO newAccessRight) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        }
+        String jwt = authHeader.substring(7);
+        String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
+
+        Boards boardInfo = boardService.getBoardByBoardId(boardId);
+        String boardOwnerName = boardInfo.getUsers().getUsername();
+
+        if (usernameFromToken.equals(boardOwnerName)) {
+            accessRightDTO changeAccessRight = collabService.changeAccessRight(boardId, userId, collabId, newAccessRight);
+            return ResponseEntity.ok(changeAccessRight);
+        }else {
+            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "Access Right not allowed");
+        }
+    }
+
+    @DeleteMapping("/{boardId}/collabs/{collabId}")
     public ResponseEntity<Collab> deleteCollab(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId,
@@ -886,7 +908,28 @@ public class BoardControllerV3 {
                 Collab collab = collabService.deleteCollaborator(boardId, collabId);
                 return ResponseEntity.ok(collab);
             }
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        String jwt = authHeader.substring(7);
+        String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
+
+        Boards boardInfo = boardService.getBoardByBoardId(boardId);
+        String boardOwnerName = boardInfo.getUsers().getUsername();
+
+        // Allow owner to delete any collaborator
+        if (usernameFromToken.equals(boardOwnerName)) {
+            return ResponseEntity.ok(collabService.deleteCollaborator(boardId, collabId));
+        }
+
+        // Allow collaborator to delete themselves
+        if (userId.equals(collabId)) {
+            return ResponseEntity.ok(collabService.deleteCollaborator(boardId, collabId));
+        }
+
+        // Deny all other requests
+        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "Access Right not allowed");
     }
+
 }

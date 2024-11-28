@@ -37,7 +37,7 @@ public class TaskServiceV3 {
     public List<TaskDTOV3> getAllTasksByBoardId(List<String> statusNames, String[] sortBy, String[] direction, String nanoId) {
         Boards boards = boardsRepositoriesV3.findById(nanoId).orElseThrow(
                 () -> new ItemNotFoundException(
-                        HttpStatus.FORBIDDEN, "board" + " " + nanoId + " " + "doesn't exist !!!")
+                        HttpStatus.NOT_FOUND, "board" + " " + nanoId + " " + "doesn't exist !!!")
         );
         List<Sort.Order> orders = new ArrayList<>();
         if ((sortBy.length != 0 && !(sortBy[0].equals("status.name"))) || sortBy.length > 1) {
@@ -60,16 +60,16 @@ public class TaskServiceV3 {
 
     public TaskV3 findTaskByBoardIdAndId(Integer id, String boardId) throws ItemNotFoundException {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(() -> new ItemNotFoundException(
-                HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
+                HttpStatus.NOT_FOUND, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         return tasksRepositoriesV3.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
-                        HttpStatus.FORBIDDEN, "Task" + " " + id + " " + "doesn't exist !!!"));
+                        HttpStatus.NOT_FOUND, "Task" + " " + id + " " + "doesn't exist !!!"));
     }
 
     public TaskV3 createTask(NewTaskDTOV3 addTask,String boardId) {
         Boards boards = boardsRepositoriesV3.findById(boardId).orElseThrow(
                 () -> new ItemNotFoundException(
-                        HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
+                        HttpStatus.NOT_FOUND, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         StatusV3 statusObj = statusRepositoriesV3.findById(addTask.getStatusId()).orElseThrow(
                 () -> new StatusIdNotFoundException("does not exist")
         );
@@ -86,7 +86,7 @@ public class TaskServiceV3 {
                 () -> new ItemNotFoundException(
                         HttpStatus.FORBIDDEN, "Board Id" + " " + boardId + " " + "doesn't exist !!!"));
         TaskV3 taskToDelete = tasksRepositoriesV3.findById(id)
-                .orElseThrow(() -> new ItemErrorNotFoundException("NOT FOUND"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         tasksRepositoriesV3.delete(taskToDelete);
         return modelMapper.map(taskToDelete, TaskDTOV3.class);
     }
@@ -96,11 +96,11 @@ public class TaskServiceV3 {
     public TaskV3 updateTask(NewTaskDTOV3 editTaskDto, Integer id, String boardId) throws ItemNotFoundException {
         Boards boards = boardsRepositoriesV3.findById(boardId)
                 .orElseThrow(() -> new ItemNotFoundException(
-                        HttpStatus.FORBIDDEN, "Board with ID " + boardId + " doesn't exist!"));
+                        HttpStatus.NOT_FOUND, "Board with ID " + boardId + " doesn't exist!"));
 
         TaskV3 existingTask = tasksRepositoriesV3.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException(
-                        HttpStatus.FORBIDDEN, "Task with ID " + id + " doesn't exist!"));
+                        HttpStatus.NOT_FOUND, "Task with ID " + id + " doesn't exist!"));
 
         TaskV3 toUpdate = modelMapper.map(editTaskDto, TaskV3.class);
 
@@ -108,6 +108,10 @@ public class TaskServiceV3 {
         toUpdate.setBoard(existingTask.getBoard());
 
         return tasksRepositoriesV3.save(toUpdate);
+    }
+
+    public boolean isTaskAvailable(Integer id, String boardId) {
+        return tasksRepositoriesV3.existsByIdAndBoardId(id, boardId);
     }
 
 }

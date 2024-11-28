@@ -1,6 +1,7 @@
 package com.example.integratedbackend.JWT;
 
 import com.example.integratedbackend.DTO.DTOV3.CollabDTO;
+import com.example.integratedbackend.ErrorHandle.AccessRightNotAllow;
 import com.example.integratedbackend.ErrorHandle.ItemNotFoundException;
 import com.example.integratedbackend.ErrorHandle.NonCollaboratorException;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.AccessRight;
@@ -8,6 +9,8 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Collab
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
 import com.example.integratedbackend.Service.ServiceV3.BoardService;
 import com.example.integratedbackend.Service.ServiceV3.CollabService;
+import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
+import com.example.integratedbackend.Service.ServiceV3.TaskServiceV3;
 import com.example.integratedbackend.Service.UserService;
 import com.example.integratedbackend.Users.User;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,6 +43,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private BoardService boardService;
     @Autowired
     private CollabService collabService;
+    @Autowired
+    private TaskServiceV3 taskServiceV3;
+    @Autowired
+    private StatusServiceV3 statusServiceV3;
     @Autowired
     private CollabRepositoriesV3 collabRepositoriesV3;
 
@@ -111,7 +118,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 } catch (ResponseStatusException e) {
                     sendErrorResponse(response, e.getStatusCode().value(), e.getMessage(), request.getRequestURI());
                     return;
-                } catch (Exception e) {
+                }  catch (Exception e) {
                     sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error during JWT processing", request.getRequestURI());
                     return;
                 }
@@ -134,8 +141,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void handleRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
-        String jwt = null;
-        jwt = authHeader.substring(7);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Missing or invalid Authorization header");
+        }
+        String jwt = authHeader.substring(7);
 
         String requestMethod = request.getMethod();
         String currentUser = (String) jwtUtil.extractAllClaims(jwt).get("oid");
@@ -145,43 +154,97 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        boolean isBoardExist = boardService.boardExists(boardId);
-        if (!isBoardExist && !requestMethod.equals("GET")) {
-            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board Not Found");
+        if (!boardService.boardExists(boardId)) {
+            if (!requestMethod.equals("GET")) {
+                throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board Not Found");
+            }
+            return;
         }
 
         boolean isPublic = boardService.isBoardPublic(boardId);
+        boolean isOwner = currentUser != null && boardService.isBoardOwner(boardId, currentUser);
+        boolean isCollaborator = currentUser != null && collabService.isCollaborator(boardId, currentUser);
 
-        if (currentUser != null) {
-            boolean isOwner = boardService.isBoardOwner(boardId, currentUser);
-            boolean isCollaborator = collabService.isCollaborator(boardId, currentUser);
+        if (isOwner) {
+            return;
+        }
 
-            if (isOwner) {
+        if (isCollaborator) {
+            AccessRight accessRight = collabService.getCollab(boardId, currentUser).getAccessRight();
+
+            if (accessRight == AccessRight.READ && requestMethod.equals("GET") || requestMethod.equals("DELETE")) {
                 return;
             }
 
-            if (isCollaborator) {
-                Collab collab = collabService.getCollab(boardId, currentUser);
-
-                AccessRight accessRight = collab.getAccessRight();
-                if (accessRight == null) {
-                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Access Right is null for collaborator");
+            if (accessRight == AccessRight.WRITE) {
+                if (requestMethod.equals("PATCH")) {
+                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
                 }
-
-                if (accessRight.equals(AccessRight.READ) && requestMethod.equals("GET")) {
+                if (requestMethod.equals("POST") && request.getRequestURI().contains("/collabs")) {
+                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
+                }
+                if (isAllowedForWriteAccess(requestMethod, request.getRequestURI())) {
+                    validateTaskAndStatusExistence(request);
                     return;
                 }
-
-                if (accessRight.equals(AccessRight.READ) && !requestMethod.equals("GET") && !requestMethod.equals("DELETE")) {
-                    throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN");
-                }
+                throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Write access not allowed for this action");
             }
+
+            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Collaborator does not have sufficient permissions");
         }
 
         if (!isPublic || !requestMethod.equals("GET")) {
-            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN here");
+            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN");
         }
     }
+
+    private void validateTaskAndStatusExistence(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String boardId = extractBoardIdFromURI(uri);
+
+        if (uri.matches(".*/tasks/\\d+$") && request.getMethod().equals("PUT")) {
+            Integer taskId = extractIdFromURI(uri, "/tasks/");
+            if (taskId == null || !taskServiceV3.isTaskAvailable(taskId, boardId)) {
+                throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Task not found");
+            }
+        }
+
+        if (uri.matches(".*/statuses/\\d+$") && request.getMethod().equals("PUT")) {
+            Integer statusId = extractIdFromURI(uri, "/statuses/");
+            if (statusId == null || !statusServiceV3.isStatusAvailable(statusId, boardId)) {
+                throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Status not found");
+            }
+        }
+    }
+
+    private Integer extractIdFromURI(String uri, String segment) {
+        try {
+            String[] parts = uri.split(segment);
+            if (parts.length > 1) {
+                String idPart = parts[1].split("/")[0];
+                return Integer.parseInt(idPart);
+            }
+        } catch (NumberFormatException e) {
+            throw new ItemNotFoundException(HttpStatus.BAD_REQUEST, "Invalid ID format in URI");
+        }
+        return null;
+    }
+
+
+    private boolean isAllowedForWriteAccess(String method, String uri) {
+        String[] allowedWriteEndpoints = {
+                "", "/statuses", "/tasks", "/collabs"
+        };
+
+        for (String endpoint : allowedWriteEndpoints) {
+            if (uri.contains(endpoint)) {
+                return true;
+            }
+        }
+        return method.equals("POST") || method.equals("PUT") || method.equals("DELETE");
+    }
+
+
 
 
     private void sendErrorResponse(HttpServletResponse response, int status, String message, String path) throws IOException {
