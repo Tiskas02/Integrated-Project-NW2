@@ -1,25 +1,57 @@
 package com.example.integratedbackend.Controller.ControllerV3;
 
-import com.example.integratedbackend.DTO.*;
-import com.example.integratedbackend.DTO.DTOV3.*;
-import com.example.integratedbackend.ErrorHandle.AccessRightNotAllow;
-import com.example.integratedbackend.ErrorHandle.NonCollaboratorException;
-import com.example.integratedbackend.JWT.JwtUtil;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.*;
-import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
-import com.example.integratedbackend.Service.ListMapper;
-import com.example.integratedbackend.Service.ServiceV3.*;
-import io.jsonwebtoken.Claims;
-import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import com.example.integratedbackend.DTO.DTOV3.CollabBoardResponse;
+import com.example.integratedbackend.DTO.DTOV3.CollabDTO;
+import com.example.integratedbackend.DTO.DTOV3.CollabRequestDTO;
+import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
+import com.example.integratedbackend.DTO.DTOV3.NewTaskDTOV3;
+import com.example.integratedbackend.DTO.DTOV3.NewTaskReturnV3;
+import com.example.integratedbackend.DTO.DTOV3.StatusDtoV3;
+import com.example.integratedbackend.DTO.DTOV3.TaskDTOV3;
+import com.example.integratedbackend.DTO.DTOV3.VisibilityDTO;
+import com.example.integratedbackend.DTO.DTOV3.accessRightDTO;
+import com.example.integratedbackend.DTO.NewStatusDTO;
+import com.example.integratedbackend.DTO.StatusDTO;
+import com.example.integratedbackend.ErrorHandle.AccessRightNotAllow;
+import com.example.integratedbackend.ErrorHandle.NonCollaboratorException;
+import com.example.integratedbackend.JWT.JwtUtil;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.AccessRight;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Boards;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Collab;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.StatusV3;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.TaskV3;
+import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
+import com.example.integratedbackend.Service.ListMapper;
+import com.example.integratedbackend.Service.ServiceV3.BoardService;
+import com.example.integratedbackend.Service.ServiceV3.CollabService;
+import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
+import com.example.integratedbackend.Service.ServiceV3.TaskServiceV3;
+import com.example.integratedbackend.Service.ServiceV3.VisibilityService;
+
+import io.jsonwebtoken.Claims;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -900,14 +932,6 @@ public class BoardControllerV3 {
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String boardId,
             @PathVariable String collabId) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
-
-            if (username != null) {
-                Collab collab = collabService.deleteCollaborator(boardId, collabId);
-                return ResponseEntity.ok(collab);
-            }
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
         }
@@ -918,17 +942,14 @@ public class BoardControllerV3 {
         Boards boardInfo = boardService.getBoardByBoardId(boardId);
         String boardOwnerName = boardInfo.getUsers().getUsername();
 
-        // Allow owner to delete any collaborator
         if (usernameFromToken.equals(boardOwnerName)) {
             return ResponseEntity.ok(collabService.deleteCollaborator(boardId, collabId));
         }
 
-        // Allow collaborator to delete themselves
         if (userId.equals(collabId)) {
             return ResponseEntity.ok(collabService.deleteCollaborator(boardId, collabId));
         }
 
-        // Deny all other requests
         throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "Access Right not allowed");
     }
 
