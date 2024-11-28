@@ -22,4 +22,6 @@ public interface TasksRepositoriesV3 extends JpaRepository<TaskV3,Integer> {
     @Modifying
     @Query("UPDATE TaskV3 t SET t.status = :newStatus WHERE t.status = :oldStatus")
     void updateTaskStatus(StatusV3 oldStatus, StatusV3 newStatus);
+
+    boolean existsByIdAndBoardId(Integer id, String boardId);
 }

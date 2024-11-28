@@ -17,4 +17,6 @@ public interface StatusRepositoriesV3 extends JpaRepository<StatusV3, Integer> {
 
 //    List<StatusV3> findAllByNameIgnoreCase(String name);
     StatusV3 findByStatusName(String name);
+
+    boolean existsByBoardIdAndStatusId(String boardId, Integer statusId);
 }
