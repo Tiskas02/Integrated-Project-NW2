@@ -80,10 +80,10 @@ const addCollab = async (newCollab) => {
   const data = await collabStore.addCollab(newCollab,routeId.value)
   console.log(data)
   if (data) {
-    toasterStore.success({ text: "Collaberator added successfully!" });
+    toasterStore.success({ text: "Collaborator added successfully!" });
   } else {
     toasterStore.error({
-      text: "An error occurred while adding the collaberator.",
+      text: "An error occurred while adding the collaborator.",
     });
   }
 };
@@ -128,18 +128,18 @@ const setModal = (value) => {
             </clipPath>
           </defs>
         </svg>
-        <div class="text-white">Add Collaberators</div>
+        <div class="text-white">Add Collaborators</div>
       </div>
   </div>
   <div class="flex justify-center text-2xl font-bold text-gray-900 ml-4 my-4 hover:bg-gradient-to-r from-blue-800 via-blue-400 to-blue-200  hover:text-transparent hover:bg-clip-text hover:duration-500">
-    Collaberators Management
+    Collaborator Management
   </div>
     <div class="w-full flex justify-center">
       <div class="min-w-full divide-y divide-gray-200">
         <div v-if="collabs.length <= 0" class="w-full border-none h-24">
-          <div class="flex justify-center items-center h-full">
+          <div class="flex justify-center items-center h-full z-0">
             <p class="text-xl font-bold animate-bounce text-slate-500">
-              No Collaberator
+              No Collaborator
             </p>
           </div>
         </div>

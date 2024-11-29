@@ -79,7 +79,7 @@ const submitForm = async () => {
         >
           <div class="flex items-center">
             <span
-              class="block text-xl font-bold whitespace-nowrap animate-typing"
+              class="block text-xl font-bold whitespace-nowrap animate-typing text-black"
               style="white-space: nowrap"
             >
               IT-Bangmod Kradan Kanban
@@ -96,19 +96,19 @@ const submitForm = async () => {
     <div class="w-full p-4 flex justify-center items-center">
       <div class="tablet:border tablet:p-24 tablet:rounded-xl tablet:bg-white">
         <div
-          class="text-center font-sans font-medium text-3xl text-slate-700 mobile:mt-12 tablet:mt-0"
+          class="text-center font-sans font-medium text-3xl text-black mobile:mt-12 tablet:mt-0"
         >
           Welcome
         </div>
         <div
-          class="text-center font-sans font-medium text-2xl text-slate-700 tablet:invisible"
+          class="text-center font-sans font-medium text-2xl text-black tablet:invisible"
         >
           IT-Bangmod Kradan Kanban
         </div>
         <div>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-slate-500"
+              <span class="label-text font-semibold text-black"
                 >Username</span
               >
             </div>
@@ -127,7 +127,7 @@ const submitForm = async () => {
           </label>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-slate-500"
+              <span class="label-text font-semibold text-black"
                 >Password</span
               >
             </div>
@@ -177,13 +177,13 @@ const submitForm = async () => {
 
           <div class="w-full flex flex-row mt-5">
             <div class="border border-slate-300 w-[45%] h-[1px] m-auto"></div>
-            <div class="px-2 text-slate-400">Other</div>
+            <div class="px-2 text-black">Other</div>
             <div class="border border-slate-300 w-[45%] h-[1px] m-auto"></div>
           </div>
           <div>
             <div class="w-full flex justify-center items-center mt-3">
               <button
-                class="btn border-none w-[20rem] h-[10%] bg-white rounded shadow-md text-slate-500"
+                class="btn border-none w-[20rem] h-[10%] bg-white rounded shadow-md text-black hover:bg-black hover:text-white transition-all duration-300"
               >
                 <img
                   class="w-[30px] h-[30px]"

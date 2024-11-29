@@ -170,7 +170,7 @@ function formatDate(isoDate) {
             <!-- Collaborator option -->
             <a
               href="#"
-              @click.prevent="updateBoardType('Collaberator')"
+              @click.prevent="updateBoardType('Collaborator')"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"
               tabindex="-1"
@@ -191,7 +191,7 @@ function formatDate(isoDate) {
         >
           <div class="flex justify-center items-center h-full">
             <p class="text-xl font-bold animate-bounce text-slate-500">
-              Board is empty
+              Personal Board is empty
             </p>
           </div>
         </div>
@@ -246,7 +246,7 @@ function formatDate(isoDate) {
         >
           <div class="flex justify-center items-center h-full">
             <p class="text-xl font-bold animate-bounce text-slate-500">
-              Collaberator Board is empty
+              Collaborator Board is empty
             </p>
           </div>
         </div>

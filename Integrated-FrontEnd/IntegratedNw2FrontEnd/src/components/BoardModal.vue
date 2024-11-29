@@ -23,7 +23,7 @@ const newBoard = ref({
             <div class="text-lg z-0 text-white">Name</div>
             <div>
               <textarea
-                class="itbkk-title itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] bg-opacity-40 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 placeholder:text-slate-400 "
+                class="itbkk-title itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] bg-opacity-40 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 placeholder:text-white "
                 placeholder="Enter board name"
                 required
                 maxlength="120"

@@ -31,7 +31,7 @@ console.log(props.task);
               "
             >
               <div class="ml-4 mt-2 text-lg font-semiblod font-rubik">
-                Task Detial
+                Task Detail
               </div>
               <div class="w-full h-[70%] flex justify-center items-center">
                 {{ task.title }}

@@ -88,7 +88,7 @@ const updateStatus = (statusName) => {
               <div class="text-lg font-bold text-white">Title</div>
               <div>
                 <textarea
-                  class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 placeholder:text-slate-200"
+                  class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 placeholder:text-white"
                   placeholder="Enter your title here..."
                   required
                   maxlength="100"

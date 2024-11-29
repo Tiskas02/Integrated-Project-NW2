@@ -60,7 +60,7 @@ console.log("storeData", storeData.value);
               <div class="text-lg z-0 mt-3 text-white">Name</div>
               <div>
                 <textarea
-                  class="itbkk-title itbkk-status-name w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] text-gray-800 border border-white rounded-md focus:outline-none focus:border-blue-500 placeholder:text-slate-400"
+                  class="itbkk-title itbkk-status-name w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] text-gray-800 border border-white rounded-md focus:outline-none focus:border-blue-500 placeholder:text-white"
                   placeholder="Enter your title here..."
                   required
                   maxlength="50"
@@ -75,7 +75,7 @@ console.log("storeData", storeData.value);
               <div>
                 <div>
                   <textarea
-                    class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] text-gray-800 border border-white rounded-md focus:outline-none focus:border-blue-500 placeholder:text-slate-400"
+                    class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] text-gray-800 border border-white rounded-md focus:outline-none focus:border-blue-500 placeholder:text-white"
                     placeholder="Enter your description here..."
                     v-model="storeData.description"
                     maxlength="200"
