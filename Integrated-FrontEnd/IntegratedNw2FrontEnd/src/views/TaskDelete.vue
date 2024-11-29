@@ -14,7 +14,7 @@ const props = defineProps({
     >
       <div class="tablet:w-[40%] m-[auto] max-h-[80%]">
         <div
-          class="flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-lg shadow-xl"
+          class="flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-b-lg tablet:rounded-lg shadow-xl"
         >
           <div class="text-xl font-semibold text-red-800">Delete Task</div>
           <div class="border-b my-3"></div>
@@ -24,20 +24,20 @@ const props = defineProps({
           </div>
           <div class="flex justify-end my-4">
             <div
-              @click="[$emit('close', false)]"
-              class="itbkk-button-cancel btn btn-error text-white mx-2"
-            >
-              Cancel
-            </div>
-            <div
               @click="
                 () => {
                   $emit('close', false), $emit('savedDelete', task?.id)
                 }
               "
-              class="itbkk-button-confirm btn btn-success text-white"
+              class="itbkk-button-confirm btn bg-gradient-to-r from-blue-700 to-blue-300 border-none text-white"
             >
               Confirm
+            </div>
+            <div
+              @click="[$emit('close', false)]"
+              class="itbkk-button-cancel btn bg-gradient-to-r from-red-700 to-red-300 border-none text-white mx-2"
+            >
+              Cancel
             </div>
           </div>
         </div>

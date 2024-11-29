@@ -24,15 +24,15 @@ watch(
 </script>
 <template>
   <div>
-    <NavBar class=""/>
+    <NavBar class="sticky top-0 z-50" />
     <div class="w-full h-screen flex justify-center items-center">
       <div class="w-[100%] h-screen tablet:w-[85%] ">
         <div class="w-full h-full ">
           <div class="w-[100%] h-full tablet:my-12 my-4">
-            <div v-if="usePath === 'status'" class="w-full">
+            <div v-if="usePath === 'status'" class="w-full ">
               <StatusTable />
             </div>
-            <div v-if="usePath === 'task'" class="w-full">
+            <div v-if="usePath === 'task'" class="w-full ">
               <TaskTable />
             </div>
             <div v-if="usePath === 'collaborator'" class="w-full">

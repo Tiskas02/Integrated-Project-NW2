@@ -22,6 +22,7 @@ const sentDelete = (value) => {
 }
 
 const sentNewTask = (value) => {
+  console.log("sentNewTask :", value);
   emit("newTask", value)
 }
 

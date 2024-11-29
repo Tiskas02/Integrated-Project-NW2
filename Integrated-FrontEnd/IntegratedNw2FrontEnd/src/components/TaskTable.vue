@@ -189,7 +189,7 @@ const addEditTask = async (newTask) => {
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees,
-        statusId: newTask.statusId,
+        statusId: newTask.status.id,
         title: newTask.title.trim(),
         description: newTask.descriptio
           ? newTask.description.trim()
@@ -205,9 +205,9 @@ const addEditTask = async (newTask) => {
     } else {
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
-        assignees: newTask.assignees.trim(),
-        statusId: newTask.statusId,
         title: newTask.title.trim(),
+        assignees: newTask.assignees.trim(),
+        statusId: newTask.status.id,
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
@@ -340,7 +340,7 @@ const getColorForStatus = (statusName, statuses) => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full ">
     <div class="w-full flex flex-col justify-start my-6">
       <div class="ml-2">Welcome to ,</div>
       <div
@@ -383,6 +383,7 @@ const getColorForStatus = (statusName, statuses) => {
           <div class="w-[80%] tablet:grow mx-2">
             <div class="my-2 flex gap-2 w-full justify-center">
               <div
+                v-if="!(showVisibility || showDetail)"
                 class="flex gap-2 items-center justify-center h-[48px] w-full laptop:w-[60%] border border-slate-700 rounded-lg"
               >
                 <div
@@ -496,7 +497,7 @@ const getColorForStatus = (statusName, statuses) => {
         class="shadow-2xl rounded-md w-[400px] tablet:w-[650px] laptop:w-[95%] h-[95%] shadow-yellow-500/10 overflow-auto"
       >
         <div
-          class="w-[800px] laptop:w-full tablet:h-[700px] laptop:h-[800px] divide-y divide-gray-200 overflow-auto"
+          class="w-[800px] laptop:w-full h-[600px] tablet:h-[700px] laptop:h-[800px] divide-y divide-gray-200 overflow-auto"
           style="
             background-image: url('/images/impressionism.png');
             background-size: cover;

@@ -78,6 +78,7 @@ async function addTask(newTask, id) {
       }),
     })
     const addedTask = await res.json()
+    console.log(addedTask);
     return addedTask
   } catch (error) {
     console.log(`error: ${error}`)
@@ -114,6 +115,7 @@ async function editTask(routerId, id,updatedTask) {
       }),
     })
     const editedTask = await res.json()
+    console.log(editedTask);
     return editedTask
   } catch (error) {
     console.log(`error: ${error}`)

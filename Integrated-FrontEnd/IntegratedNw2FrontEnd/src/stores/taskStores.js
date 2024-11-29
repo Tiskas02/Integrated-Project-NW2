@@ -45,6 +45,8 @@ export const useStoreTasks = defineStore("tasks", () => {
 
   async function updateTask(routeId, id, task) {
     try {
+      console.log(task);
+      
       const updatedTask = await editTask(routeId, id, task);
       const taskIndex = tasks.value.findIndex((task) => task.id === id);
       tasks.value[taskIndex] = updatedTask;
