@@ -66,18 +66,20 @@ onMounted(async () => {
     const nameCollab = await boardStore.fetchBoardsByCollabId(
       routerId.value,
       token.oid
-    )
-    matchedBoards.value = nameCollab
-    nameboard.value = matchedBoards.value[0].name
+    );
+    matchedBoards.value = nameCollab;
+    nameboard.value = matchedBoards.value[0].name;
   }
-  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC"
-  storeTasks.value = data
-})
+  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC";
+  storeTasks.value = data;
+  console.log(storeTasks.value);
+  
+});
 
 watch(
   () => storeVisibility.value,
   (newVisibility) => {
-    checkToggle.value = newVisibility === "PUBLIC"
+    checkToggle.value = newVisibility === "PUBLIC";
   },
   { immediate: true }
 );
@@ -94,9 +96,9 @@ onMounted(async () => {
 });
 
 const fetchDataById = async (routerId, id, mode) => {
-  storeMode.value = mode
-  storeTask.value = await getTaskById(routerId, id, token.oid)
-  statusStore.value = await getStatusData(routerId, token.oid)
+  storeMode.value = mode;
+  storeTask.value = await getTaskById(routerId, id, token.oid);
+  statusStore.value = await getStatusData(routerId, token.oid);
   if (storeMode.value === "add") {
     showDetail.value = true;
     router.push({ name: "addTask" });
@@ -247,15 +249,15 @@ const EditVisibilities = async (value) => {
   );
 
   if (data.visibility === value.visibilities) {
-    storeVisibility.value = data.visibility === "PUBLIC" ? true : false
-    matchedBoards.value.visibilities = data
-    toasterStore.success({ text: "Visibility updated successfully!" })
+    storeVisibility.value = data.visibility === "PUBLIC" ? true : false;
+    matchedBoards.value.visibilities = data;
+    toasterStore.success({ text: "Visibility updated successfully!" });
   } else {
     toasterStore.error({
       text: "An error occurred while updating visibility.",
     });
   }
-}
+};
 
 const setVisibility = () => {
   showVisibility.value = true;
@@ -271,10 +273,9 @@ const SortOrder = async () => {
     sortOrder.value = "DEFAULT";
   }
 };
-
+//filter
 const updateFilterList = (filterName) => {
   const filterIndex = selectFilter.value.indexOf(filterName);
-
   if (filterIndex === -1) {
     selectFilter.value.push(filterName);
   } else {
@@ -285,7 +286,7 @@ const updateFilterList = (filterName) => {
 const getFilterTask = computed(() => {
   return selectFilter.value.length > 0
     ? tasks.value.filter((task) =>
-        selectFilter.value.includes(task.status.statusName)
+        selectFilter.value.includes(task.status.name)
       )
     : tasks.value;
 });
@@ -294,11 +295,7 @@ const ClearStatuses = () => {
   selectFilter.value.splice(0, selectFilter.value.length);
 };
 //test
-const isExpanded = ref(false);
 
-const toggleSearch = () => {
-  isExpanded.value = !isExpanded.value;
-};
 const removeFilter = (index) => {
   // Remove a specific filter by index
   selectFilter.value.splice(index, 1);
@@ -316,10 +313,34 @@ const clearStatuses = () => {
   // Clear all filters
   selectFilter.value = [];
 };
+
+const colorCache = {}; 
+
+const generateDynamicColors = (statuses) => {
+  const total = statuses.length;
+  return statuses.map((_, index) => {
+    const hue = Math.floor((360 / total) * index); 
+    return `hsl(${hue}, 50%, 50%)`; 
+  });
+};
+
+const getColorForStatus = (statusName, statuses) => {
+  if (!statusName) return "bg-gray-300"; 
+  if (colorCache[statusName]) return colorCache[statusName]; 
+
+  const dynamicColors = generateDynamicColors(statuses);
+
+
+  statuses.forEach((status, index) => {
+    colorCache[status.name] = dynamicColors[index];
+  });
+
+  return colorCache[statusName]; 
+};
 </script>
 
 <template>
-  <div class="w-full laptop:mx-20">
+  <div class="w-full">
     <div class="w-full flex flex-col justify-start my-6">
       <div class="ml-2">Welcome to ,</div>
       <div
@@ -327,192 +348,164 @@ const clearStatuses = () => {
       >
         {{ nameboard }} Personal Board !
       </div>
-      <div>
-          <div class="form-control">
-            <label class="label cursor-pointer">
-              <span class="label-text mx-2" >
-                {{ storeVisibility ? "public" : "private" }}
-              </span>
-              <input
-                type="checkbox"
-                class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
-                v-model="storeVisibility"
-                @click="setVisibility()"
-                :checked="checkToggle"
-              />
-            </label>
-          </div>
-        </div>
-      <div class="flex justify-start items-center gap-4 my-4">
-        <div
-          class="flex items-center gap-2 bg-white rounded-full shadow-md transition-all duration-700"
-          :class="{ 'w-[300px] ': isExpanded, 'w-[40px] px-0': !isExpanded }"
-        >
-          <!-- Search Button -->
-          <button
-            @click="toggleSearch"
-            class="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md transition-transform duration-100"
-          >
-            <svg
-              v-if="!isExpanded"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="w-6 h-6 text-blue-800"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <svg
-              v-if="isExpanded"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="w-6 h-6 text-blue-800"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-
-          <!-- Search Input -->
-          <input
-            v-if="isExpanded"
-            type="text"
-            placeholder="Search..."
-            class="flex-1 py-2 pl-2 pr-12 bg-transparent outline-none"
-          />
-        </div>
-      </div>
     </div>
   </div>
-  <div class="flex justify-center text-2xl font-bold text-gray-900 ml-4 my-4 hover:bg-gradient-to-r from-blue-800 via-blue-400 to-blue-200  hover:text-transparent hover:bg-clip-text hover:duration-500">
+  <div
+    class="flex justify-center text-2xl font-bold text-gray-900 ml-4 my-4 hover:bg-gradient-to-r from-blue-800 via-blue-400 to-blue-200 hover:text-transparent hover:bg-clip-text hover:duration-500"
+  >
     Task Management
   </div>
-  <div>
-    <div
-      class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between"
-    >
-      <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
-        <div class="font-bold text-slate-700">Tool Bar :</div>
-        
-        <div class="my-2 flex">
-          <div
-            class="itbkk-button-add btn btn-outline mx-5"
-            @click="setDetail(true, null, 'add')"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="#334155"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clip-path="url(#clip0_529_11)">
-                <path
-                  d="M11 9H15V11H11V15H9V11H5V9H9V5H11V9ZM10 20C7.34784 20 4.8043 18.9464 2.92893 17.0711C1.05357 15.1957 0 12.6522 0 10C0 7.34784 1.05357 4.8043 2.92893 2.92893C4.8043 1.05357 7.34784 0 10 0C12.6522 0 15.1957 1.05357 17.0711 2.92893C18.9464 4.8043 20 7.34784 20 10C20 12.6522 18.9464 15.1957 17.0711 17.0711C15.1957 18.9464 12.6522 20 10 20ZM10 18C12.1217 18 14.1566 17.1571 15.6569 15.6569C17.1571 14.1566 18 12.1217 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 12.1217 2.84285 14.1566 4.34315 15.6569C5.84344 17.1571 7.87827 18 10 18Z"
-                  fill="#334155"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_529_11">
-                  <rect width="20" height="20" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-            <div class="text-slate-700">Add Task</div>
-          </div>
-        </div>
-        <div class="my-2 flex gap-2 tablet:w-2/5 mobile:mr-4 mobile:w-full">
-          <div
-            class="flex gap-2 items-center justify-center h-[48px] w-full border border-slate-700 rounded-lg"
-          >
-            <div class="transition ease-in-out hover:scale-125 duration-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                id="Outline"
-                viewBox="0 0 10 24"
-                width="45"
-                height="15"
-              >
-                <path
-                  d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
-                  fill="#334155"
-                />
-              </svg>
+  <div class="flex flex-col w-full justify-center my-4">
+    <div>
+      <div class="font-rubik text-sm ml-6 font-semibold">Tools Bar</div>
+      <div
+        class="flex flex-col tablet:flex-row items-center border w-[90%] tablet:w-[100%] h-fit rounded-lg mx-4"
+      >
+        <div class="flex flex-row w-full tablet:w-[80%]">
+          <div class="flex items-center">
+            <div class="w-[30%]">
+              <div class="form-control">
+                <label class="label cursor-pointer">
+                  <span class="label-text mx-2">
+                    {{ storeVisibility ? "public" : "private" }}
+                  </span>
+                  <input
+                    type="checkbox"
+                    class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
+                    v-model="storeVisibility"
+                    @click="setVisibility()"
+                    :checked="checkToggle"
+                  />
+                </label>
+              </div>
             </div>
-            <div
-              class="dropdown dropdown-bottom dropdown-hover w-full flex h-[48px]"
-            >
+          </div>
+          <div class="w-[80%] tablet:grow mx-2">
+            <div class="my-2 flex gap-2 w-full justify-center">
               <div
-                tabindex="0"
-                role="button"
-                class="overflow-x-auto max-h-[40px] btn w-full pt-2 text-[#334155] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
+                class="flex gap-2 items-center justify-center h-[48px] w-full laptop:w-[60%] border border-slate-700 rounded-lg"
               >
                 <div
-                  v-for="statuses in selectFilter"
-                  class="bg-slate-500 overflow-x text-slate-700 rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around animate-jump"
+                  class="transition ease-in-out hover:scale-125 duration-300"
                 >
-                  <div>{{ statuses }}</div>
-                  <div
-                    class="pr-3 transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
-                    @click="updateFilterList(statuses)"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    id="Outline"
+                    viewBox="0 0 10 24"
+                    width="45"
+                    height="15"
                   >
-                    x
-                  </div>
-                </div>
-              </div>
-              <ul
-                tabindex="0"
-                class="dropdown-content z-[1] menu p-2 shadow bg-white mt-1 rounded-box w-full"
-              >
-                <li
-                  v-for="statuses in statusStore.statuses"
-                  :key="statuses.id"
-                  @click="updateFilterList(statuses.name)"
-                >
-                  <div
-                    class="hover:text-white hover:bg-slate-700 hover:shadow-inner"
-                  >
-                    <input
-                      type="checkbox"
-                      class="checkbox hover:border-white"
-                      :id="statuses.id"
-                      :checked="selectFilter.includes(statuses.name)"
-                      :value="statuses.id"
+                    <path
+                      d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"
+                      fill="#334155"
                     />
-                    <label class="overflow-auto" :for="statuses.name">{{
-                      statuses.name
-                    }}</label>
+                  </svg>
+                </div>
+                <div
+                  class="dropdown dropdown-bottom dropdown-hover w-full flex h-[48px]"
+                >
+                  <div
+                    tabindex="0"
+                    role="button"
+                    class="overflow-x-auto max-h-[40px] btn w-full pt-2 text-[#334155] border-none text-base rounded-lg bg-transparent hover:bg-transparent"
+                  >
+                    <div
+                      v-for="statuses in selectFilter"
+                      class="bg-slate-500 overflow-x text-slate-700 rounded-lg pl-2 min-w-20 min-h-8 flex items-center gap-x-3 justify-around animate-jump"
+                    >
+                      <div>{{ statuses }}</div>
+                      <div
+                        class="pr-3 transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
+                        @click="updateFilterList(statuses)"
+                      >
+                        x
+                      </div>
+                    </div>
                   </div>
-                </li>
-              </ul>
+                  <ul
+                    tabindex="0"
+                    class="dropdown-content z-[1] menu p-2 shadow bg-white mt-1 rounded-box w-full"
+                  >
+                    <li
+                      v-for="statuses in statusStore.statuses"
+                      :key="statuses.id"
+                      @click="updateFilterList(statuses.name)"
+                    >
+                      <div
+                        class="hover:text-white hover:bg-slate-700 hover:shadow-inner"
+                      >
+                        <input
+                          type="checkbox"
+                          class="checkbox hover:border-white"
+                          :id="statuses.id"
+                          :checked="selectFilter.includes(statuses.name)"
+                          :value="statuses.id"
+                        />
+                        <label class="overflow-auto" :for="statuses.name"
+                          >{{ statuses.name }}</label
+                        >
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <p
+                  class="pr-3 text-slate-700 text-xs transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
+                  @click="ClearStatuses()"
+                >
+                  Clear
+                </p>
+              </div>
             </div>
-            <p
-              class="pr-3 text-slate-700 text-xs transition ease-in-out hover:scale-125 duration-300 hover:text-red-500 hover:font-bold hover:cursor-pointer"
-              @click="ClearStatuses()"
+          </div>
+        </div>
+        <div class="w-full tablet:w-fit laptop:w-[18%] flex justify-end">
+          <div class="my-2 flex">
+            <div
+              class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 mx-5 tablet:mx-1"
+              @click="setDetail(true, null, 'add')"
             >
-              Clear
-            </p>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="white"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clip-path="url(#clip0_529_11)">
+                  <path
+                    d="M11 9H15V11H11V15H9V11H5V9H9V5H11V9ZM10 20C7.34784 20 4.8043 18.9464 2.92893 17.0711C1.05357 15.1957 0 12.6522 0 10C0 7.34784 1.05357 4.8043 2.92893 2.92893C4.8043 1.05357 7.34784 0 10 0C12.6522 0 15.1957 1.05357 17.0711 2.92893C18.9464 4.8043 20 7.34784 20 10C20 12.6522 18.9464 15.1957 17.0711 17.0711C15.1957 18.9464 12.6522 20 10 20ZM10 18C12.1217 18 14.1566 17.1571 15.6569 15.6569C17.1571 14.1566 18 12.1217 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 12.1217 2.84285 14.1566 4.34315 15.6569C5.84344 17.1571 7.87827 18 10 18Z"
+                    fill="white"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_529_11">
+                    <rect width="20" height="20" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <div class="text-white">Add Task</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="w-full flex justify-center">
-      <div class="shadow-2xl rounded-md w-[95%] h-[95%] shadow-blue-500/40">
-        <div class="min-w-full divide-y divide-gray-200 overflow-auto">
-          <div class="#4793AF bg-slate-800 flex rounded-md overflow-auto">
+  </div>
+  <div class="h-[800px] tablet:h-[900px] laptop:h-[1000px]">
+    <div class="w-[420px] tablet:w-[750px] laptop:w-full flex tablet:justify-start laptop:justify-center tablet:mx-4 laptop:mx-4 justify-center ">
+      <div
+        class="shadow-2xl rounded-md w-[400px] tablet:w-[650px] laptop:w-[95%] h-[95%] shadow-yellow-500/10 overflow-auto"
+      >
+        <div
+          class="w-[800px] laptop:w-full tablet:h-[700px] laptop:h-[800px] divide-y divide-gray-200 overflow-auto"
+          style="
+            background-image: url('/images/impressionism.png');
+            background-size: cover;
+            background-position: center;
+          "
+        >
+          <div class="bg-slate-800 flex rounded-md">
             <div
-              class="w-[10%] m-auto text-start text-md font-bold text-white uppercase overflow-auto"
+              class="w-[10%] m-auto text-start text-md font-bold text-white"
             ></div>
             <div
               class="w-[22%] h-14 text-md font-bold text-white uppercase flex justify-center items-center"
@@ -604,7 +597,7 @@ const clearStatuses = () => {
               </p>
             </div>
           </div>
-          <div class="w-full h-[500px] overflow-auto rounded">
+          <div class="w-full tablet:h-[680px] laptop:h-[780px] overflow-auto rounded">
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div
                 class="itbkk-item bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
@@ -633,6 +626,7 @@ const clearStatuses = () => {
                       :style="{
                         fontStyle: task.assignees ? 'normal' : 'italic',
                       }"
+                      :class="task.assignees ? '' : 'text-red-800'"
                     >
                       {{ task.assignees ? task.assignees : "Unassigned" }}
                     </div>
@@ -642,25 +636,28 @@ const clearStatuses = () => {
                     >
                       <div
                         class="itbkk-status btn btn-outline shadow overflow-x-auto"
+                        :style="{
+                          backgroundColor: getColorForStatus(
+                            task?.status?.name,
+                            statusStore.statuses
+                          ),
+                          color: 'white', // Adjust text color for better contrast
+                        }"
                       >
-                        {{
-                          task?.status?.name
-                            ? task?.status?.name
-                            : task?.status?.statusName
-                        }}
+                        {{ task?.status?.name }}
                       </div>
                     </div>
                     <div
                       class="itbkk-button-action w-[22%] px-6 py-4 whitespace-nowrap flex gap-4"
                     >
                       <div
-                        class="itbkk-button-edit btn btn-outline btn-warning"
+                        class="itbkk-button-edit text-white btn border-white bg-gradient-to-r from-yellow-500 to-yellow-300"
                         @click="fetchDataById(routerId, task.id, 'edit')"
                       >
                         Edit
                       </div>
                       <div
-                        class="itbkk-button-delete btn btn-outline btn-error"
+                        class="itbkk-button-delete text-white btn btn-outline border-white bg-gradient-to-r from-red-500 to-red-300"
                         @click="
                           fetchDataById(routerId, task.id, 'delete'),
                             setIndex(index)
@@ -677,15 +674,7 @@ const clearStatuses = () => {
         </div>
       </div>
     </div>
-    
-    <teleport to="#body">
-      <Boardvisibility
-        v-if="showVisibility"
-        :board="matchedBoards"
-        @newBoard="EditVisibilities"
-        @close="setCloseVisibility"
-      />
-    </teleport>
+    <!-- box -->
     <teleport to="#body">
       <TaskModal
         v-if="showDetail"
@@ -695,6 +684,14 @@ const clearStatuses = () => {
         @newTask="addEditTask"
         :index="storeIndex"
         @saveDelete="removeTask"
+      />
+    </teleport>
+    <teleport to="#body">
+      <Boardvisibility
+        v-if="showVisibility"
+        :board="matchedBoards"
+        @newBoard="EditVisibilities"
+        @close="setCloseVisibility"
       />
     </teleport>
   </div>

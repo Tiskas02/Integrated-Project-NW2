@@ -64,8 +64,7 @@ const updateStatus = (statusName) => {
   });
   isDropdownOpen.value = false; // Close the dropdown after selection
 };
-console.log("status", props.status);
-console.log("statuses", statuses);
+
 </script>
 
 <template>
