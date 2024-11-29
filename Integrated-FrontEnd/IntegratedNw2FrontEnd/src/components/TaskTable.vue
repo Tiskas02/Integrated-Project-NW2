@@ -327,6 +327,22 @@ const clearStatuses = () => {
       >
         {{ nameboard }} Personal Board !
       </div>
+      <div>
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <span class="label-text mx-2" >
+                {{ storeVisibility ? "public" : "private" }}
+              </span>
+              <input
+                type="checkbox"
+                class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
+                v-model="storeVisibility"
+                @click="setVisibility()"
+                :checked="checkToggle"
+              />
+            </label>
+          </div>
+        </div>
       <div class="flex justify-start items-center gap-4 my-4">
         <div
           class="flex items-center gap-2 bg-white rounded-full shadow-md transition-all duration-700"
@@ -378,44 +394,16 @@ const clearStatuses = () => {
       </div>
     </div>
   </div>
-
+  <div class="flex justify-center text-2xl font-bold text-gray-900 ml-4 my-4 hover:bg-gradient-to-r from-blue-800 via-blue-400 to-blue-200  hover:text-transparent hover:bg-clip-text hover:duration-500">
+    Task Management
+  </div>
   <div>
-    <div class="w-full flex justify-center my-3">
-      <div
-        class="itbkk-board-name font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
-      >
-        Board name : {{ nameboard }}
-      </div>
-    </div>
-    <div class="w-full flex justify-center my-3">
-      <div
-        class="font-rubik font-medium text-4xl text-slate-500 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
-      >
-        Manage Task
-      </div>
-    </div>
-
     <div
       class="w-full h-16 flex justify-between sm:flex-nowrap mobile:flex-wrap mobile:justify-end tablet:justify-between"
     >
       <div class="w-[95%] h-full m-auto flex justify-start items-center px-6">
         <div class="font-bold text-slate-700">Tool Bar :</div>
-        <div>
-          <div class="form-control">
-            <label class="label cursor-pointer">
-              <span class="label-text mx-2" >
-                {{ storeVisibility ? "public" : "private" }}
-              </span>
-              <input
-                type="checkbox"
-                class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
-                v-model="storeVisibility"
-                @click="setVisibility()"
-                :checked="checkToggle"
-              />
-            </label>
-          </div>
-        </div>
+        
         <div class="my-2 flex">
           <div
             class="itbkk-button-add btn btn-outline mx-5"
