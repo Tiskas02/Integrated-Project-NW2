@@ -78,7 +78,6 @@ async function addTask(newTask, id) {
       }),
     })
     const addedTask = await res.json()
-    console.log(addedTask);
     return addedTask
   } catch (error) {
     console.log(`error: ${error}`)
@@ -103,6 +102,7 @@ async function deleteItemById(routerId, id) {
 
 async function editTask(routerId, id,updatedTask) {
   try {
+    console.log(updatedTask);
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${routerId}/tasks/${id}`, {
       method: "PUT",

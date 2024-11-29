@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref, computed, onMounted } from "vue"
+import { defineProps, defineEmits, ref, computed, onMounted,watch } from "vue"
 import { useStoreStatus } from "@/stores/statusStores"
 import { useRoute } from "vue-router"
 import NavBar from "@/shared/NavBar.vue";
@@ -60,28 +60,13 @@ const toggleDropdown = () => {
 };
 const updateStatus = (statusName) => {
   selectedStatus.value = statusName;
-  newTask.statusId = allStatus.value.find((status) => status.name === statusName).id
-  console.log(newTask.statusId);
-  
+  newTask.value.statusId = allStatus.value.find((status) => status.name === statusName).id
   isDropdownOpen.value = false; // Close the dropdown after selection
 };
 
-computed(newTask.value, () => {
-  Errortext.value.title == "" &&
-    Errortext.value.description == "" &&
-    Errortext.value.assignee == ""
-  if (newTask.value.title.trim().length > 100) {
-    Errortext.value.title = "Title has longer than 100 character"
-  } else if (newTask.value.title.trim().length == 0) {
-    Errortext.value.title = "Title can not be empty!!"
-  } else if (newTask.value.description.trim().length > 500) {
-    Errortext.value.description = "Description has longer than 500 character"
-  } else if (newTask.value.assignees.trim().length > 30) {
-    Errortext.value.assignees = "Assignees has longer than 30 character"
-  } else {
-    Errortext.value.assignees = ""
-  }
-})
+// watch(newTask, (newValue) => {
+//   console.log(newValue);
+// }, { deep: true })
 </script>
 
 <template>

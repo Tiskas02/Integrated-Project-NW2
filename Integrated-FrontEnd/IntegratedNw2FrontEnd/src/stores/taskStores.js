@@ -23,7 +23,11 @@ export const useStoreTasks = defineStore("tasks", () => {
   async function createTask(task, id) {
     try {
       const addedTask = await addTask(task, id);
-      tasks.value.push(addedTask);
+      tasks.value.push({
+        ...addedTask, 
+        status: { id: addedTask.status.statusId, name: addedTask.status.statusName },
+      });
+      
       return addedTask;
     } catch (error) {
       throw new Error(error.message);
@@ -45,11 +49,14 @@ export const useStoreTasks = defineStore("tasks", () => {
 
   async function updateTask(routeId, id, task) {
     try {
-      console.log(task);
-      
       const updatedTask = await editTask(routeId, id, task);
       const taskIndex = tasks.value.findIndex((task) => task.id === id);
-      tasks.value[taskIndex] = updatedTask;
+      tasks.value[taskIndex] = {
+        ...updatedTask, 
+        status: { id: updatedTask.status.statusId, name: updatedTask.status.statusName },
+      };
+      console.log(tasks.value);
+      
       return updatedTask;
     } catch (error) {
       throw new Error(error.message);
@@ -59,10 +66,8 @@ export const useStoreTasks = defineStore("tasks", () => {
   async function sortTasksByStatus(sortOrder) {
     if (sortOrder === "DEFAULT") {
       tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name));
-      console.log(tasks.value);
     } else if (sortOrder === "ASC") {
       tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name));
-      console.log(tasks.value);
     } else {
       tasks.value.sort((a, b) => a.id - b.id);
     }

@@ -69,11 +69,11 @@ onMounted(async () => {
     );
     matchedBoards.value = nameCollab;
     nameboard.value = matchedBoards.value[0].name;
+    console.log(matchedBoard.value);
+    
   }
   storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC";
   storeTasks.value = data;
-  console.log(storeTasks.value);
-  
 });
 
 watch(
@@ -189,7 +189,7 @@ const addEditTask = async (newTask) => {
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         assignees: newTask.assignees,
-        statusId: newTask.status.id,
+        statusId: newTask.statusId,
         title: newTask.title.trim(),
         description: newTask.descriptio
           ? newTask.description.trim()
@@ -207,7 +207,7 @@ const addEditTask = async (newTask) => {
         id: newTask.id,
         title: newTask.title.trim(),
         assignees: newTask.assignees.trim(),
-        statusId: newTask.status.id,
+        statusId: newTask.statusId,
         description: newTask.description
           ? newTask.description.trim()
           : newTask.description,
