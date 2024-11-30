@@ -1,30 +1,30 @@
 <script setup>
-import BaseBtn from "../shared/BaseBtn.vue";
-import Autocomplete from "../shared/AutoComplete.vue";
-import { defineEmits, ref, computed } from "vue";
-const emit = defineEmits(["close", "newCollab"]);
+import BaseBtn from "../shared/BaseBtn.vue"
+import Autocomplete from "../shared/AutoComplete.vue"
+import { defineEmits, ref, computed } from "vue"
+const emit = defineEmits(["close", "newCollab"])
 const newCollab = ref({
   email: "",
   accessRight: "READ",
-});
-const isDropdownOpen = ref(false);
-const accessRights = ["READ", "WRITE"];
+})
+const isDropdownOpen = ref(false)
+const accessRights = ["READ", "WRITE"]
 const selectAccessRight = (nameAcess) => {
-  newCollab.value.accessRight = nameAcess;
-  console.log(newCollab.value);
-};
+  newCollab.value.accessRight = nameAcess
+  console.log(newCollab.value)
+}
 const updateEmail = (value) => {
-  newCollab.value.email = value; // Update the email when receiving input
-};
-const selectedAcess = ref(accessRights[0]);
+  newCollab.value.email = value // Update the email when receiving input
+}
+const selectedAcess = ref(accessRights[0])
 const toggleDropdown = () => {
-  isDropdownOpen.value = !isDropdownOpen.value;
-};
+  isDropdownOpen.value = !isDropdownOpen.value
+}
 const updateAcess = (accessName) => {
-  selectedAcess.value = accessName;
-  selectAccessRight(accessName);
-  isDropdownOpen.value = false; // Close the dropdown after selection
-};
+  selectedAcess.value = accessName
+  selectAccessRight(accessName)
+  isDropdownOpen.value = false // Close the dropdown after selection
+}
 </script>
 
 <template>
@@ -118,7 +118,7 @@ const updateAcess = (accessName) => {
                   </div>
                 </div>
               </div>
-              
+
               <div class="flex flex-row w-full justify-end my-4">
                 <div class="flex">
                   <BaseBtn
@@ -128,8 +128,8 @@ const updateAcess = (accessName) => {
                       <button
                         @click="
                           () => {
-                            emit('close', false);
-                            emit('newCollab', newCollab);
+                            emit('close', false)
+                            emit('newCollab', newCollab)
                           }
                         "
                       >
@@ -137,12 +137,12 @@ const updateAcess = (accessName) => {
                       </button>
                     </template>
                   </BaseBtn>
-                  <BaseBtn class="itbkk-button-cancel ">
+                  <BaseBtn class="itbkk-button-cancel">
                     <template #cancel>
                       <button
                         @click="
                           () => {
-                            emit('close', false);
+                            emit('close', false)
                           }
                         "
                       >
