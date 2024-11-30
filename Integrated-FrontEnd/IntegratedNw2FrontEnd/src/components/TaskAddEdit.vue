@@ -1,7 +1,8 @@
 <script setup>
-import { defineProps, defineEmits, ref, computed, onMounted } from "vue"
+import { defineProps, defineEmits, ref, computed, onMounted,watch } from "vue"
 import { useStoreStatus } from "@/stores/statusStores"
 import { useRoute } from "vue-router"
+import NavBar from "@/shared/NavBar.vue";
 const route = useRoute()
 const emit = defineEmits(["close", "sentData"])
 const statusStore = useStoreStatus()
@@ -52,45 +53,42 @@ const assigneesCharCount = computed(() =>
 const descriptionCharCount = computed(() =>
   newTask.value.description ? newTask.value.description.length : 0
 )
+const selectedStatus = ref(props?.task?.status?.name ?? "No Status");
+const isDropdownOpen = ref(false);
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+const updateStatus = (statusName) => {
+  selectedStatus.value = statusName;
+  newTask.value.statusId = allStatus.value.find((status) => status.name === statusName).id
+  isDropdownOpen.value = false; // Close the dropdown after selection
+};
 
-computed(newTask.value, () => {
-  Errortext.value.title == "" &&
-    Errortext.value.description == "" &&
-    Errortext.value.assignee == ""
-  if (newTask.value.title.trim().length > 100) {
-    Errortext.value.title = "Title has longer than 100 character"
-  } else if (newTask.value.title.trim().length == 0) {
-    Errortext.value.title = "Title can not be empty!!"
-  } else if (newTask.value.description.trim().length > 500) {
-    Errortext.value.description = "Description has longer than 500 character"
-  } else if (newTask.value.assignees.trim().length > 30) {
-    Errortext.value.assignees = "Assignees has longer than 30 character"
-  } else {
-    Errortext.value.assignees = ""
-  }
-})
+// watch(newTask, (newValue) => {
+//   console.log(newValue);
+// }, { deep: true })
 </script>
 
 <template>
   <div>
     <div>
       <div
-        class="itbkk-modal-task bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-50 left-50 pt-10 z-[2]"
+        class="itbkk-modal-task bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-16 tablet:pt-20"
         style="translate: transform(-50%, -50%)"
       >
-        <div class="w-[60%] m-[auto] max-h-screen">
+        <div class="w-full tablet:w-[60%] laptop:w-[600px] m-[auto] max-h-screen">
           <div
-            class="overflow-auto max-h-screen flex flex-col justify-between bg-white p-7 border-gray-200 rounded-lg shadow-xl"
+            class="overflow-auto max-h-screen flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-b-xl tablet:rounded-lg shadow-xl"
           >
             <div>
-              <div class="text-xl font-bold my-3">
+              <div class="text-xl font-bold my-3 text-white">
                 {{ mode === "add" ? "Add Task" : "Edit Task" }}
               </div>
               <div class="border-b my-2"></div>
-              <div class="text-lg z-0">Title</div>
+              <div class="text-lg font-bold text-white">Title</div>
               <div>
                 <textarea
-                  class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                  class="itbkk-title w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 placeholder:text-white"
                   placeholder="Enter your title here..."
                   required
                   maxlength="100"
@@ -98,49 +96,85 @@ computed(newTask.value, () => {
                   >{{ task?.title }}</textarea
                 >
               </div>
-              <div class="flex justify-end text-xs">
+              <div class="flex justify-end text-xs text-white">
                 {{ titleCharCount }}/100
               </div>
             </div>
-            <div class="flex my-1">
-              <div class="max-w-fit my-auto mx-6">Status</div>
-
-              <div>
-                <label class="form-control w-full max-w-xs">
-                  <!-- Dropdown select -->
-                  <select
-                    class="itbkk-status select select-info w-full max-w-xs bg-slate-100 shadow-inner text-black border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                    v-model="newTask.statusId"
+            <div class="flex flex-col my-1">
+              <div class="text-lg font-bold text-white">Status</div>
+              <div class="inline-block text-left">
+                <!-- Dropdown button -->
+                <div>
+                  <button
+                    type="button"
+                    @click="toggleDropdown"
+                    class="inline-flex justify-center w-full text-white font-semibold rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-[#b3d1e8] text-sm   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    id="menu-button"
+                    aria-expanded="true"
+                    aria-haspopup="true"
                   >
-                    <option disabled :value="null">Select a Status</option>
-                    <option
+                    {{ selectedStatus}}
+                    <!-- Chevron Icon -->
+                    <svg
+                      class="-mr-1 ml-2 h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Dropdown menu -->
+                <div
+                  v-if="isDropdownOpen"
+                  class="absolute mt-2 w-[375px] tablet:w-[405px] laptop:w-[545px] rounded-md shadow-lg bg-[#b3d1e8] ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="menu-button"
+                  tabindex="-1"
+                >
+                  <div class="py-1 text-center " role="none">
+                    <a
                       v-for="status in allStatus"
                       :key="status.id"
-                      :value="status.id"
+                      href="#"
+                      @click.prevent="updateStatus(status.name)"
+                      class="block px-4 py-2 text-sm text-white font-semibold hover:bg-gray-100 hover:text-gray-900 border-b border-gray-100"
+                      role="menuitem"
+                      tabindex="-1"
+                      :id="`menu-item-${status.id}`"
                     >
                       {{ status.name }}
-                    </option>
-                  </select>
-                </label>
+                    </a>
+                  </div>
+                </div>
               </div>
+             
             </div>
-            <div class="flex">
-              <div class="my-auto mx-2">Assignees</div>
+            <div class="flex flex-col">
+              <div class="text-lg font-bold text-white">Assignees</div>
               <div>
                 <div class="w-full">
                   <textarea
-                    class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-slate-100 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic"
+                    class="itbkk-assignees w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 italic placeholder:text-slate-100"
                     :placeholder="
                       task?.assignees
-                        ? 'Enter your assign here...'
-                        : 'Unassigned'
+                        ? task?.assignees
+                        : 'Enter your assign here...'
                     "
                     maxlength="30"
                     v-model="newTask.assignees"
                     >{{ task?.assignees }}</textarea
                   >
                 </div>
-                <div class="flex justify-end text-xs">
+                <div class="flex justify-end text-xs text-white">
                   {{ assigneesCharCount }}/30
                 </div>
               </div>
@@ -165,18 +199,15 @@ computed(newTask.value, () => {
                 </div>
               </div>
             </div>
-            <div class="mt-5">
-              <div role="tablist" class="tabs tabs-bordered mb-3">
-                <a role="tab" class="tab tab-active text-lg font-bold"
-                  >Description</a
-                >
-                <a role="tab" class="tab"></a>
-                <a role="tab" class="tab"></a>
+            <div>
+              <div>
+                <div class="text-lg font-bold text-white">Description</div>
+                <div class="border w-full my-1"></div>
               </div>
               <div>
                 <div>
                   <textarea
-                    class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-slate-100 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner"
+                    class="itbkk-description w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 shadow-inner placeholder:text-slate-100"
                     :placeholder="
                       task?.description
                         ? 'Enter your description here...'
@@ -187,7 +218,7 @@ computed(newTask.value, () => {
                     >{{ task?.description }}</textarea
                   >
                 </div>
-                <div class="flex justify-end text-xs pb-3">
+                <div class="flex justify-end text-xs pb-3 text-white">
                   {{ descriptionCharCount }}/500
                 </div>
               </div>
@@ -197,7 +228,7 @@ computed(newTask.value, () => {
               <div class="mr-2">
                 <div v-if="mode !== 'view'">
                   <button
-                    class="itbkk-button-confirm disabled btn btn-info text-white"
+                    class="itbkk-button-confirm disabled btn bg-gradient-to-r from-blue-700 to-blue-300 border-none text-white"
                     @click="
                       () => {
                         $router.go(-1)
@@ -221,7 +252,7 @@ computed(newTask.value, () => {
               </div>
               <div>
                 <div
-                  class="itbkk-button-cancel btn btn-error text-white"
+                  class="itbkk-button-cancel btn bg-gradient-to-r from-red-700 to-red-300 border-none text-white"
                   @click="
                     () => {
                       $router.go(-1)

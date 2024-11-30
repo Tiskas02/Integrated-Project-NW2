@@ -102,6 +102,7 @@ async function deleteItemById(routerId, id) {
 
 async function editTask(routerId, id,updatedTask) {
   try {
+    console.log(updatedTask);
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${routerId}/tasks/${id}`, {
       method: "PUT",
@@ -114,6 +115,7 @@ async function editTask(routerId, id,updatedTask) {
       }),
     })
     const editedTask = await res.json()
+    console.log(editedTask);
     return editedTask
   } catch (error) {
     console.log(`error: ${error}`)

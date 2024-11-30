@@ -54,10 +54,20 @@ export const useStoreBoard = defineStore("boards", () => {
 
   async function updateVisibility(id, visibility) {
     try {
+      console.log(id);
       
       const updatedBoard = await updateBoardVisibility(id, visibility)
-      const index = boards.value.findIndex((board) => board.id === id)
-      boards.value[index] = updatedBoard
+      const index = boards.value.findIndex((board) => board.boards.id === id)
+      boards.value[index] = {
+        boards: {
+          ...boards.value[index].boards,
+          visibility: updatedBoard.visibility
+        },
+        collabIn:[
+          ...boards.value[index].collabIn
+      ]
+
+      }
       return updatedBoard
     } catch (error) {
       throw new Error(error.message)

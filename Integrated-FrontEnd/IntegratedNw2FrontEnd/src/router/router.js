@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import NotFound from "../views/NotFound.vue"
-import TaskHome from "@/views/TaskHome.vue"
+import TaskHome from "@/views/Home.vue"
 import TaskModal from "@/components/TaskModal.vue"
 import StatusTable from "@/components/StatusTable.vue"
 import TaskAddEdit from "@/components/TaskAddEdit.vue"
@@ -8,6 +8,7 @@ import StatusAddEdit from "@/components/StatusAddEdit.vue"
 import Login from "@/components/Login.vue"
 import BoardHome from "@/views/BoardHome.vue"
 import CollaberaterTable from "@/components/CollaberaterTable.vue"
+import NavBar from "@/shared/NavBar.vue"
 const url = import.meta.env.VITE_BASE_URL
 
 function parseJwt(token) {
@@ -73,6 +74,11 @@ const routes = [
     name: "board",
     component: BoardHome,
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/nav",
+    name: "nav",
+    component: NavBar,
   },
   {
     path: "/board/:id/task",

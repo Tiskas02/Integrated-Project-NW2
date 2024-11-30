@@ -82,7 +82,7 @@ public class StatusServiceV3 {
     @Transactional
     public NewStatusIDDTO updateStatus(Integer statusId, NewStatusDTO status) {
         StatusV3 oldStatusV3 = statusRepositoriesV3.findById(statusId).
-                orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "NOT FOUND ID:" + statusId));
+                orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "NOT FOUND ID:" + statusId));
         StatusV3 statusDuplicate = statusRepositoriesV3.findByStatusNameIgnoreCaseAndBoard(status.getName(),oldStatusV3.getBoard());
         if (statusDuplicate != null && !oldStatusV3.getStatusName().equalsIgnoreCase(status.getName())){
                 throw new TaskNameDuplicatedException("must be unique");
@@ -98,7 +98,7 @@ public class StatusServiceV3 {
     @Transactional
     public StatusV3 deleteStatus(Integer id) throws ItemNotFoundException{
         StatusV3 statusToDelete = statusRepositoriesV3.findById(id)
-                .orElseThrow(() -> new ItemErrorNotFoundException("STATUS ID:" + id + "NOT FOUND"));
+                .orElseThrow(() -> new ItemNotFoundException(HttpStatus.NOT_FOUND, "STATUS ID:" + id + "NOT FOUND"));
         if (statusToDelete.getStatusName().equalsIgnoreCase("No Status") || statusToDelete.getStatusName().equalsIgnoreCase("Done")) {
             throw new ItemErrorNotFoundException(statusToDelete.getStatusName() + " cannot be deleted");
         }
@@ -143,5 +143,13 @@ public class StatusServiceV3 {
                 .orElseThrow(() -> new ItemNotFoundException(HttpStatus.FORBIDDEN, "Not Found"));
         List<TaskV3> tasks = tasksRepositoriesV3.findAllByStatus(status);
         return !tasks.isEmpty();
+    }
+
+//    public boolean isStatusAvailable(int id, String boardId) {
+//        return repository.existsByIdAndStBoard(id, boardId);
+//    }
+
+    public boolean isStatusAvailable(Integer statusId, String boardId){
+        return statusRepositoriesV3.existsByBoardIdAndStatusId(boardId, statusId);
     }
 }
