@@ -15,15 +15,17 @@ const newBoard = ref({
     >
       <div class="w-full tablet:w-[60%] m-[auto] max-h-screen laptop:w-[40%]">
         <div
-          class="overflow-auto max-h-screen flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-b-2xl tablet:rounded-xl  shadow-xl"
-          >
+          class="overflow-auto max-h-screen flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-b-2xl tablet:rounded-xl shadow-xl"
+        >
           <div class="itbkk-modal-new">
-            <div class="text-xl font-bold my-3 text-white">Create personal board</div>
+            <div class="text-xl font-bold my-3 text-white">
+              Create personal board
+            </div>
             <div class="border-b my-2"></div>
             <div class="text-lg z-0 text-white">Name</div>
             <div>
               <textarea
-                class="itbkk-title itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] bg-opacity-40 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 placeholder:text-white "
+                class="itbkk-title itbkk-board-name w-full h-[90%] px-4 py-2 my-1 bg-[#b3d1e8] bg-opacity-40 shadow-inner text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 placeholder:text-white"
                 placeholder="Enter board name"
                 required
                 maxlength="120"
@@ -32,7 +34,7 @@ const newBoard = ref({
             </div>
           </div>
           <div class="flex flex-row w-full justify-end my-4">
-            <div class="flex ">
+            <div class="flex">
               <BaseBtn class="itbkk-button-confirm itbkk-button-ok mx-4 mt-3">
                 <template #default>
                   <button
@@ -42,7 +44,6 @@ const newBoard = ref({
                         emit('newBoard', newBoard)
                       }
                     "
-                    
                   >
                     Save
                   </button>
