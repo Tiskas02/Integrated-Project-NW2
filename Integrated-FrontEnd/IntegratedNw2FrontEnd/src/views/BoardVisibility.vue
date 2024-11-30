@@ -8,14 +8,10 @@ const props = defineProps({
 
 const newBoard = ref({ ...props.board })
 
-console.log(props.board.boards)
+console.log(props.board.boards.visibility)
 
 const toggleVisibility = () => {
-  // Toggle the visibilities field
-  console.log(newBoard.value.boards)
-  console.log(newBoard.value.boards.visibility)
   if (newBoard.value.boards.visibility === "PUBLIC") {
-  
     newBoard.value.visibilities = "PRIVATE"
     console.log(newBoard.value.visibilities)
   } else {

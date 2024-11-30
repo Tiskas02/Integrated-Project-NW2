@@ -197,7 +197,7 @@ const setClose = (value) => {
       <div class="min-w-full divide-y divide-gray-200">
         <div v-if="statuses.length <= 0" class="w-full border-none h-24">
           <div class="flex justify-center items-center h-full">
-            <p class="text-xl font-bold animate-bounce text-slate-500">
+            <p class="text-xl font-bold  text-slate-500">
               No Status
             </p>
           </div>

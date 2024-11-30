@@ -68,7 +68,7 @@ function resetSuggestions() {
       @keydown.down.prevent="highlightNext"
       @keydown.up.prevent="highlightPrevious"
       @keydown.enter.prevent="selectSuggestion"
-      class="w-full p-2 border rounded-lg outline-none focus:ring focus:ring-blue-400"
+      class="w-full p-2 border rounded-lg outline-none bg-[#b3d1e8] focus:ring focus:ring-blue-400 placeholder:text-slate-100"
       placeholder="Type your email to add collab..."
     />
     <ul

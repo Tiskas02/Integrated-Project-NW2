@@ -30,6 +30,7 @@ const selectFilter = ref([]);
 const routerId = ref(route.params.id);
 const allStatus = ref([]);
 const matchedBoards = ref();
+const storeChangeVisibility = ref();
 const nameboard = ref();
 const boardVisibility = ref();
 const storeVisibility = ref();
@@ -58,9 +59,8 @@ onMounted(async () => {
   await boardStore.fetchBoards(token.oid);
   const data = await tasksStore.fetchTasks(routerId.value, token.oid);
   const matchedBoard = boardStore.matchUserBoard(routerId.value);
-
   if (matchedBoard !== "Board not found") {
-    matchedBoards.value = matchedBoard;
+    matchedBoards.value = matchedBoard
     nameboard.value = matchedBoards.value.boards.name;
   } else {
     const nameCollab = await boardStore.fetchBoardsByCollabId(
@@ -68,9 +68,7 @@ onMounted(async () => {
       token.oid
     );
     matchedBoards.value = nameCollab;
-    nameboard.value = matchedBoards.value[0].name;
-    console.log(matchedBoard.value);
-    
+    nameboard.value = matchedBoards.value[0].name;    
   }
   storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC";
   storeTasks.value = data;
@@ -260,7 +258,13 @@ const EditVisibilities = async (value) => {
 };
 
 const setVisibility = () => {
+  const toVisibility = boardStore.matchUserBoard(routerId.value);
+  console.log(toVisibility);
+  
+  storeChangeVisibility.value = toVisibility
+  console.log(storeChangeVisibility.value);
   showVisibility.value = true;
+  
 };
 
 const SortOrder = async () => {
@@ -492,9 +496,9 @@ const getColorForStatus = (statusName, statuses) => {
     </div>
   </div>
   <div class="h-[800px] tablet:h-[900px] laptop:h-[1000px]">
-    <div class="w-[420px] tablet:w-[750px] laptop:w-full flex tablet:justify-start laptop:justify-center tablet:mx-4 laptop:mx-4 justify-center ">
+    <div class="w-[410px] tablet:w-[750px] laptop:w-full flex tablet:justify-start laptop:justify-center tablet:mx-4 laptop:mx-4 justify-center ">
       <div
-        class="shadow-2xl rounded-md w-[400px] tablet:w-[650px] laptop:w-[95%] h-[95%] shadow-yellow-500/10 overflow-auto"
+        class="shadow-2xl rounded-md w-[360px] tablet:w-[650px] laptop:w-[95%] h-[95%] shadow-yellow-500/10 overflow-auto"
       >
         <div
           class="w-[800px] laptop:w-full h-[600px] tablet:h-[700px] laptop:h-[800px] divide-y divide-gray-200 overflow-auto"
@@ -593,7 +597,7 @@ const getColorForStatus = (statusName, statuses) => {
           </div>
           <div v-if="tasks.length <= 0" class="w-full border bg-white h-24">
             <div class="flex justify-center items-center h-full">
-              <p class="text-xl font-bold animate-bounce text-slate-500">
+              <p class="text-xl font-bold  text-slate-500">
                 No task
               </p>
             </div>
@@ -690,7 +694,7 @@ const getColorForStatus = (statusName, statuses) => {
     <teleport to="#body">
       <Boardvisibility
         v-if="showVisibility"
-        :board="matchedBoards"
+        :board="storeChangeVisibility"
         @newBoard="EditVisibilities"
         @close="setCloseVisibility"
       />

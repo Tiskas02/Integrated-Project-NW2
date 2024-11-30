@@ -138,7 +138,7 @@ const setModal = (value) => {
       <div class="min-w-full divide-y divide-gray-200">
         <div v-if="collabs.length <= 0" class="w-full border-none h-24">
           <div class="flex justify-center items-center h-full z-0">
-            <p class="text-xl font-bold animate-bounce text-slate-500">
+            <p class="text-xl font-bold text-slate-500">
               No Collaborator
             </p>
           </div>
