@@ -1,6 +1,6 @@
 <script setup>
-import BaseBtn from "@/shared/BaseBtn.vue";
-import Autocomplete from "@/shared/Autocomplete.vue";
+import BaseBtn from "../shared/BaseBtn.vue";
+import Autocomplete from "../shared/AutoComplete.vue";
 import { defineEmits, ref, computed } from "vue";
 const emit = defineEmits(["close", "newCollab"]);
 const newCollab = ref({
