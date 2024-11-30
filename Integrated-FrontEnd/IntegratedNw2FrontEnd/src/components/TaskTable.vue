@@ -201,6 +201,7 @@ const addEditTask = async (newTask) => {
         });
       }
     } else {
+      console.log(newTask);
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         title: newTask.title.trim(),
@@ -259,8 +260,6 @@ const EditVisibilities = async (value) => {
 
 const setVisibility = () => {
   const toVisibility = boardStore.matchUserBoard(routerId.value);
-  console.log(toVisibility);
-  
   storeChangeVisibility.value = toVisibility
   console.log(storeChangeVisibility.value);
   showVisibility.value = true;

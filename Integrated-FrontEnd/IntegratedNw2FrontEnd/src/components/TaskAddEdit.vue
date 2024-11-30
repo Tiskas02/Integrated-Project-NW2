@@ -23,6 +23,7 @@ const props = defineProps({
     },
   },
 })
+console.log(props.task);
 
 const defaultStatus = ref({
   statusId: null,
@@ -31,15 +32,17 @@ const defaultStatus = ref({
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus(routerId.value)
   const noStatus = allStatus.value.find((status) => status.name === "No Status")
-
   if (noStatus) {
     defaultStatus.value.statusId = noStatus.id
   }
 })
+console.log(props.task);
+
+
 
 const newTask = ref({
   ...props.task,
-  statusId: props.task?.status?.statusId ?? defaultStatus.value.statusId,
+  statusId: props.task?.status?.id ?? defaultStatus.value.statusId,
 })
 
 const titleCharCount = computed(() =>
@@ -180,24 +183,28 @@ const updateStatus = (statusName) => {
               </div>
             </div>
             <div v-if="mode === 'edit'">
-              <div class="flex itbkk-timezone my-1">
-                <div class="2xl:w-[13%] sm:w-[17%]">TimeZone</div>
-                <div>
-                  {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+              <div class="flex flex-row">
+                  <div class="mr-2 text-sm font-chivo text-white">TimeZone</div>
+                  <div class="text-sm font-chivo text-white">
+                    🌏 {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+                  </div>
                 </div>
-              </div>
-              <div class="flex itbkk-created-on my-1">
-                <div class="2xl:w-[13%] sm:w-[17%]">Created On</div>
-                <div>
-                  {{ new Date(task?.createdOn).toLocaleString("en-GB") }}
-                </div>
-              </div>
-              <div class="flex itbkk-updated-on my-1">
-                <div class="2xl:w-[13%] sm:w-[17%]">Updated On</div>
-                <div>
-                  {{ new Date(task?.updatedOn).toLocaleString("en-GB") }}
-                </div>
-              </div>
+                <div class="flex flex-row">
+                  <div class="border w-full rounded-md px-2 py-1 my-2">
+                    <div class="flex itbkk-created-on my-1">
+                      <div class="overflow-auto mr-1 text-white">Created On :</div>
+                      <div class="text-white">
+                        {{ new Date(task?.createdOn).toLocaleString("en-GB") }}
+                      </div>
+                    </div>
+                    <div class="flex itbkk-updated-on my-1">
+                      <div class="overflow-auto mr-1 text-white">Updated On :</div>
+                      <div class="text-white">
+                        {{ new Date(task?.updatedOn).toLocaleString("en-GB") }}
+                      </div>
+                    </div>
+                  </div>
+                  </div>
             </div>
             <div>
               <div>
@@ -242,7 +249,7 @@ const updateStatus = (statusName) => {
                         (newTask.description ?? '') ===
                           (task?.description ?? '') &&
                         (newTask.statusId ?? '') ===
-                          (task?.status?.statusId ?? '') &&
+                          (task?.status?.id ?? '') &&
                         (newTask.title ?? '') === (task?.title ?? ''))
                     "
                   >
