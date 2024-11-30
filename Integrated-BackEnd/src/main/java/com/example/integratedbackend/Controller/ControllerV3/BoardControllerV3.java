@@ -895,6 +895,24 @@ public class BoardControllerV3 {
         }
     }
 
+    @PatchMapping("/{boardId}/collabs/invitations")
+    public ResponseEntity<Collab> updateCollabStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String boardId,
+            @RequestBody Collab newCollab) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        }
+        String jwt = authHeader.substring(7);
+        String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
+
+        Collab collab = collabService.updateStatusCollaborator(boardId, newCollab, userId);
+        return ResponseEntity.ok(collab);
+
+    }
+
+
     @DeleteMapping("/{boardId}/collabs/{collabId}")
     public ResponseEntity<Collab> deleteCollab(
             @RequestHeader("Authorization") String authHeader,

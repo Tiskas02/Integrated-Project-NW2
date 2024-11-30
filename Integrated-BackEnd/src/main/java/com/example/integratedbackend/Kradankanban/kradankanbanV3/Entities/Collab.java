@@ -33,9 +33,19 @@ public class Collab {
     @Enumerated(EnumType.STRING)
     private AccessRight accessRight = AccessRight.READ;
 
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PENDING;
+
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_boardId", insertable = false, updatable = false)
     private Boards board;
+
+
+    public enum Status {
+        PENDING, ACCEPTED
+    }
 
 }
