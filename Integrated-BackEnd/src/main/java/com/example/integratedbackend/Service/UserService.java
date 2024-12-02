@@ -40,14 +40,14 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-//public static User getCurrentUser() {
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    if (authentication != null && authentication.getPrincipal() instanceof User) {
-//        return (User) authentication.getPrincipal();
-//    }
-//
-//    return (User) authentication.getPrincipal();
-//}
+public static User getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getPrincipal() instanceof User) {
+        return (User) authentication.getPrincipal();
+    }
+
+    return (User) authentication.getPrincipal();
+}
 
 
 

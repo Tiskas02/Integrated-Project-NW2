@@ -11,6 +11,7 @@ import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.Us
 import com.example.integratedbackend.Service.UserService;
 import com.example.integratedbackend.Users.User;
 import com.example.integratedbackend.Users.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +36,8 @@ public class CollabService {
     @Autowired
     private UserService userService;
     @Autowired
+    private MailSenderService mailSenderService;
+    @Autowired
     ModelMapper modelMapper;
     @Autowired
     private UsersRepositoriesV3 usersRepositoriesV3;
@@ -46,6 +50,7 @@ public class CollabService {
         collabDTO.setOid(collab.getUserId());
         collabDTO.setOwnerName(collab.getBoard().getUsers().getName());
         collabDTO.setAccessRight(collab.getAccessRight());
+        collabDTO.setStatus(collab.getStatus());
         collabDTO.setAddedOn(collab.getAddedOn());
         collabDTO.setBoardId(collab.getBoardId());
         collabDTO.setName(user.getName());
@@ -217,32 +222,18 @@ public class CollabService {
         collabDTO.setName(user.getName());
         collabDTO.setEmail(user.getEmail());
         collabDTO.setAccessRight(collab.getAccessRight());
+        collabDTO.setStatus(Collab.Status.PENDING);
         collabDTO.setAddedOn(collab.getAddedOn());
+
+        try {
+            mailSenderService.sendSimpleMail(user.getUsername(), user.getEmail(), boards.getName(), collabRequestDTO.getAccessRight(), boardId);
+        }catch (MessagingException | UnsupportedEncodingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
 
         return collabDTO;
     }
 
-//    @Transactional
-//    public Collab deleteCollaborator(String boardId, String userId) {
-//        boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
-//                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
-//        usersRepositoriesV3.findById(userId).orElseThrow(() ->
-//                new ItemNotFoundException(HttpStatus.NOT_FOUND, "User not found"));
-//
-//        Collab collaboratorToDelete = collabRepositoriesV3.getByBoardIdAndUserId(boardId, userId);
-//        if (collaboratorToDelete == null) {
-//            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found");
-//        }
-//
-//        collabRepositoriesV3.delete(collaboratorToDelete);
-//
-//        //check existing collab after deleted
-//        boolean existsAfterDelete = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId).isPresent();
-//        if (existsAfterDelete) {
-//            throw new RuntimeException("Deletion failed: Collaborator still exists");
-//        }
-//        return modelMapper.map(collaboratorToDelete, Collab.class);
-//    }
 
     @Transactional
     public Collab deleteCollaborator(String boardId, String userId) {
@@ -253,6 +244,33 @@ public class CollabService {
 
         collabRepositoriesV3.deleteCollabByBoardIdAndUserId(collab.getBoardId(), collab.getUserId());
         collabRepositoriesV3.flush();
+
+        return collab;
+    }
+
+    @Transactional
+    public Collab updateStatusCollaborator(String boardId, Collab newCollab, String userId) {
+        Boards board = boardsRepositoriesV3.findById(boardId).orElseThrow(() ->
+                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board not found"));
+
+        Collab collab = collabRepositoriesV3.findByBoardIdAndUserId(boardId, userId).orElseThrow(() ->
+                new ItemNotFoundException(HttpStatus.NOT_FOUND, "Collaborator not found"));
+
+        if (board.getUsers().getOid().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are board owner");
+        }
+        if (collab.getStatus().equals(Collab.Status.ACCEPTED)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Collaborator is accepted");
+        }
+        if (newCollab.getStatus() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status is required");
+        }
+        if (newCollab.getStatus().equals(Collab.Status.ACCEPTED)) {
+            collab.setStatus(Collab.Status.ACCEPTED);
+            collabRepositoriesV3.save(collab);
+        }else {
+            collabRepositoriesV3.deleteCollabByBoardIdAndUserId(boardId, userId);
+        }
 
         return collab;
     }
