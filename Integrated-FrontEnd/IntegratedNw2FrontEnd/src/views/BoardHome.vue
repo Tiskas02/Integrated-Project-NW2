@@ -205,7 +205,7 @@ function formatDate(isoDate) {
             <div
               class="btn border-0 w-[380px] h-60 laptop:w-[350px] rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
               style="
-                background-image: url('/images/Background.jpg');
+                background-image: url('https://res.cloudinary.com/dyhavbbzf/image/upload/v1733736378/msdzivjvn8byjiikg2cc.jpg');
                 background-size: cover;
                 background-position: center;
               "
@@ -260,7 +260,7 @@ function formatDate(isoDate) {
             <div
               class="btn border-0 w-[380px] h-60 laptop:w-[350px] rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
               style="
-                background-image: url('/images/Collab.jpg');
+                background-image: url('https://res.cloudinary.com/dyhavbbzf/image/upload/v1733736425/rggdluwhpkfptb457uhf.png');
                 background-size: cover;
                 background-position: center;
               "

@@ -210,7 +210,7 @@ const setClose = (value) => {
             <div
               class="btn border-0 w-[187px] h-[11rem] laptop:w-60 laptop:h-48 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
               style="
-                background-image: url('/images/impressionism3.png');
+                background-image: url('https://res.cloudinary.com/dyhavbbzf/image/upload/v1733736380/l3eanxnnefwk07sonuhz.png');
                 background-size: cover;
                 background-position: center;
               "
