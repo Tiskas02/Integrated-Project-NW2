@@ -182,7 +182,7 @@ function formatDate(isoDate) {
         </div>
       </div>
     </div>
-    <div class="px-4 text-xl font-bold mb-4">{{ storeBoardType }} Board</div>
+    <div class="px-4 text-xl font-bold mb-4">{{ storeBoardType }} Board </div>
     <div v-if="storeBoardType === 'Personal'">
       <div>
         <div
