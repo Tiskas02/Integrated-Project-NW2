@@ -151,7 +151,7 @@ const setModal = (value) => {
             <div
               class="btn border-0 w-[380px] h-60 laptop:w-[350px] laptop:h-60 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
               style="
-                background-image: url('/images/impressionnism2.png');
+                background-image: url('https://res.cloudinary.com/dyhavbbzf/image/upload/v1733736380/l3eanxnnefwk07sonuhz.png');
                 background-size: cover;
                 background-position: center;
               "

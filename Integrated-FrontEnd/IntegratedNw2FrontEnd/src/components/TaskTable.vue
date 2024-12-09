@@ -502,7 +502,7 @@ const getColorForStatus = (statusName, statuses) => {
         <div
           class="w-[800px] laptop:w-full h-[600px] tablet:h-[700px] laptop:h-[800px] divide-y divide-gray-200 overflow-auto"
           style="
-            background-image: url('/images/impressionism.png');
+            background-image: url('https://res.cloudinary.com/dyhavbbzf/image/upload/v1733736424/jcw7sjnihbpmwljizi7p.png');
             background-size: cover;
             background-position: center;
           "
