@@ -1,6 +1,12 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { getAllCollabDataByUserId,getCollabDataByBoardId,addCollabData,deleteCollabUtil } from "@/libs/api/collab/fetchUtilCollab"
+import {
+  getAllCollabDataByUserId,
+  getCollabDataByBoardId,
+  addCollabData,
+  deleteCollabUtil,
+  sendInvitationEmail,
+} from "@/libs/api/collab/fetchUtilCollab"
 
 export const useStoreCollab = defineStore("collabs", () => {
   const collabs = ref([])
@@ -8,11 +14,11 @@ export const useStoreCollab = defineStore("collabs", () => {
     try {
       const noData = "No data"
       collabs.value = []
-    const collabData = await getAllCollabDataByUserId(collabId)
-    collabData.boards.forEach((collab) => {
-        collabs.value.push(collab);
-    });
-    console.log(collabs.value)
+      const collabData = await getAllCollabDataByUserId(collabId)
+      collabData.boards.forEach((collab) => {
+        collabs.value.push(collab)
+      })
+      console.log(collabs.value)
       if (collabs.value.length === 0) {
         return noData
       } else {
@@ -25,18 +31,18 @@ export const useStoreCollab = defineStore("collabs", () => {
   function addCollabDataInBoard(collab) {
     collabs.value = []
     collab.forEach((item) => {
-      collabs.value.push(item);
-    });
+      collabs.value.push(item)
+    })
     return collabs.value
   }
   async function fetchCollabsByBoardId(boardId) {
     try {
       const noData = "No data"
       collabs.value = []
-    const collabData = await getCollabDataByBoardId(boardId)
-    collabData.forEach((collab) => {
-        collabs.value.push(collab);
-    });
+      const collabData = await getCollabDataByBoardId(boardId)
+      collabData.forEach((collab) => {
+        collabs.value.push(collab)
+      })
       if (collabs.value.length === 0) {
         return noData
       } else {
@@ -46,19 +52,23 @@ export const useStoreCollab = defineStore("collabs", () => {
       console.error("Error fetching data:", error)
     }
   }
-  async function addCollab(collab,routeId) {
+  async function addCollab(collab, routeId) {
     try {
-      const newCollab = await addCollabData(collab,routeId)
-      collabs.value.push(newCollab)
+      const newCollab = await addCollabData(collab, routeId)
+      if (newCollab) {
+        console.log("New collab:", newCollab)
+        collabs.value.push(newCollab)
+      }
       return newCollab
     } catch (error) {
-      console.error("Error fetching data:", error)
+      console.error("Error adding collaborator:", error)
+      return null
     }
   }
 
-  async function deleteCollab(collabId,routeId) {
+  async function deleteCollab(collabId, routeId) {
     try {
-      const res = await deleteCollabUtil(collabId,routeId)
+      const res = await deleteCollabUtil(collabId, routeId)
       console.log(collabs.value)
       console.log("Collab ID:", collabId)
       console.log("collab.oid", collabs.oid)
@@ -73,6 +83,15 @@ export const useStoreCollab = defineStore("collabs", () => {
     }
   }
 
+  async function sendInvitation(newCollab, boardId) {
+    try {
+      const response = await sendInvitationEmail(newCollab, boardId)
+      return response
+    } catch (error) {
+      console.error("Error sending invitation:", error)
+      throw new Error(error.message)
+    }
+  }
 
   return {
     collabs,
@@ -80,6 +99,7 @@ export const useStoreCollab = defineStore("collabs", () => {
     fetchCollabsByBoardId,
     addCollab,
     deleteCollab,
-    addCollabDataInBoard
+    addCollabDataInBoard,
+    sendInvitation,
   }
 })

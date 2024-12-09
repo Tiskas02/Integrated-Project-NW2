@@ -9,6 +9,7 @@ import Login from "@/components/Login.vue"
 import BoardHome from "@/views/BoardHome.vue"
 import CollaberaterTable from "@/components/CollaberaterTable.vue"
 import NavBar from "@/shared/NavBar.vue"
+import Invitation from "@/views/Invitation.vue"
 const url = import.meta.env.VITE_BASE_URL
 
 function parseJwt(token) {
@@ -157,6 +158,12 @@ const routes = [
     //     meta: { requiresAuth: true },
     //   },
     // ],
+  },
+  {
+    path: "/board/:id/collab/invitations",
+    name: "invitation",
+    component: Invitation,
+    meta: { requiresAuth: true },
   },
   {
     path: "/:notfoundpath(.*)",

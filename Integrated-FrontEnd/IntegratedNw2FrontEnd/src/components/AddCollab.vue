@@ -2,7 +2,11 @@
 import BaseBtn from "../shared/BaseBtn.vue"
 import Autocomplete from "../shared/AutoComplete.vue"
 import { defineEmits, ref, computed } from "vue"
+
+
 const emit = defineEmits(["close", "newCollab"])
+//Can you receive routeId from others files?
+
 const newCollab = ref({
   email: "",
   accessRight: "READ",
@@ -25,6 +29,28 @@ const updateAcess = (accessName) => {
   selectAccessRight(accessName)
   isDropdownOpen.value = false // Close the dropdown after selection
 }
+
+
+
+// const saveCollab = async () => {
+//   try {
+//     const addedCollab = await collabStore.addCollab(newCollab.value, routeId.value);
+//     console.log("Added collaborator:", addedCollab);
+//     if (addedCollab) {
+//       // Send the invitation to the added collaborator
+//       const invitation = await collabStore.sendInvitation(newCollab.value, routeId.value);
+//       console.log("Invitation sent:", invitation);
+//     }
+
+//     emit("close", false);
+//     emit("newCollab", addedCollab);
+//   } catch (error) {
+//     console.error("Error adding collaborator:", error);
+//   }
+// };
+
+
+
 </script>
 
 <template>
@@ -125,16 +151,12 @@ const updateAcess = (accessName) => {
                     class="itbkk-button-confirm itbkk-button-ok mx-4 mt-3"
                   >
                     <template #default>
-                      <button
-                        @click="
+                      <button @click="
                           () => {
                             emit('close', false)
                             emit('newCollab', newCollab)
                           }
-                        "
-                      >
-                        Save
-                      </button>
+                        ">Save</button>
                     </template>
                   </BaseBtn>
                   <BaseBtn class="itbkk-button-cancel">

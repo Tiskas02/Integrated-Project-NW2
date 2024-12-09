@@ -83,9 +83,37 @@ async function deleteCollabUtil(collabId, routeId) {
     return null
   }
 }
+
+async function sendInvitationEmail(newCollab, boardId) {
+  try {
+    console.log(newCollab)
+    const token = getToken()
+    const res = await fetch(`${url}/v3/boards/${boardId}/collabs/invitations`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(newCollab),
+    })
+
+    console.log("Response data:", res)
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`)
+    }
+    const data = await res.json()
+    console.log("Response data:", data)
+    return data
+  } catch (error) {
+    console.error("Error fetching data:", error.message)
+    return null
+  }
+}
+
 export {
   getAllCollabDataByUserId,
   getCollabDataByBoardId,
   addCollabData,
   deleteCollabUtil,
+  sendInvitationEmail,
 }
