@@ -3,6 +3,7 @@ package com.example.integratedbackend.Controller.ControllerV3;
 import java.util.List;
 import java.util.Objects;
 
+import com.example.integratedbackend.DTO.DTOV3.*;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.integratedbackend.DTO.DTOV3.CollabBoardResponse;
-import com.example.integratedbackend.DTO.DTOV3.CollabDTO;
-import com.example.integratedbackend.DTO.DTOV3.CollabRequestDTO;
-import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
-import com.example.integratedbackend.DTO.DTOV3.NewTaskDTOV3;
-import com.example.integratedbackend.DTO.DTOV3.NewTaskReturnV3;
-import com.example.integratedbackend.DTO.DTOV3.StatusDtoV3;
-import com.example.integratedbackend.DTO.DTOV3.TaskDTOV3;
-import com.example.integratedbackend.DTO.DTOV3.VisibilityDTO;
-import com.example.integratedbackend.DTO.DTOV3.accessRightDTO;
 import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.StatusDTO;
 import com.example.integratedbackend.ErrorHandle.AccessRightNotAllow;
@@ -79,7 +70,7 @@ public class BoardControllerV3 {
 
     // ================================Board=====================================
     @GetMapping("")
-    public ResponseEntity<Object> getBoardByUserId(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<List<BoardResponse>> getBoardByUserId(@RequestHeader("Authorization") String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
@@ -521,8 +512,9 @@ public class BoardControllerV3 {
             @RequestParam(required = false) List<String> filterStatuses,
             @RequestParam(required = false, defaultValue = "") String[] sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+        if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.isBlank()) {
+            return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+
         }
 
         String jwt = authHeader.substring(7);
@@ -566,7 +558,7 @@ public class BoardControllerV3 {
                 }
             }
         }
-        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
     @GetMapping("{boardId}/tasks/{id}")
