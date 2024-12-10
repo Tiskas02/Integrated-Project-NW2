@@ -11,15 +11,18 @@ import TaskModal from "../components/TaskModal.vue";
 import BaseBtn from "@/shared/BaseBtn.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 import Boardvisibility from "@/views/BoardVisibility.vue";
+import { useStoreCollab } from "@/stores/collabStore";
 const route = useRoute();
 const router = useRouter();
 const boardStore = useStoreBoard();
 const tasksStore = useStoreTasks();
 const statusStore = useStoreStatus();
 const toasterStore = useToasterStore();
+const collabStore = useStoreCollab();
 const { boards } = storeToRefs(boardStore);
 const { nameCollab } = storeToRefs(boardStore);
 const { tasks } = storeToRefs(tasksStore);
+const { collabs } = storeToRefs(collabStore);
 const showDetail = ref(false);
 const storeMode = ref("");
 const storeTask = ref({});
@@ -29,7 +32,6 @@ const sortOrder = ref("DEFAULT");
 const selectFilter = ref([]);
 const routerId = ref(route.params.id);
 const allStatus = ref([]);
-const matchedBoards = ref();
 const storeChangeVisibility = ref();
 const nameboard = ref();
 const boardVisibility = ref();
@@ -56,32 +58,21 @@ const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
 
 onMounted(async () => {
-  await boardStore.fetchBoards(token.oid);
+  const boardData = await boardStore.fetchBoards(token.oid);
   const data = await tasksStore.fetchTasks(routerId.value, token.oid);
-  const matchedBoard = boardStore.matchUserBoard(routerId.value);
-  if (matchedBoard !== "Board not found") {
-    matchedBoards.value = matchedBoard
-    nameboard.value = matchedBoards.value.boards.name;
-  } else {
-    const nameCollab = await boardStore.fetchBoardsByCollabId(
-      routerId.value,
-      token.oid
-    );
-    matchedBoards.value = nameCollab;
-    nameboard.value = matchedBoards.value[0].name;    
+  console.log(data);
+  
+  const collab = await collabStore.fetchCollabsByBoardId(routerId.value);
+  console.log(collab);
+  
+  if(data.error){
+    toasterStore.error({ text: `error : ${data.error}`});
+    router.push({ name: "board" });
   }
-  storeVisibility.value = matchedBoards.value.boards.visibility === "PUBLIC";
+  nameboard.value = data[0]?.board?.name ? data[0].board.name : boardData[0].boards.name; 
+  storeVisibility.value = boardData[0].boards.visibility === "PUBLIC";
   storeTasks.value = data;
-});
-
-watch(
-  () => storeVisibility.value,
-  (newVisibility) => {
-    checkToggle.value = newVisibility === "PUBLIC";
-  },
-  { immediate: true }
-);
-
+}); 
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus(routerId.value, token.oid);
   const noStatus = allStatus.value.find(
@@ -92,6 +83,15 @@ onMounted(async () => {
     defaultStatus.value.statusId = noStatus.id;
   }
 });
+
+watch(
+  () => storeVisibility.value,
+  (newVisibility) => {
+    checkToggle.value = newVisibility === "PUBLIC";
+  },
+  { immediate: true }
+);
+
 
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
@@ -349,7 +349,7 @@ const getColorForStatus = (statusName, statuses) => {
       <div
         class="itbkk-board-name font-rubik font-medium text-xl text-slate-800 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
       >
-        {{ nameboard }} Personal Board !
+        {{ nameboard }} 
       </div>
     </div>
   </div>

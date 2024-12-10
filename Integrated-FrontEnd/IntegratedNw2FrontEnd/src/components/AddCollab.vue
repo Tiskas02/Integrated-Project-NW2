@@ -20,6 +20,7 @@ const selectAccessRight = (nameAcess) => {
 const updateEmail = (value) => {
   newCollab.value.email = value // Update the email when receiving input
 }
+const isEmailValid = computed(() => newCollab.value.email.includes('@ad.sit.kmutt.ac.th'));
 const selectedAcess = ref(accessRights[0])
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
@@ -149,6 +150,7 @@ const updateAcess = (accessName) => {
                 <div class="flex">
                   <BaseBtn
                     class="itbkk-button-confirm itbkk-button-ok mx-4 mt-3"
+                    :disabled="!isEmailValid"
                   >
                     <template #default>
                       <button @click="
@@ -156,7 +158,7 @@ const updateAcess = (accessName) => {
                             emit('close', false)
                             emit('newCollab', newCollab)
                           }
-                        ">Save</button>
+                        ":disabled="!isEmailValid">Save</button>
                     </template>
                   </BaseBtn>
                   <BaseBtn class="itbkk-button-cancel">

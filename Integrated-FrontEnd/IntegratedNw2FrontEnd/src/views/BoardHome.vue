@@ -68,6 +68,7 @@ const setClose = () => {
 };
 
 const addBoard = async (newBoard) => {
+  console.log(newBoard);
   const data = await boardStore.createBoard({
     name: newBoard.name ? newBoard.name : `${token.name} Personal Board`,
   });

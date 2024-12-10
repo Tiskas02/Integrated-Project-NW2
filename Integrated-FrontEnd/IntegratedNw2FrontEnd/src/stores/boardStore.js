@@ -77,6 +77,8 @@ export const useStoreBoard = defineStore("boards", () => {
 
   function matchUserBoard(id) {
     const matchedBoard = boards.value.find((board) => board.boards.id === id)
+    console.log(matchedBoard);
+    
     if (matchedBoard) {
       return matchedBoard
     } else {

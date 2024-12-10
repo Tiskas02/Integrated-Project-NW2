@@ -15,6 +15,7 @@ export const useStoreTasks = defineStore("tasks", () => {
       tasks.value = [];
       const taskData = await getTaskDataInBoardId(id, collabId);
       tasks.value = taskData;
+      return taskData;
     } catch (error) {
       console.error("Error fetching data:", error);
     }
