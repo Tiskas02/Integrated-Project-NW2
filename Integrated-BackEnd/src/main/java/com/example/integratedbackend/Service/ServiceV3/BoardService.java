@@ -48,6 +48,7 @@ public class BoardService {
         dto.setName(collab.getBoard().getName());
         dto.setEmail(collab.getBoard().getUsers().getEmail());
         dto.setAccessRight(collab.getAccessRight());
+        dto.setStatus((collab.getStatus()));
         dto.setAddedOn(collab.getAddedOn());
         return dto;
     }
@@ -66,27 +67,44 @@ public class BoardService {
 public List<BoardResponse> getBoardByUserName(String userName) {
     List<BoardResponse> boardResponses = new ArrayList<>();
     List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
+
     if (users.isEmpty()) {
         throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with username " + userName + " not found");
     }
+
     Users user = users.get(0);
+
+    // Fetch collaborators for the user
+    List<Collab> collabList = collabRepositoriesV3.findCollabByUserId(user.getOid());
+    List<CollabDTO> collabDTOList = collabList.stream().map(this::convertToCollabDTO).collect(Collectors.toList());
+
+    // Fetch boards for the user
     List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
+
+    // If there are no boards, add a response with only collaborators
     if (boards.isEmpty()) {
-        throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Boards for user " + userName + " not found");
-    }
-    for (Boards board : boards) {
-        List<Collab> collabList = collabRepositoriesV3.findCollabByUserId(user.getOid());
-        List<CollabDTO> collabDTOList = collabList.stream().map(this::convertToCollabDTO).collect(Collectors.toList());
+        BoardResponse placeholderResponse = new BoardResponse();
+        placeholderResponse.setCollabIn(collabDTOList);
+        boardResponses.add(placeholderResponse);
+    } else {
+        // Populate board responses normally
+        for (Boards board : boards) {
+            BoardResponse boardResponse = new BoardResponse();
+            boardResponse.setId(board.getId());
+            boardResponse.setName(board.getName());
+            boardResponse.setVisibilities(board.getVisibility());
+            boardResponse.setUsers(board.getUsers().getName());
+            boardResponse.setCreatedOn(board.getCreatedOn());
+            boardResponse.setUpdatedOn(board.getUpdatedOn());
+            boardResponse.setCollabIn(collabDTOList);
 
-        BoardResponse boardResponse = new BoardResponse();
-        boardResponse.setBoards(board);
-        boardResponse.setCollabIn(collabDTOList);
-
-        boardResponses.add(boardResponse);
+            boardResponses.add(boardResponse);
+        }
     }
 
     return boardResponses;
 }
+
 
     public Boards getBoardByBoardId(String boardId) {
         Optional<Boards> boards = boardsRepositoriesV3.findById(boardId);

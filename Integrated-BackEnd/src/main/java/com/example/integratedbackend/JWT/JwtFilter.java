@@ -175,7 +175,7 @@ public class JwtFilter extends OncePerRequestFilter {
             if (accessRight == AccessRight.READ && requestMethod.equals("GET") || requestMethod.equals("DELETE")) {
                 return;
             }
-            if (accessRight == AccessRight.READ && requestMethod.equals("PATCH") && request.getRequestURI().contains("collabs/invitations")){
+            if (requestMethod.equals("PATCH") && request.getRequestURI().contains("collabs/invitations")){
                 return;
             }
 
