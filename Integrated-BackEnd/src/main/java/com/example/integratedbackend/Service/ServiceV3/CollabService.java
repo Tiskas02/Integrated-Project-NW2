@@ -48,6 +48,7 @@ public class CollabService {
         CollabDTO collabDTO = new CollabDTO();
 
         collabDTO.setOid(collab.getUserId());
+        collabDTO.setBoardName(collab.getBoard().getName());
         collabDTO.setOwnerName(collab.getBoard().getUsers().getName());
         collabDTO.setAccessRight(collab.getAccessRight());
         collabDTO.setStatus(collab.getStatus());

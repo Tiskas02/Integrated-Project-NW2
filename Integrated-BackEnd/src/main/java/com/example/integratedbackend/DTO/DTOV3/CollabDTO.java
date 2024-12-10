@@ -11,6 +11,7 @@ import java.util.Date;
 public class CollabDTO {
     private String oid;
     private String boardId;
+    private String boardName;
     private String ownerName;
     private String name;
     private String email;
