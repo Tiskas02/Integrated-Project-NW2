@@ -34,13 +34,14 @@ const routerId = ref(route.params.id);
 const allStatus = ref([]);
 const storeChangeVisibility = ref();
 const nameboard = ref();
-const boardVisibility = ref();
 const storeVisibility = ref();
 const showVisibility = ref(false);
 const checkToggle = ref(false);
+const boardsData = ref();
 const defaultStatus = ref({
   statusId: null,
 });
+const accessRights = ref("WRITE");
 const parseJwt = (token) => {
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -59,20 +60,36 @@ const token = parseJwt(receiveToken);
 
 onMounted(async () => {
   const boardData = await boardStore.fetchBoards(token.oid);
+  boardsData.value = boardData[0];
+  console.log(boardData);
   const data = await tasksStore.fetchTasks(routerId.value, token.oid);
-  console.log(data);
-  
   const collab = await collabStore.fetchCollabsByBoardId(routerId.value);
-  console.log(collab);
-  
-  if(data.error){
-    toasterStore.error({ text: `error : ${data.error}`});
+  nameboard.value = data[0]?.board?.name
+    ? data[0].board.name
+    : boardData[0].boards.name;
+  storeVisibility.value =
+  boardData[0].visibilities === "PUBLIC"
+      ? true
+      : false;
+    
+  storeTasks.value = data;
+  if (data.error) {
+    toasterStore.error({ text: `error : ${data.error}` });
     router.push({ name: "board" });
   }
-  nameboard.value = data[0]?.board?.name ? data[0].board.name : boardData[0].boards.name; 
-  storeVisibility.value = boardData[0].boards.visibility === "PUBLIC";
-  storeTasks.value = data;
-}); 
+  console.log(collab);
+
+  if (collab.length !== 0) {
+    collab.forEach((item) => {
+      if (item.oid === token.oid) {
+        accessRights.value = item.accessRight;
+      }
+    });
+  } else {
+    accessRights.value = "WRITE";
+  }
+  console.log(accessRights.value);
+});
 onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus(routerId.value, token.oid);
   const noStatus = allStatus.value.find(
@@ -91,7 +108,6 @@ watch(
   },
   { immediate: true }
 );
-
 
 const fetchDataById = async (routerId, id, mode) => {
   storeMode.value = mode;
@@ -246,10 +262,8 @@ const EditVisibilities = async (value) => {
     routerId.value,
     value.visibilities
   );
-
   if (data.visibility === value.visibilities) {
     storeVisibility.value = data.visibility === "PUBLIC" ? true : false;
-    matchedBoards.value.visibilities = data;
     toasterStore.success({ text: "Visibility updated successfully!" });
   } else {
     toasterStore.error({
@@ -259,11 +273,10 @@ const EditVisibilities = async (value) => {
 };
 
 const setVisibility = () => {
-  const toVisibility = boardStore.matchUserBoard(routerId.value);
-  storeChangeVisibility.value = toVisibility
+  const toVisibility = boardsData.value
+  storeChangeVisibility.value = toVisibility;
   console.log(storeChangeVisibility.value);
   showVisibility.value = true;
-  
 };
 
 const SortOrder = async () => {
@@ -317,39 +330,38 @@ const clearStatuses = () => {
   selectFilter.value = [];
 };
 
-const colorCache = {}; 
+const colorCache = {};
 
 const generateDynamicColors = (statuses) => {
   const total = statuses.length;
   return statuses.map((_, index) => {
-    const hue = Math.floor((360 / total) * index); 
-    return `hsl(${hue}, 50%, 50%)`; 
+    const hue = Math.floor((360 / total) * index);
+    return `hsl(${hue}, 50%, 50%)`;
   });
 };
 
 const getColorForStatus = (statusName, statuses) => {
-  if (!statusName) return "bg-gray-300"; 
-  if (colorCache[statusName]) return colorCache[statusName]; 
+  if (!statusName) return "bg-gray-300";
+  if (colorCache[statusName]) return colorCache[statusName];
 
   const dynamicColors = generateDynamicColors(statuses);
-
 
   statuses.forEach((status, index) => {
     colorCache[status.name] = dynamicColors[index];
   });
 
-  return colorCache[statusName]; 
+  return colorCache[statusName];
 };
 </script>
 
 <template>
-  <div class="w-full ">
+  <div class="w-full">
     <div class="w-full flex flex-col justify-start my-6">
       <div class="ml-2">Welcome to ,</div>
       <div
         class="itbkk-board-name font-rubik font-medium text-xl text-slate-800 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
       >
-        {{ nameboard }} 
+        {{ nameboard }}
       </div>
     </div>
   </div>
@@ -376,8 +388,12 @@ const getColorForStatus = (statusName, statuses) => {
                     type="checkbox"
                     class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
                     v-model="storeVisibility"
-                    @click="setVisibility()"
+                    @click="accessRights !== 'READ' && setVisibility()"
                     :checked="checkToggle"
+                    :disabled="accessRights === 'READ'"
+                    :class="{
+                      'opacity-50 cursor-not-allowed': accessRights === 'READ',
+                    }"
                   />
                 </label>
               </div>
@@ -445,9 +461,9 @@ const getColorForStatus = (statusName, statuses) => {
                           :checked="selectFilter.includes(statuses.name)"
                           :value="statuses.id"
                         />
-                        <label class="overflow-auto" :for="statuses.name"
-                          >{{ statuses.name }}</label
-                        >
+                        <label class="overflow-auto" :for="statuses.name">{{
+                          statuses.name
+                        }}</label>
                       </div>
                     </li>
                   </ul>
@@ -466,7 +482,10 @@ const getColorForStatus = (statusName, statuses) => {
           <div class="my-2 flex">
             <div
               class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 mx-5 tablet:mx-1"
-              @click="setDetail(true, null, 'add')"
+              :class="{
+                'opacity-50 cursor-not-allowed': accessRights === 'READ',
+              }"
+              @click="accessRights !== 'READ' && setDetail(true, null, 'add')"
             >
               <svg
                 width="20"
@@ -495,7 +514,9 @@ const getColorForStatus = (statusName, statuses) => {
     </div>
   </div>
   <div class="h-[800px] tablet:h-[900px] laptop:h-[1000px]">
-    <div class="w-[410px] tablet:w-[750px] laptop:w-full flex tablet:justify-start laptop:justify-center tablet:mx-4 laptop:mx-4 justify-center ">
+    <div
+      class="w-[410px] tablet:w-[750px] laptop:w-full flex tablet:justify-start laptop:justify-center tablet:mx-4 laptop:mx-4 justify-center"
+    >
       <div
         class="shadow-2xl rounded-md w-[360px] tablet:w-[650px] laptop:w-[95%] h-[95%] shadow-yellow-500/10 overflow-auto"
       >
@@ -596,12 +617,12 @@ const getColorForStatus = (statusName, statuses) => {
           </div>
           <div v-if="tasks.length <= 0" class="w-full border bg-white h-24">
             <div class="flex justify-center items-center h-full">
-              <p class="text-xl font-bold  text-slate-500">
-                No task
-              </p>
+              <p class="text-xl font-bold text-slate-500">No task</p>
             </div>
           </div>
-          <div class="w-full tablet:h-[680px] laptop:h-[780px] overflow-auto rounded">
+          <div
+            class="w-full tablet:h-[680px] laptop:h-[780px] overflow-auto rounded"
+          >
             <div v-for="(task, index) in getFilterTask" :key="task.id">
               <div
                 class="itbkk-item bg-white divide-y divide-gray-200 overflow-auto shadow-inner"
@@ -656,16 +677,28 @@ const getColorForStatus = (statusName, statuses) => {
                     >
                       <div
                         class="itbkk-button-edit text-white btn border-white bg-gradient-to-r from-yellow-500 to-yellow-300"
-                        @click="fetchDataById(routerId, task.id, 'edit')"
+                        @click="
+                          accessRights !== 'READ' &&
+                            fetchDataById(routerId, task.id, 'edit')
+                        "
+                        :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ',
+                        }"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete text-white btn btn-outline border-white bg-gradient-to-r from-red-500 to-red-300"
                         @click="
-                          fetchDataById(routerId, task.id, 'delete'),
-                            setIndex(index)
+                          accessRights !== 'READ' &&
+                            (fetchDataById(routerId, task.id, 'delete'),
+                            setIndex(index))
                         "
+                        :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ',
+                        }"
                       >
                         Delete
                       </div>

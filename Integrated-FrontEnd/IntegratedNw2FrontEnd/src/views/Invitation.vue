@@ -74,31 +74,39 @@ const declineInvitation = () => {
     "
   >
     <div class="w-full h-full flex flex-col justify-center tablet:items-center">
-      <div v-for="(collab, index) in collabInvitation" :key="collabs.boardId">
-        <div>{{ collab }}</div>
-      </div>
-      <div class="w-fit h-48 p-8 glass rounded-b-lg tablet:rounded-xl">
+      <div class="w-fit max-h-96 p-8 glass rounded-b-lg tablet:rounded-xl">
         <h1 class="text-2xl font-bold">Invitation</h1>
         <p>
           You have received an invitation. Would you like to accept or decline?
         </p>
         <div>
-          <div class="bg-slate-800 flex rounded-md">
+          <div class="bg-slate-800 flex rounded-md my-2">
             <div class="w-[10%] m-auto text-start text-md font-bold text-white">
               BoardName
             </div>
             <div class="w-[10%] m-auto text-start text-md font-bold text-white">
-              
+              Owner
             </div>
             <div class="w-[10%] m-auto text-start text-md font-bold text-white">
-              index
+              accessRight
             </div>
             <div class="w-[10%] m-auto text-start text-md font-bold text-white">
-              index
+              status
+            </div>
+          </div>
+          <div
+            v-for="(collab, index) in collabInvitation"
+            :key="collabs.boardId"
+          >
+            <div class="bg-slate-100 flex rounded-md">
+              <div class="w-[10%] m-auto text-center text-md font-bold">{{ collab.boardName }}</div>
+              <div class="w-[10%] m-auto text-center text-md font-bold">{{ collab.ownerName }}</div>
+              <div class="w-[10%] m-auto text-center text-md font-bold">{{ collab.accessRight }}</div>
+              <div class="w-[10%] m-auto text-center text-md font-bold text-yellow-500">{{ collab.status  }}</div>
             </div>
           </div>
         </div>
-        <div class="buttons my-4">
+        <div class="buttons my-4 w-full flex justify-end">
           <button
             @click="acceptInvitation"
             class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white mx-2"

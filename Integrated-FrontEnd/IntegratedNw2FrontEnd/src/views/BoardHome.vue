@@ -199,9 +199,9 @@ function formatDate(isoDate) {
         <div class="flex flex-row flex-wrap justify-start mx-2">
           <div
             v-for="(board, index) in boards"
-            :key="board.boards.id"
+            :key="board.id"
             class="m-2"
-            @click="navigateToBoardTasks(board.boards.id)"
+            @click="navigateToBoardTasks(board.id)"
           >
             <div
               class="btn border-0 w-[380px] h-60 laptop:w-[350px] rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
@@ -213,13 +213,13 @@ function formatDate(isoDate) {
             >
               <div>
                 <h1 class="text-3xl font-bold text-gray-900 text-left">
-                  {{ board.boards.name }}
+                  {{ board.name }}
                 </h1>
                 <p class="text-sm font-medium text-gray-700 text-left">
-                  Board Visibility : {{ board.boards.visibility }}
+                  Board Visibility : {{ board.visibility }}
                 </p>
                 <p class="text-sm font-medium text-gray-700 text-left">
-                  Created : {{ formatDate(board.boards.createdOn) }}
+                  Created : {{ formatDate(board.createdOn) }}
                 </p>
               </div>
               <div class="flex space-x-2 w-full">

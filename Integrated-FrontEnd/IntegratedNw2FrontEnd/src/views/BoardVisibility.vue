@@ -8,15 +8,16 @@ const props = defineProps({
 
 const newBoard = ref({ ...props.board })
 
-console.log(props.board.boards.visibility)
+console.log(props.board)
 
 const toggleVisibility = () => {
-  if (newBoard.value.boards.visibility === "PUBLIC") {
+  if (newBoard.value.visibilities === "PUBLIC") {
     newBoard.value.visibilities = "PRIVATE"
-    console.log(newBoard.value.visibilities)
   } else {
     newBoard.value.visibilities = "PUBLIC"
   }
+  console.log(newBoard.value.visibilities);
+  
 }
 </script>
 
@@ -35,13 +36,13 @@ const toggleVisibility = () => {
             </div>
             <div class="border-b my-3"></div>
             <div
-              v-if="board.boards.visibility === 'PRIVATE'"
+              v-if="board.visibilities === 'PRIVATE'"
               class="itbkk-message break-all text-white"
             >
               "Do you want to change board visibility to public 👁️ ?"
             </div>
             <div v-else class="itbkk-message break-all text-white">
-              <div>"Do you want to change board visibility to private 🫣 {{ board.boards.visibilities }}?"</div>
+              <div>"Do you want to change board visibility to private 🫣?"</div>
             </div>
             <div class="flex justify-end my-4 gap-2">
               <button
