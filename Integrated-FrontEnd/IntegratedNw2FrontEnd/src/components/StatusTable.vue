@@ -36,10 +36,15 @@ const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
 
 onMounted(async () => {
-  await boardStore.fetchBoards(token.oid);
-  await statusStore.fetchStatus(routeId.value, token.oid);
-  const nameBoardf = boardStore.matchUserBoard(routeId.value);
-  nameBoard.value = nameBoardf.boards.name;
+  const dataBoard = await boardStore.fetchBoards(token.oid);
+  console.log(dataBoard);
+  const dataStatus = await statusStore.fetchStatus(routeId.value, token.oid);
+  console.log(dataStatus);
+  if(dataStatus.error){
+    toasterStore.error({ text: `error : ${dataStatus.error}`});
+    router.push({ name: "board" });
+  }
+  nameBoard.value = dataBoard[0].boards.name;
 });
 
 const addOrEditStatus = async (newStatus) => {
@@ -160,7 +165,7 @@ const setClose = (value) => {
         <div
           class="itbkk-board-name font-rubik font-medium text-xl text-slate-800 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
         >
-          {{ nameBoard }} Personal Board !
+          {{ nameBoard }} 
         </div>
       </div>
       <div class="grow"></div>

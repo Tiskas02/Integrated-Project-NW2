@@ -29,7 +29,7 @@ async function getCollabDataByBoardId(boardId) {
         Authorization: `Bearer ${token}`,
       },
     })
-    const data = await res.json()
+    const data = await res.json()    
     return data
   } catch (error) {
     console.error("Error fetching data:", error)
@@ -87,6 +87,7 @@ async function deleteCollabUtil(collabId, routeId) {
 async function sendInvitationEmail(newCollab, boardId) {
   try {
     console.log(newCollab)
+    console.log(boardId);
     const token = getToken()
     const res = await fetch(`${url}/v3/boards/${boardId}/collabs/invitations`, {
       method: "PATCH",
@@ -96,14 +97,10 @@ async function sendInvitationEmail(newCollab, boardId) {
       },
       body: JSON.stringify(newCollab),
     })
-
-    console.log("Response data:", res)
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`)
     }
-    const data = await res.json()
-    console.log("Response data:", data)
-    return data
+    return res
   } catch (error) {
     console.error("Error fetching data:", error.message)
     return null

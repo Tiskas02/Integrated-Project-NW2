@@ -37,17 +37,17 @@ export const useStoreCollab = defineStore("collabs", () => {
   }
   async function fetchCollabsByBoardId(boardId) {
     try {
-      const noData = "No data"
       collabs.value = []
       const collabData = await getCollabDataByBoardId(boardId)
+      console.log(collabData);
+      if (collabData.error) {
+        return collabData
+      }else{
       collabData.forEach((collab) => {
         collabs.value.push(collab)
       })
-      if (collabs.value.length === 0) {
-        return noData
-      } else {
-        return collabs.value
-      }
+      return collabs.value
+    }
     } catch (error) {
       console.error("Error fetching data:", error)
     }
