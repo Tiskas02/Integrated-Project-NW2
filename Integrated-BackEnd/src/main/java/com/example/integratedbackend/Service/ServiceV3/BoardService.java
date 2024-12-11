@@ -44,6 +44,7 @@ public class BoardService {
         CollabDTO dto = new CollabDTO();
         dto.setOid(collab.getUserId());
         dto.setBoardId(collab.getBoardId());
+        dto.setBoardName(collab.getBoard().getName());
         dto.setOwnerName(collab.getBoard().getUsers().getName());
         dto.setName(collab.getBoard().getName());
         dto.setEmail(collab.getBoard().getUsers().getEmail());
