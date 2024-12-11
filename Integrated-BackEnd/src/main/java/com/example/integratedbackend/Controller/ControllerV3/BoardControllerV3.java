@@ -3,6 +3,7 @@ package com.example.integratedbackend.Controller.ControllerV3;
 import java.util.List;
 import java.util.Objects;
 
+import com.example.integratedbackend.DTO.DTOV3.*;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.integratedbackend.DTO.DTOV3.CollabBoardResponse;
-import com.example.integratedbackend.DTO.DTOV3.CollabDTO;
-import com.example.integratedbackend.DTO.DTOV3.CollabRequestDTO;
-import com.example.integratedbackend.DTO.DTOV3.NewBoardDTO;
-import com.example.integratedbackend.DTO.DTOV3.NewTaskDTOV3;
-import com.example.integratedbackend.DTO.DTOV3.NewTaskReturnV3;
-import com.example.integratedbackend.DTO.DTOV3.StatusDtoV3;
-import com.example.integratedbackend.DTO.DTOV3.TaskDTOV3;
-import com.example.integratedbackend.DTO.DTOV3.VisibilityDTO;
-import com.example.integratedbackend.DTO.DTOV3.accessRightDTO;
 import com.example.integratedbackend.DTO.NewStatusDTO;
 import com.example.integratedbackend.DTO.StatusDTO;
 import com.example.integratedbackend.ErrorHandle.AccessRightNotAllow;
@@ -79,7 +70,7 @@ public class BoardControllerV3 {
 
     // ================================Board=====================================
     @GetMapping("")
-    public ResponseEntity<Object> getBoardByUserId(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<List<BoardResponse>> getBoardByUserId(@RequestHeader("Authorization") String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
@@ -175,10 +166,14 @@ public class BoardControllerV3 {
 
     @GetMapping("{boardId}/statuses")
     public ResponseEntity<Object> getAllStatus(
-            @RequestHeader("Authorization") String authHeader,
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
             @PathVariable String boardId) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+
+        boolean visibleValue = visibilityService.checkVisibility(boardId);
+        if (!visibleValue) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.isBlank()) {
+                return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+            }
         }
 
         String jwt = authHeader.substring(7);
@@ -197,11 +192,14 @@ public class BoardControllerV3 {
         }
 
         CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
-        boolean visibleValue = visibilityService.checkVisibility(boardId);
+
 
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     if (boardService.getBoardByBoardId(boardId) != null) {
                         return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId),
                                 StatusDTO.class, modelMapper));
@@ -216,6 +214,9 @@ public class BoardControllerV3 {
         if (visibleValue) {
             if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     if (boardService.getBoardByBoardId(boardId) != null) {
                         return ResponseEntity.ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId),
                                 StatusDTO.class, modelMapper));
@@ -225,8 +226,7 @@ public class BoardControllerV3 {
                 }
             }
         }
-        return ResponseEntity
-                .ok(listMapper.mapList(statusServiceV3.getAllStatus(boardId), StatusDTO.class, modelMapper));
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
     @GetMapping("{boardId}/statuses/{statusId}")
@@ -258,6 +258,9 @@ public class BoardControllerV3 {
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     return ResponseEntity
                             .ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
                 } else {
@@ -270,6 +273,9 @@ public class BoardControllerV3 {
         if (visibleValue) {
             if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     return ResponseEntity
                             .ok(modelMapper.map(statusServiceV3.findById(boardId, statusId), StatusDTO.class));
                 } else {
@@ -516,14 +522,21 @@ public class BoardControllerV3 {
 
     @GetMapping("{boardId}/tasks")
     public ResponseEntity<Object> getAllTaskByBoardId(
-            @RequestHeader("Authorization") String authHeader,
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
             @PathVariable String boardId,
             @RequestParam(required = false) List<String> filterStatuses,
             @RequestParam(required = false, defaultValue = "") String[] sortBy,
             @RequestParam(required = false, defaultValue = "ASC") String[] sortDirection) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+
+        boolean visibleValue = visibilityService.checkVisibility(boardId);
+
+        if (!visibleValue) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.isBlank()) {
+                return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+
+            }
         }
+
 
         String jwt = authHeader.substring(7);
         String usernameFromToken = jwtUtil.extractClaim(jwt, Claims::getSubject);
@@ -542,11 +555,13 @@ public class BoardControllerV3 {
 
         CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
         // Check board visibility
-        boolean visibleValue = visibilityService.checkVisibility(boardId);
 
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     return ResponseEntity
                             .ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
                 } else {
@@ -559,6 +574,9 @@ public class BoardControllerV3 {
         if (visibleValue) {
             if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     return ResponseEntity
                             .ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
                 } else {
@@ -566,7 +584,7 @@ public class BoardControllerV3 {
                 }
             }
         }
-        return ResponseEntity.ok(taskServiceV3.getAllTasksByBoardId(filterStatuses, sortBy, sortDirection, boardId));
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
 
     @GetMapping("{boardId}/tasks/{id}")
@@ -600,6 +618,9 @@ public class BoardControllerV3 {
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
                     return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
                 } else {
@@ -612,6 +633,9 @@ public class BoardControllerV3 {
         if (visibleValue) {
             if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
+                    if (collabAccess.getStatus() == Collab.Status.PENDING){
+                        throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                    }
                     TaskV3 task = taskServiceV3.findTaskByBoardIdAndId(id, boardId);
                     return ResponseEntity.ok(modelMapper.map(task, TaskDTOV3.class));
                 } else {
@@ -827,17 +851,42 @@ public class BoardControllerV3 {
             String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
 
             Boards boardInfo = boardService.getBoardByBoardId(boardId);
+            String boardOwnerName = boardInfo.getUsers().getUsername();
 
-            if (boardInfo != null && username != null) {
-                String boardOwnerName = boardInfo.getUsers().getUsername();
 
-                if (username.equals(boardOwnerName)) {
-                    List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
-                    return ResponseEntity.ok(collabDTOS);
-                }
 
+            if (username.equals(boardOwnerName)) {
                 List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
                 return ResponseEntity.ok(collabDTOS);
+            }
+
+            boolean visibleValue = visibilityService.checkVisibility(boardId);
+            CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
+
+            if (!visibleValue) {
+                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+//                        if (collabAccess.getStatus() == Collab.Status.PENDING){
+//                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+//                        }
+                        List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+                        return ResponseEntity.ok(collabDTOS);
+                    } else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+                    }
+                }
+            }
+            if (visibleValue) {
+                if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+
+                        List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+                        return ResponseEntity.ok(collabDTOS);
+                    } else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+                    }
+                }
             }
         }
 
@@ -853,10 +902,46 @@ public class BoardControllerV3 {
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
             String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
 
-            if (username != null) {
+            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+            String boardOwnerName = boardInfo.getUsers().getUsername();
+
+            if (username.equals(boardOwnerName)) {
                 CollabDTO collabDTO = collabService.getCollaboratorOfBoard(boardId, collabId, userId);
                 return ResponseEntity.ok(collabDTO);
             }
+
+            CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
+            boolean visibleValue = visibilityService.checkVisibility(boardId);
+
+            if (!visibleValue) {
+                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+                        if (collabAccess.getStatus() == Collab.Status.PENDING){
+                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                        }
+                        CollabDTO collabDTO = collabService.getCollaboratorOfBoard(boardId, collabId, userId);
+                        return ResponseEntity.ok(collabDTO);
+                    }else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+                    }
+                }
+            }
+
+            if (visibleValue) {
+                if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+                        if (collabAccess.getStatus() == Collab.Status.PENDING){
+                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                        }
+                        CollabDTO collabDTO = collabService.getCollaboratorOfBoard(boardId, collabId, userId);
+                        return ResponseEntity.ok(collabDTO);
+                    }else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+                    }
+                }
+            }
+
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }

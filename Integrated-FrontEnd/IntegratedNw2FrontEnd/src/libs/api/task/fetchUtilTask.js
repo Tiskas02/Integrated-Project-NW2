@@ -7,11 +7,16 @@ function getToken() {
 async function getTaskDataInBoardId(id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${id}/tasks`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-    })
+    let res
+    if (token === null) {
+      res = await fetch(`${url}/v3/boards/${id}/tasks`)
+    }else{
+      res = await fetch(`${url}/v3/boards/${id}/tasks`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      })
+    }
     const data = await res.json()
     return data
   } catch (error) {

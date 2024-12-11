@@ -34,8 +34,6 @@ public class BoardService {
     @Autowired
     private UsersRepositoriesV3 usersRepositoriesV3;
     @Autowired
-    private CollabService collabService;
-    @Autowired
     private StatusServiceV3 statusServiceV3;
     @Autowired
     ModelMapper modelMapper;
@@ -44,49 +42,52 @@ public class BoardService {
         CollabDTO dto = new CollabDTO();
         dto.setOid(collab.getUserId());
         dto.setBoardId(collab.getBoardId());
+        dto.setBoardName(collab.getBoard().getName());
         dto.setOwnerName(collab.getBoard().getUsers().getName());
         dto.setName(collab.getBoard().getName());
         dto.setEmail(collab.getBoard().getUsers().getEmail());
         dto.setAccessRight(collab.getAccessRight());
+        dto.setStatus((collab.getStatus()));
         dto.setAddedOn(collab.getAddedOn());
         return dto;
     }
-
-
-//    public List<Boards> getBoardByUserName(String userName) {
-//        List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
-//        Users user = users.get(0);
-//        List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
-//        if (boards == null) {
-//            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
-//                    " " + userName + " not found");
-//        }
-//        return boards;
-//    }
 public List<BoardResponse> getBoardByUserName(String userName) {
     List<BoardResponse> boardResponses = new ArrayList<>();
     List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
+
     if (users.isEmpty()) {
         throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "User with username " + userName + " not found");
     }
+
     Users user = users.get(0);
+
+    List<Collab> collabList = collabRepositoriesV3.findCollabByUserId(user.getOid());
+    List<CollabDTO> collabDTOList = collabList.stream().map(this::convertToCollabDTO).collect(Collectors.toList());
+
     List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
+
     if (boards.isEmpty()) {
-        throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Boards for user " + userName + " not found");
-    }
-    for (Boards board : boards) {
-        List<Collab> collabList = collabRepositoriesV3.findCollabByUserId(user.getOid());
-        List<CollabDTO> collabDTOList = collabList.stream().map(this::convertToCollabDTO).collect(Collectors.toList());
+        BoardResponse placeholderResponse = new BoardResponse();
+        placeholderResponse.setCollabIn(collabDTOList);
+        boardResponses.add(placeholderResponse);
+    } else {
+        for (Boards board : boards) {
+            BoardResponse boardResponse = new BoardResponse();
+            boardResponse.setId(board.getId());
+            boardResponse.setName(board.getName());
+            boardResponse.setVisibilities(board.getVisibility());
+            boardResponse.setUsers(board.getUsers().getName());
+            boardResponse.setCreatedOn(board.getCreatedOn());
+            boardResponse.setUpdatedOn(board.getUpdatedOn());
+            boardResponse.setCollabIn(collabDTOList);
 
-        BoardResponse boardResponse = new BoardResponse();
-        boardResponse.setBoards(board);
-        boardResponse.setCollabIn(collabDTOList);
-
-        boardResponses.add(boardResponse);
+            boardResponses.add(boardResponse);
+        }
     }
 
     return boardResponses;
 }
+
 
     public Boards getBoardByBoardId(String boardId) {
         Optional<Boards> boards = boardsRepositoriesV3.findById(boardId);

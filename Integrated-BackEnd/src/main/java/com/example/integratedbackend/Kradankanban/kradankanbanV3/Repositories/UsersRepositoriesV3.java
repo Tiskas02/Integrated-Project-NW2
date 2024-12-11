@@ -9,6 +9,4 @@ import java.util.Optional;
 public interface UsersRepositoriesV3  extends JpaRepository<Users, String> {
     List<Users> findAllByUsername(String username);
 
-    List<Users> findByUsername(String username);
-
 }

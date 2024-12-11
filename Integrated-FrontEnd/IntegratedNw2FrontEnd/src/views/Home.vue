@@ -25,8 +25,8 @@ watch(
 <template>
   <div>
     <NavBar class="sticky top-0 z-50" />
-    <div class="w-full h-screen flex justify-center items-center">
-      <div class="w-[100%] h-screen tablet:w-[85%] ">
+    <div class="w-full h-full flex justify-center items-center">
+      <div class="w-[100%] h-full tablet:w-[85%] ">
         <div class="w-full h-full ">
           <div class="w-[100%] h-full tablet:my-12 my-4">
             <div v-if="usePath === 'status'" class="w-full ">

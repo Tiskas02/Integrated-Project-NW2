@@ -41,13 +41,30 @@ const parseJwt = (token) => {
 };
 const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
-
+const accessRights = ref("WRITE");
 onMounted(async () => {
-  await boardStore.fetchBoards(token.oid);
-  const nameBoardf = boardStore.matchUserBoard(routeId.value);
-  console.log(nameBoardf.boards);
-  const collab = collabStore.fetchCollabsByBoardId(routeId.value);
-  nameBoard.value = nameBoardf.boards.name;
+  const dataBoard = await boardStore.fetchBoards(token.oid);
+  const collab = await collabStore.fetchCollabsByBoardId(routeId.value);
+  if (collab.length !== 0) {
+    collab.forEach((item) => {
+      if (item.oid === token.oid) {
+        accessRights.value = item.accessRight;
+      }
+    });
+  } else {
+    accessRights.value = "WRITE";
+  }
+  console.log(accessRights.value);
+  if(collab.status === 403){
+    console.log("You are not the owner of this board");
+    toasterStore.error({ text: collab.message  ,setTimeout: 8000 });
+    router.push({ name: "board" });
+  }
+  if(collab.error){
+    toasterStore.error({ text:  `error : ${collab.error}` });
+    router.push({ name: "board" });
+  }
+  nameBoard.value = dataBoard[0].name;
   dataCollab.value = collab;
 });
 
@@ -57,7 +74,6 @@ const setDataCollab = (value,collab) => {
 };
 
 const deleteCollabFunc = async (collab) => {
-  console.log(collab)
   if (collab === deleteCollab.value) {
     const res = await collabStore.deleteCollab(collab.oid, routeId.value);    
     if (res.status === 200) {
@@ -78,7 +94,6 @@ const setCloseDelete = () => {
 };
 const addCollab = async (newCollab) => {
   const data = await collabStore.addCollab(newCollab,routeId.value)
-  console.log(data)
   if (data) {
     toasterStore.success({ text: "Collaborator added successfully!" });
   } else {
@@ -101,13 +116,17 @@ const setModal = (value) => {
         <div
           class="itbkk-board-name font-rubik font-medium text-xl text-slate-800 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
         >
-          {{ nameBoard }} Personal Board !
+          {{ nameBoard }} 
         </div>
       </div>
       <div class="grow"></div>
       <div
         class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 flex tablet:mx-8 mx-4"
-        @click="setModal(true, 'add', null)"
+        @click="accessRights !== 'READ' && setModal(true, 'add', null)"
+        :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ',
+                        }"
       >
         <svg
           width="20"
@@ -149,7 +168,7 @@ const setModal = (value) => {
             class="m-2"
           >
             <div
-              class="btn border-0 w-[380px] h-60 laptop:w-[350px] laptop:h-60 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
+              class="btn border-0 w-[380px] h-72 laptop:w-[350px] laptop:h-72 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
               style="
                 background-image: url('https://res.cloudinary.com/dyhavbbzf/image/upload/v1733736380/l3eanxnnefwk07sonuhz.png');
                 background-size: cover;
@@ -176,13 +195,25 @@ const setModal = (value) => {
                     {{ collab.accessRight }}
                   </div>
                 </div>
+                <div class="text-sm font-medium text-gray-700 text-left">
+                  <div class="font-bold">
+                    Status
+                  </div>
+                  <div class="text-lg" :class="{ 'text-yellow-500': collab.status === 'PENDING','text-green-500': collab.status === 'ACCEPTED' }">
+                    {{ collab.status.toLowerCase() }}
+                  </div>
+                </div>
               </div>
               <div
                 class="flex space-x-2 w-full"
               >
                 <button
                   class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
-                  @click="setDataCollab(true,collab)"
+                  @click="accessRights !== 'READ' && setDataCollab(true,collab)"
+                  :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ',
+                        }"
                 >
                   Delete
                 </button>

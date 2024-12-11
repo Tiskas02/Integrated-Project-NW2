@@ -7,10 +7,7 @@ import com.example.integratedbackend.ErrorHandle.NonCollaboratorException;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.AccessRight;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Entities.Collab;
 import com.example.integratedbackend.Kradankanban.kradankanbanV3.Repositories.CollabRepositoriesV3;
-import com.example.integratedbackend.Service.ServiceV3.BoardService;
-import com.example.integratedbackend.Service.ServiceV3.CollabService;
-import com.example.integratedbackend.Service.ServiceV3.StatusServiceV3;
-import com.example.integratedbackend.Service.ServiceV3.TaskServiceV3;
+import com.example.integratedbackend.Service.ServiceV3.*;
 import com.example.integratedbackend.Service.UserService;
 import com.example.integratedbackend.Users.User;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -48,6 +45,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private StatusServiceV3 statusServiceV3;
     @Autowired
+    private VisibilityService visibilityService;
+    @Autowired
     private CollabRepositoriesV3 collabRepositoriesV3;
 
     @Override
@@ -58,6 +57,17 @@ public class JwtFilter extends OncePerRequestFilter {
         if (request.getRequestURI().equals("/login") || request.getRequestURI().equals("/token")) {
             filterChain.doFilter(request, response);
             return;
+        } else {
+            String boardId = extractBoardIdFromURI(request.getRequestURI());
+            try {
+                boolean isPublic = boardService.isBoardPublic(boardId);
+                if (isPublic && request.getMethod().equals("GET")) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
         }
 
         String username = null;
@@ -118,7 +128,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 } catch (ResponseStatusException e) {
                     sendErrorResponse(response, e.getStatusCode().value(), e.getMessage(), request.getRequestURI());
                     return;
-                }  catch (Exception e) {
+                } catch (Exception e) {
                     sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error during JWT processing", request.getRequestURI());
                     return;
                 }
@@ -175,7 +185,7 @@ public class JwtFilter extends OncePerRequestFilter {
             if (accessRight == AccessRight.READ && requestMethod.equals("GET") || requestMethod.equals("DELETE")) {
                 return;
             }
-            if (accessRight == AccessRight.READ && requestMethod.equals("PATCH") && request.getRequestURI().contains("collabs/invitations")){
+            if (requestMethod.equals("PATCH") && request.getRequestURI().contains("collabs/invitations")) {
                 return;
             }
 
@@ -196,8 +206,16 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Collaborator does not have sufficient permissions");
         }
 
-        if (!isPublic || !requestMethod.equals("GET")) {
-            throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "FORBIDDEN");
+        if (!isPublic) {
+            if (requestMethod.equals("GET")) {
+                throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Board is private, Only Collaborator and Owner can access");
+            } else {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+            }
+        } else {
+            if (!requestMethod.equals("GET")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
+            }
         }
     }
 
@@ -246,8 +264,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return method.equals("POST") || method.equals("PUT") || method.equals("DELETE");
     }
-
-
 
 
     private void sendErrorResponse(HttpServletResponse response, int status, String message, String path) throws IOException {

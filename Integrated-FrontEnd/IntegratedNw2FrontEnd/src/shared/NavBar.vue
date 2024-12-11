@@ -18,7 +18,7 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 const parseJwt = (token) => {
-  const base64Url = token.split(".")[1];
+  const base64Url = token?.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
     atob(base64)
@@ -73,7 +73,8 @@ const logout = () => {
         class="transition-all animate-fade-down animate-once animate-ease-in-out animate-duration-[600ms] animate-fill-both w-full bg-[#81B2D6] tablet:hidden flex flex-col mt-[60px] space-y-2 rounded-b-2xl shadow-md"
       >
         <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
-        <template v-if="mode !== 'board'">
+        <div v-if="mode === 'board' || mode === 'collab'"></div>
+        <template v-else>
           <router-link
             :to="{ name: 'Task', params: { id: boardId } }"
             class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center text-lg text-white"
@@ -101,7 +102,7 @@ const logout = () => {
           class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center"
           @click="isMenuOpen = false"
         >
-          {{ userPayload.name }}
+          {{ userPayload?.name }}
         </RouterLink>
         <!-- Always show the Logout link -->
         <RouterLink
@@ -150,7 +151,8 @@ const logout = () => {
       <!-- Pill Navigation (visible only on tablets and larger) -->
       <div class="hidden tablet:flex space-x-4 items-center">
         <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
-        <div v-if="mode !== 'board'" class="flex flex-row space-x-8">
+         <div v-if="mode === 'board' || mode === 'collab'"></div>
+        <div v-else class="flex flex-row space-x-8">  
           <router-link
             :to="{ name: 'Task', params: { id: boardId } }"
             class="block py-2 hover:text-blue-700 font-semibold text-center text-slate-500 tooltip tooltip-bottom"

@@ -64,11 +64,6 @@ public class TaskServiceV3 {
         return tasksRepositoriesV3.findById(id).orElseThrow(
                 () -> new ItemNotFoundException(
                         HttpStatus.NOT_FOUND, "Task" + " " + id + " " + "doesn't exist !!!"));
-//        TaskV3 task = tasksRepositoriesV3.findById(id).orElseThrow(
-//                () -> new ItemNotFoundException(
-//                        HttpStatus.NOT_FOUND, "Task" + " " + id + " " + "doesn't exist !!!"));
-//
-//        return listMapper.mapList(task, TaskDTOV3.class, modelMapper);
     }
 
     public TaskV3 createTask(NewTaskDTOV3 addTask,String boardId) {
