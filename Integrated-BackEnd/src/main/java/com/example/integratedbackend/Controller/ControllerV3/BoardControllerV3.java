@@ -855,7 +855,7 @@ public class BoardControllerV3 {
             Boards boardInfo = boardService.getBoardByBoardId(boardId);
             String boardOwnerName = boardInfo.getUsers().getUsername();
 
-            CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
+
 
             if (username.equals(boardOwnerName)) {
                 List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
@@ -863,6 +863,7 @@ public class BoardControllerV3 {
             }
 
             boolean visibleValue = visibilityService.checkVisibility(boardId);
+            CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
 
             if (!visibleValue) {
                 if (Objects.equals(collabAccess.getBoardId(), boardId)) {
@@ -916,6 +917,14 @@ public class BoardControllerV3 {
             String jwt = authHeader.substring(7);
             String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
             String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
+
+            Boards boardInfo = boardService.getBoardByBoardId(boardId);
+            String boardOwnerName = boardInfo.getUsers().getUsername();
+
+            if (username.equals(boardOwnerName)) {
+                CollabDTO collabDTO = collabService.getCollaboratorOfBoard(boardId, collabId, userId);
+                return ResponseEntity.ok(collabDTO);
+            }
 
             CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
             boolean visibleValue = visibilityService.checkVisibility(boardId);
