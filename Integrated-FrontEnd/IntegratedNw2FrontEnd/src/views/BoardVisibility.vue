@@ -1,24 +1,20 @@
 <script setup>
-import { defineProps, defineEmits, ref } from "vue"
+import { defineProps, defineEmits, ref } from "vue";
 
-const emit = defineEmits(["close", "newBoard"])
+const emit = defineEmits(["close", "newBoard"]);
 const props = defineProps({
   board: Object,
-})
+});
 
-const newBoard = ref({ ...props.board })
-
-console.log(props.board)
+const newBoard = ref({ ...props.board });
 
 const toggleVisibility = () => {
   if (newBoard.value.visibilities === "PUBLIC") {
-    newBoard.value.visibilities = "PRIVATE"
+    newBoard.value.visibilities = "PRIVATE";
   } else {
-    newBoard.value.visibilities = "PUBLIC"
+    newBoard.value.visibilities = "PUBLIC";
   }
-  console.log(newBoard.value.visibilities);
-  
-}
+};
 </script>
 
 <template>
@@ -49,7 +45,7 @@ const toggleVisibility = () => {
                 class="bg-red-500 text-white px-4 py-2 rounded-lg"
                 @click="
                   () => {
-                    emit('close', false)
+                    emit('close', false);
                   }
                 "
               >
@@ -59,9 +55,9 @@ const toggleVisibility = () => {
                 class="bg-green-500 text-white px-4 py-2 rounded-lg"
                 @click="
                   () => {
-                    toggleVisibility()
-                    emit('close', false)
-                    emit('newBoard', newBoard)
+                    toggleVisibility();
+                    emit('close', false);
+                    emit('newBoard', newBoard);
                   }
                 "
               >

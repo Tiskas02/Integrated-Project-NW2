@@ -15,10 +15,9 @@ const isDropdownOpen = ref(false)
 const accessRights = ["READ", "WRITE"]
 const selectAccessRight = (nameAcess) => {
   newCollab.value.accessRight = nameAcess
-  console.log(newCollab.value)
 }
 const updateEmail = (value) => {
-  newCollab.value.email = value // Update the email when receiving input
+  newCollab.value.email = value 
 }
 const isEmailValid = computed(() => newCollab.value.email.includes('@ad.sit.kmutt.ac.th'));
 const selectedAcess = ref(accessRights[0])
@@ -28,27 +27,9 @@ const toggleDropdown = () => {
 const updateAcess = (accessName) => {
   selectedAcess.value = accessName
   selectAccessRight(accessName)
-  isDropdownOpen.value = false // Close the dropdown after selection
+  isDropdownOpen.value = false 
 }
 
-
-
-// const saveCollab = async () => {
-//   try {
-//     const addedCollab = await collabStore.addCollab(newCollab.value, routeId.value);
-//     console.log("Added collaborator:", addedCollab);
-//     if (addedCollab) {
-//       // Send the invitation to the added collaborator
-//       const invitation = await collabStore.sendInvitation(newCollab.value, routeId.value);
-//       console.log("Invitation sent:", invitation);
-//     }
-
-//     emit("close", false);
-//     emit("newCollab", addedCollab);
-//   } catch (error) {
-//     console.error("Error adding collaborator:", error);
-//   }
-// };
 
 
 

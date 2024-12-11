@@ -31,25 +31,29 @@ const token = parseJwt(receiveToken);
 onMounted(async () => {
   storeModeNavBar.value = "collab";
   const collab = await collabStore.fetchCollabsByBoardId(routeId.value);
-  console.log(collab);
   collab.forEach((item) => {
     if (item.oid === token.oid) {
       collabInvitation.value.push(item);
     }
   });
-  if(token.oid === collabInvitation.value[0]?.oid){
+  if (token.oid === collabInvitation.value[0]?.oid) {
     console.log("You are the owner of this board");
-  }else{
-    toasterStore.error({ text: "You are not the owner of this board 🫵",setTimeout: 5000 });
+  } else {
+    toasterStore.error({
+      text: "You are not the owner of this board 🫵",
+      setTimeout: 5000,
+    });
     router.push({ name: "board" });
   }
   if (collabInvitation.value[0].status === "ACCEPTED") {
-    toasterStore.error({ text: "You are accepted this borad already",setTimeout: 5000 });
+    toasterStore.error({
+      text: "You are accepted this borad already",
+      setTimeout: 5000,
+    });
     router.push({ name: "board" });
   }
 });
 const acceptInvitation = async () => {
-  // Navigate to the board home after accepting
   const res = await collabStore.sendInvitation(
     { status: "ACCEPTED" },
     routeId.value
@@ -63,18 +67,15 @@ const acceptInvitation = async () => {
 };
 
 const declineInvitation = async () => {
-  const res = await collabStore.deleteCollab(token.oid,routeId.value);
+  const res = await collabStore.deleteCollab(token.oid, routeId.value);
   if (res.status === 200) {
     toasterStore.success({ text: "Declined Collab Board successfully!" });
   } else {
     toasterStore.error({ text: "Error Declined Collab Board" });
   }
-  // Navigate back to the login page or wherever appropriate
   router.push({ name: "board" });
 };
 </script>
-
-<!-- src/views/Invitation.vue -->
 <template>
   <NavBar :mode="storeModeNavBar" class="sticky top-0 z-50" />
   <div
@@ -111,10 +112,20 @@ const declineInvitation = async () => {
             :key="collabs.boardId"
           >
             <div class="bg-slate-100 flex rounded-md">
-              <div class="w-[10%] m-auto text-center text-md font-bold">{{ collab.boardName }}</div>
-              <div class="w-[10%] m-auto text-center text-md font-bold">{{ collab.ownerName }}</div>
-              <div class="w-[10%] m-auto text-center text-md font-bold">{{ collab.accessRight }}</div>
-              <div class="w-[10%] m-auto text-center text-md font-bold text-yellow-500">{{ collab.status  }}</div>
+              <div class="w-[10%] m-auto text-center text-md font-bold">
+                {{ collab.boardName }}
+              </div>
+              <div class="w-[10%] m-auto text-center text-md font-bold">
+                {{ collab.ownerName }}
+              </div>
+              <div class="w-[10%] m-auto text-center text-md font-bold">
+                {{ collab.accessRight }}
+              </div>
+              <div
+                class="w-[10%] m-auto text-center text-md font-bold text-yellow-500"
+              >
+                {{ collab.status }}
+              </div>
             </div>
           </div>
         </div>

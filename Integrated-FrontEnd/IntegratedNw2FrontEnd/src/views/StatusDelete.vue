@@ -62,9 +62,8 @@ const updateStatus = (statusName) => {
       newId.value = status.id;
     }
   });
-  isDropdownOpen.value = false; // Close the dropdown after selection
+  isDropdownOpen.value = false;
 };
-
 </script>
 
 <template>
@@ -87,7 +86,6 @@ const updateStatus = (statusName) => {
             <div class="flex justify-start items-center">
               <div class="itbkk-message mr-3 text-white my-6">Transfer to</div>
               <div class="inline-block text-left">
-                <!-- Dropdown button -->
                 <div>
                   <button
                     type="button"
@@ -98,7 +96,6 @@ const updateStatus = (statusName) => {
                     aria-haspopup="true"
                   >
                     {{ selectedStatus }}
-                    <!-- Chevron Icon -->
                     <svg
                       class="-mr-1 ml-2 h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"
@@ -114,8 +111,6 @@ const updateStatus = (statusName) => {
                     </svg>
                   </button>
                 </div>
-
-                <!-- Dropdown menu -->
                 <div
                   v-if="isDropdownOpen"
                   class="absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"

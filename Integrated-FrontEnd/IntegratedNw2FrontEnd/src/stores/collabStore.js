@@ -18,7 +18,6 @@ export const useStoreCollab = defineStore("collabs", () => {
       collabData.boards.forEach((collab) => {
         collabs.value.push(collab);
       });
-      console.log(collabs.value);
       if (collabs.value.length === 0) {
         return noData;
       } else {
@@ -58,7 +57,6 @@ export const useStoreCollab = defineStore("collabs", () => {
     try {
       const newCollab = await addCollabData(collab, routeId);
       if (newCollab) {
-        console.log("New collab:", newCollab);
         collabs.value.push(newCollab);
       }
       return newCollab;

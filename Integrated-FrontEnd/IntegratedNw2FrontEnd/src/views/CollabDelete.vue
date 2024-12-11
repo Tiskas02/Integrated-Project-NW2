@@ -1,10 +1,9 @@
 <script setup>
-import { defineProps, defineEmits } from "vue"
-const emit = defineEmits(["close", "savedDelete"])
+import { defineProps, defineEmits } from "vue";
+const emit = defineEmits(["close", "savedDelete"]);
 const props = defineProps({
   collab: Object,
-})
-console.log(props.collab);
+});
 </script>
 
 <template>
@@ -16,16 +15,18 @@ console.log(props.collab);
         <div
           class="flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-lg shadow-xl"
         >
-          <div class="text-xl font-semibold text-red-800">Remove Collaberator</div>
+          <div class="text-xl font-semibold text-red-800">
+            Remove Collaberator
+          </div>
           <div class="border-b my-3"></div>
           <div class="break-all itbkk-message text-white">
-            Do you want to remove" {{ collab.name }} " from the board? 
+            Do you want to remove" {{ collab.name }} " from the board?
           </div>
           <div class="flex justify-end my-4">
             <div
               @click="
                 () => {
-                  [$emit('close', false ), $emit('savedDelete', collab)]
+                  [$emit('close', false), $emit('savedDelete', collab)];
                 }
               "
               class="itbkk-button-confirm btn bg-gradient-to-r from-blue-700 to-blue-400 hover:bg-gradient-to-r hover:from-blue-900 hover:to-blue-700 border-none text-white"
@@ -38,7 +39,6 @@ console.log(props.collab);
             >
               Cancel
             </div>
-            
           </div>
         </div>
       </div>

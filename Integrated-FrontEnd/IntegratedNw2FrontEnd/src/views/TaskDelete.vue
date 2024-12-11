@@ -1,10 +1,10 @@
 <script setup>
-import { defineProps, defineEmits } from "vue"
-const emit = defineEmits(["close", "savedDelete"])
+import { defineProps, defineEmits } from "vue";
+const emit = defineEmits(["close", "savedDelete"]);
 const props = defineProps({
   task: Object,
   index: Number,
-})
+});
 </script>
 
 <template>
@@ -26,7 +26,7 @@ const props = defineProps({
             <div
               @click="
                 () => {
-                  $emit('close', false), $emit('savedDelete', task?.id)
+                  $emit('close', false), $emit('savedDelete', task?.id);
                 }
               "
               class="itbkk-button-confirm btn bg-gradient-to-r from-blue-700 to-blue-300 border-none text-white"

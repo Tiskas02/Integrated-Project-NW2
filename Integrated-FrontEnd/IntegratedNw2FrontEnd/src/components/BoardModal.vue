@@ -1,10 +1,10 @@
 <script setup>
-import BaseBtn from "@/shared/BaseBtn.vue"
-import { defineEmits, ref } from "vue"
-const emit = defineEmits(["close", "newBoard"])
+import BaseBtn from "@/shared/BaseBtn.vue";
+import { defineEmits, ref } from "vue";
+const emit = defineEmits(["close", "newBoard"]);
 const newBoard = ref({
   name: "",
-})
+});
 </script>
 
 <template>
@@ -40,8 +40,8 @@ const newBoard = ref({
                   <button
                     @click="
                       () => {
-                        emit('close', false)
-                        emit('newBoard', newBoard)
+                        emit('close', false);
+                        emit('newBoard', newBoard);
                       }
                     "
                   >
@@ -54,7 +54,7 @@ const newBoard = ref({
                   <button
                     @click="
                       () => {
-                        emit('close', false)
+                        emit('close', false);
                       }
                     "
                   >

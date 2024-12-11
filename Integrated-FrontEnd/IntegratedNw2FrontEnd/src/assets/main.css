@@ -14,12 +14,7 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  /* background-color: rgb(241 245 249);*/
-  /* Laptop - 1 */
-  /* background: linear-gradient(90deg, #34383e 0%, #1d2024 69.5%); */
   background-color: whitesmoke;
-
-  /* background: url('/images/background.png'); */
   background-size: cover;
 }
 

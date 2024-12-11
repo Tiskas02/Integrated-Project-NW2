@@ -40,9 +40,7 @@ async function userLogin(user) {
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
-
     const data = await res.json();
-
     localStorage.setItem("token", data.access_token);
     localStorage.setItem("refresh_token", data.refresh_token);
     return data;
@@ -108,9 +106,7 @@ const submitForm = async () => {
         <div>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-black"
-                >Username</span
-              >
+              <span class="label-text font-semibold text-black">Username</span>
             </div>
             <input
               type="text"
@@ -127,9 +123,7 @@ const submitForm = async () => {
           </label>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-black"
-                >Password</span
-              >
+              <span class="label-text font-semibold text-black">Password</span>
             </div>
             <input
               type="password"

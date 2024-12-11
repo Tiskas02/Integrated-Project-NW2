@@ -4,11 +4,6 @@ const emit = defineEmits(["close", "task"]);
 const props = defineProps({
   task: Object,
 });
-
-const getRandomColor = () => {
-  return "#" + Math.floor(Math.random() * 16777215).toString(16);
-};
-console.log(props.task);
 </script>
 
 <template>

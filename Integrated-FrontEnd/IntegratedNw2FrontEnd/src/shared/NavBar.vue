@@ -8,9 +8,6 @@ const boardId = route.params.id ? route.params.id : 1;
 const props = defineProps({
   mode: String,
 });
-watchEffect(() => {
-  console.log("Mode prop updated:", props.mode);
-});
 
 const isMenuOpen = ref(false);
 
@@ -46,11 +43,9 @@ const logout = () => {
     class="text-white bg-white"
     :class="{ 'backdrop-blur-md': isMenuOpen, 'backdrop-blur-0': !isMenuOpen }"
   >
-    <!-- Top Navigation Menu -->
     <div
       class="topnav relative laptop:mx-24 h-[65px] flex flex-col tablet:flex-row items-start tablet:items-center justify-between"
     >
-      <!-- Logo -->
       <router-link :to="{ name: 'board' }" class="p-0">
         <div class="flex flex-row">
           <img
@@ -65,14 +60,11 @@ const logout = () => {
           </div>
         </div>
       </router-link>
-      <!-- Hamburger Menu (visible only on mobile) -->
-      <!-- Hamburger Menu (visible only on mobile) -->
       <div
         id="myLinks"
         :class="{ absolute: isMenuOpen, hidden: !isMenuOpen }"
         class="transition-all animate-fade-down animate-once animate-ease-in-out animate-duration-[600ms] animate-fill-both w-full bg-[#81B2D6] tablet:hidden flex flex-col mt-[60px] space-y-2 rounded-b-2xl shadow-md"
       >
-        <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
         <div v-if="mode === 'board' || mode === 'collab'"></div>
         <template v-else>
           <router-link
@@ -104,7 +96,6 @@ const logout = () => {
         >
           {{ userPayload?.name }}
         </RouterLink>
-        <!-- Always show the Logout link -->
         <RouterLink
           to="/login"
           class="block py-2 hover:bg-sky-800 font-medium text-center text-lg pb-4"
@@ -116,7 +107,6 @@ const logout = () => {
           Logout
         </RouterLink>
       </div>
-      <!-- Hamburger Icon (visible only on mobile) -->
       <button
         @click="toggleMenu"
         class="tablet:hidden absolute right-1 p-4 text-white hover:animate-jump hover:animate-once hover:animate-ease-in-out"
@@ -148,11 +138,10 @@ const logout = () => {
           </defs>
         </svg>
       </button>
-      <!-- Pill Navigation (visible only on tablets and larger) -->
+
       <div class="hidden tablet:flex space-x-4 items-center">
-        <!-- Show Task, Status, and Collaborator links only if mode is not "board" -->
-         <div v-if="mode === 'board' || mode === 'collab'"></div>
-        <div v-else class="flex flex-row space-x-8">  
+        <div v-if="mode === 'board' || mode === 'collab'"></div>
+        <div v-else class="flex flex-row space-x-8">
           <router-link
             :to="{ name: 'Task', params: { id: boardId } }"
             class="block py-2 hover:text-blue-700 font-semibold text-center text-slate-500 tooltip tooltip-bottom"
@@ -176,7 +165,6 @@ const logout = () => {
           </router-link>
         </div>
 
-        <!-- Profile and Logout -->
         <div class="flex items-center space-x-4">
           <div class="mx-2">
             <svg

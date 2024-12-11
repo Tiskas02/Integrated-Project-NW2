@@ -7,18 +7,20 @@ const suggestions = ref([]);
 const showSuggestions = ref(false);
 const highlightedIndex = ref(-1);
 const props = defineProps({
-    modelValue: String
+  modelValue: String,
 });
 const emit = defineEmits(["update:modelValue"]);
 
-watch(() => props.modelValue, (newValue) => {
-  inputValue.value = newValue;
-});
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    inputValue.value = newValue;
+  }
+);
 
 function onInputChange() {
   const query = inputValue.value.trim();
-  emit("update:modelValue", inputValue.value); // Emit the updated value to the parent
-  // Generate suggestions based on the mock email array
+  emit("update:modelValue", inputValue.value);
   if (query) {
     suggestions.value = emailDomains.map(
       (domain) => `${query.split("@")[0]}${domain}`
@@ -47,7 +49,7 @@ function highlightPrevious() {
 function selectSuggestion(index = highlightedIndex.value) {
   if (index >= 0 && index < suggestions.value.length) {
     inputValue.value = suggestions.value[index];
-    emit("update:modelValue", inputValue.value); // Emit the updated value to the parent
+    emit("update:modelValue", inputValue.value);
     resetSuggestions();
   }
 }
@@ -68,7 +70,7 @@ function resetSuggestions() {
       @keydown.down.prevent="highlightNext"
       @keydown.up.prevent="highlightPrevious"
       @keydown.enter.prevent="selectSuggestion"
-      class="w-full p-2 border rounded-lg outline-none bg-[#b3d1e8] text-gray-800 focus:ring focus:ring-blue-400 placeholder:text-white "
+      class="w-full p-2 border rounded-lg outline-none bg-[#b3d1e8] text-gray-800 focus:ring focus:ring-blue-400 placeholder:text-white"
       placeholder="Type your email to add collab..."
     />
     <ul

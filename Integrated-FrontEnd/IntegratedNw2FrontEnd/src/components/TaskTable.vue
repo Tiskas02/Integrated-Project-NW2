@@ -59,16 +59,16 @@ const parseJwt = (token) => {
 const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
 
-
 onMounted(async () => {
   if (token?.oid) {
-  const boardData = await boardStore.fetchBoards(token?.oid);
-  boardsData.value = boardData[0] ? boardData[0] : null ;
-  storeVisibility.value = boardData[0].visibilities === "PUBLIC" ? true : false;
+    const boardData = await boardStore.fetchBoards(token?.oid);
+    boardsData.value = boardData[0] ? boardData[0] : null;
+    storeVisibility.value =
+      boardData[0].visibilities === "PUBLIC" ? true : false;
   }
   const data = await tasksStore.fetchTasks(routerId.value);
-  if(data.status === 403){
-    toasterStore.error({ text: data.message  ,setTimeout: 8000 });
+  if (data.status === 403) {
+    toasterStore.error({ text: data.message, setTimeout: 8000 });
     router.push({ name: "board" });
   }
   if (data.error) {
@@ -95,7 +95,6 @@ onMounted(async () => {
   const noStatus = allStatus.value.find(
     (status) => status.name === "No Status"
   );
-  // If found, assign its statusId to defaultStatus.value.statusId
   if (noStatus) {
     defaultStatus.value.statusId = noStatus.id;
   }
@@ -217,7 +216,6 @@ const addEditTask = async (newTask) => {
         });
       }
     } else {
-      console.log(newTask);
       const dataEdit = await tasksStore.updateTask(routerId.value, newTask.id, {
         id: newTask.id,
         title: newTask.title.trim(),
@@ -272,12 +270,11 @@ const EditVisibilities = async (value) => {
   }
 };
 
-const setVisibility =async () => {
+const setVisibility = async () => {
   const boardData = await boardStore.fetchBoards(token?.oid);
-  boardsData.value = boardData[0] ? boardData[0] : null ;
+  boardsData.value = boardData[0] ? boardData[0] : null;
   const toVisibility = boardsData.value;
   storeChangeVisibility.value = toVisibility;
-  console.log(storeChangeVisibility.value);
   showVisibility.value = true;
 };
 
@@ -311,25 +308,6 @@ const getFilterTask = computed(() => {
 
 const ClearStatuses = () => {
   selectFilter.value.splice(0, selectFilter.value.length);
-};
-//test
-
-const removeFilter = (index) => {
-  // Remove a specific filter by index
-  selectFilter.value.splice(index, 1);
-};
-
-const addNewFilter = (event) => {
-  const newFilter = event.target.value.trim();
-  if (newFilter && !selectFilter.value.includes(newFilter)) {
-    selectFilter.value.push(newFilter);
-    event.target.value = ""; // Clear input field
-  }
-};
-
-const clearStatuses = () => {
-  // Clear all filters
-  selectFilter.value = [];
 };
 
 const colorCache = {};
@@ -394,7 +372,8 @@ const getColorForStatus = (statusName, statuses) => {
                     :checked="checkToggle"
                     :disabled="accessRights === 'READ' || !token"
                     :class="{
-                      'opacity-50 cursor-not-allowed': accessRights === 'READ' || !token,
+                      'opacity-50 cursor-not-allowed':
+                        accessRights === 'READ' || !token,
                     }"
                   />
                 </label>
@@ -485,9 +464,12 @@ const getColorForStatus = (statusName, statuses) => {
             <div
               class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 mx-5 tablet:mx-1"
               :class="{
-                'opacity-50 cursor-not-allowed': accessRights === 'READ' || !token,
+                'opacity-50 cursor-not-allowed':
+                  accessRights === 'READ' || !token,
               }"
-              @click="token && accessRights !== 'READ' && setDetail(true, null, 'add')"
+              @click="
+                token && accessRights !== 'READ' && setDetail(true, null, 'add')
+              "
             >
               <svg
                 width="20"
@@ -679,8 +661,9 @@ const getColorForStatus = (statusName, statuses) => {
                     >
                       <div
                         class="itbkk-button-edit text-white btn border-white bg-gradient-to-r from-yellow-500 to-yellow-300"
-                        @click="token && 
-                          accessRights !== 'READ' &&
+                        @click="
+                          token &&
+                            accessRights !== 'READ' &&
                             fetchDataById(routerId, task.id, 'edit')
                         "
                         :class="{
@@ -692,8 +675,9 @@ const getColorForStatus = (statusName, statuses) => {
                       </div>
                       <div
                         class="itbkk-button-delete text-white btn btn-outline border-white bg-gradient-to-r from-red-500 to-red-300"
-                        @click="token && 
-                          accessRights !== 'READ' &&
+                        @click="
+                          token &&
+                            accessRights !== 'READ' &&
                             (fetchDataById(routerId, task.id, 'delete'),
                             setIndex(index))
                         "

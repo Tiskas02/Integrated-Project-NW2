@@ -8,10 +8,8 @@ import StatusAddEdit from "@/components/StatusAddEdit.vue";
 import AcessDeniend from "@/shared/AcessDeniend.vue";
 import Login from "@/components/Login.vue";
 import BoardHome from "@/views/BoardHome.vue";
-import CollaberaterTable from "@/components/CollaberaterTable.vue";
 import NavBar from "@/shared/NavBar.vue";
 import Invitation from "@/views/Invitation.vue";
-import { getBoardData } from "@/libs/api/board/fetchUtilBoard";
 import { getCollabDataByBoardId } from "@/libs/api/collab/fetchUtilCollab";
 const url = import.meta.env.VITE_BASE_URL;
 function parseJwt(token) {
@@ -26,7 +24,7 @@ function parseJwt(token) {
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    return null; // Return null if parsing fails
+    return null;
   }
 }
 
@@ -187,17 +185,14 @@ router.beforeEach(async (to, from, next) => {
           localStorage.setItem("token", refreshResponse.access_token);
           isAuthenticated = true;
         } else {
-          console.log("Failed to refresh access token.");
           deleteTokenFromLocalStorage();
           alert("Failed to refresh your session. Please log in again.");
         }
       } catch (error) {
-        // console.log("Error refreshing token: ", `${error}`)
         deleteTokenFromLocalStorage();
         alert("Your session has expired. Please log in again.");
       }
     } else {
-      // console.log(("Error refreshing token: ", `${error}`))
       deleteTokenFromLocalStorage();
       alert("There is a problem. Please try again later.");
     }
@@ -230,11 +225,9 @@ router.beforeEach(async (to, from, next) => {
     to.path.includes(`/board/${boardId}/task`) ||
     to.path.includes(`/board/${boardId}/status`)
   ) {
-    console.log("Skipping auth checks for /task or /status");
     next();
     return;
   }
-  // ตรวจสอบ auth สำหรับเส้นทางอื่น
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: "login" });
   } else {
