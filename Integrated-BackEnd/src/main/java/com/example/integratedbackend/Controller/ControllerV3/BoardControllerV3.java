@@ -1,6 +1,5 @@
 package com.example.integratedbackend.Controller.ControllerV3;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Objects;
 
@@ -557,7 +556,6 @@ public class BoardControllerV3 {
         CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
         // Check board visibility
 
-
         if (!visibleValue) {
             if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                 if (usernameFromToken != null) {
@@ -868,9 +866,9 @@ public class BoardControllerV3 {
             if (!visibleValue) {
                 if (Objects.equals(collabAccess.getBoardId(), boardId)) {
                     if (username != null) {
-                        if (collabAccess.getStatus() == Collab.Status.PENDING){
-                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
-                        }
+//                        if (collabAccess.getStatus() == Collab.Status.PENDING){
+//                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+//                        }
                         List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
                         return ResponseEntity.ok(collabDTOS);
                     } else {
@@ -890,20 +888,6 @@ public class BoardControllerV3 {
                     }
                 }
             }
-
-//            if (boardInfo != null && username != null) {
-//                if (collabAccess.getStatus() == Collab.Status.PENDING){
-//                    throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
-//                }
-//
-////                if (username.equals(boardOwnerName)) {
-////                    List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
-////                    return ResponseEntity.ok(collabDTOS);
-////                }
-//
-//                List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
-//                return ResponseEntity.ok(collabDTOS);
-//            }
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");

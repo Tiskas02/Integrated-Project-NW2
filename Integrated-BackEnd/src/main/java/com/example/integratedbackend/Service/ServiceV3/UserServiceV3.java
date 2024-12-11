@@ -14,7 +14,6 @@ public class UserServiceV3 {
     UsersRepositoriesV3 usersRepositoriesV3;
 
     private List<Users> findUserByUsername(String username) {
-        System.out.println(usersRepositoriesV3.findAllByUsername(username));
         return usersRepositoriesV3.findAllByUsername(username);
     }
 

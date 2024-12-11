@@ -70,19 +70,6 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-//        if (!isPublic) {
-//            if (requestMethod.equals("GET")) {
-//                throw new NonCollaboratorException(HttpStatus.FORBIDDEN, "Board is private, Only Collaborator and Owner can access");
-//            }else {
-//                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
-//            }
-//        }else {
-//            if (!requestMethod.equals("GET")) {
-//                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
-//            }
-//        }
-
-
         String username = null;
         String jwt = null;
 

@@ -34,8 +34,6 @@ public class BoardService {
     @Autowired
     private UsersRepositoriesV3 usersRepositoriesV3;
     @Autowired
-    private CollabService collabService;
-    @Autowired
     private StatusServiceV3 statusServiceV3;
     @Autowired
     ModelMapper modelMapper;
@@ -53,18 +51,6 @@ public class BoardService {
         dto.setAddedOn(collab.getAddedOn());
         return dto;
     }
-
-
-//    public List<Boards> getBoardByUserName(String userName) {
-//        List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
-//        Users user = users.get(0);
-//        List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
-//        if (boards == null) {
-//            throw new ItemNotFoundException(HttpStatus.FORBIDDEN, "Board with username" +
-//                    " " + userName + " not found");
-//        }
-//        return boards;
-//    }
 public List<BoardResponse> getBoardByUserName(String userName) {
     List<BoardResponse> boardResponses = new ArrayList<>();
     List<Users> users = usersRepositoriesV3.findAllByUsername(userName);
@@ -75,20 +61,16 @@ public List<BoardResponse> getBoardByUserName(String userName) {
 
     Users user = users.get(0);
 
-    // Fetch collaborators for the user
     List<Collab> collabList = collabRepositoriesV3.findCollabByUserId(user.getOid());
     List<CollabDTO> collabDTOList = collabList.stream().map(this::convertToCollabDTO).collect(Collectors.toList());
 
-    // Fetch boards for the user
     List<Boards> boards = boardsRepositoriesV3.findBoardsByUsersOid(user.getOid());
 
-    // If there are no boards, add a response with only collaborators
     if (boards.isEmpty()) {
         BoardResponse placeholderResponse = new BoardResponse();
         placeholderResponse.setCollabIn(collabDTOList);
         boardResponses.add(placeholderResponse);
     } else {
-        // Populate board responses normally
         for (Boards board : boards) {
             BoardResponse boardResponse = new BoardResponse();
             boardResponse.setId(board.getId());

@@ -15,6 +15,5 @@ public class BoardResponse {
     private ZonedDateTime createdOn;
     private ZonedDateTime updatedOn;
     private String users;
-//    private Boards boards;
     private List<CollabDTO> collabIn;
 }

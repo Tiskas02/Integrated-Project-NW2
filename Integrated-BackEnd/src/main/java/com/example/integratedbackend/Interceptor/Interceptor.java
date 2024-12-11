@@ -17,15 +17,6 @@ public class Interceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest,
                              HttpServletResponse httpServletResponse,
                              Object o) throws Exception {
-//        if (httpServletRequest.getMethod().equalsIgnoreCase("POST") && httpServletRequest.getRequestURI().contains("/boards")) {
-//            ContentCachingRequestWrapper cachedRequest = new ContentCachingRequestWrapper(httpServletRequest);
-//
-//            if (cachedRequest.getContentAsByteArray().length == 0) {
-//                httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-//                httpServletResponse.getWriter().write("Board creation failed. Request body is required.");
-//                return false;
-//            }
-//        }
         return true;
     }
 

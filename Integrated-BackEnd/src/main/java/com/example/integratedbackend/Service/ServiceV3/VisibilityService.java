@@ -27,7 +27,7 @@ public class VisibilityService {
                 new IllegalArgumentException("Board not found"));
 
         //ถ้าvisibility = private return true, other return false
-//        return boards.getVisibilities() == Visibilities.PRIVATE;
+
         return "private".equals(boards.getVisibility());
     }
 
