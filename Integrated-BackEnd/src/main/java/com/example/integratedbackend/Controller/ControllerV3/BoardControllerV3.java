@@ -862,19 +862,47 @@ public class BoardControllerV3 {
                 return ResponseEntity.ok(collabDTOS);
             }
 
-            if (boardInfo != null && username != null) {
-                if (collabAccess.getStatus() == Collab.Status.PENDING){
-                    throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+            boolean visibleValue = visibilityService.checkVisibility(boardId);
+
+            if (!visibleValue) {
+                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+                        if (collabAccess.getStatus() == Collab.Status.PENDING){
+                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                        }
+                        List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+                        return ResponseEntity.ok(collabDTOS);
+                    } else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+                    }
                 }
-
-//                if (username.equals(boardOwnerName)) {
-//                    List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
-//                    return ResponseEntity.ok(collabDTOS);
-//                }
-
-                List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
-                return ResponseEntity.ok(collabDTOS);
             }
+            if (visibleValue) {
+                if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+
+                        List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+                        return ResponseEntity.ok(collabDTOS);
+                    } else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+                    }
+                }
+            }
+
+//            if (boardInfo != null && username != null) {
+//                if (collabAccess.getStatus() == Collab.Status.PENDING){
+//                    throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+//                }
+//
+////                if (username.equals(boardOwnerName)) {
+////                    List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+////                    return ResponseEntity.ok(collabDTOS);
+////                }
+//
+//                List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+//                return ResponseEntity.ok(collabDTOS);
+//            }
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
@@ -890,14 +918,37 @@ public class BoardControllerV3 {
             String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
 
             CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
+            boolean visibleValue = visibilityService.checkVisibility(boardId);
 
-            if (username != null) {
-                if (collabAccess.getStatus() == Collab.Status.PENDING){
-                    throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+            if (!visibleValue) {
+                if (Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+                        if (collabAccess.getStatus() == Collab.Status.PENDING){
+                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                        }
+                        CollabDTO collabDTO = collabService.getCollaboratorOfBoard(boardId, collabId, userId);
+                        return ResponseEntity.ok(collabDTO);
+                    }else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "YOU DON'T HAVE PERMISSION ON THIS BOARD");
+                    }
                 }
-                CollabDTO collabDTO = collabService.getCollaboratorOfBoard(boardId, collabId, userId);
-                return ResponseEntity.ok(collabDTO);
             }
+
+            if (visibleValue) {
+                if (!Objects.equals(collabAccess.getBoardId(), boardId)) {
+                    if (username != null) {
+                        if (collabAccess.getStatus() == Collab.Status.PENDING){
+                            throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
+                        }
+                        CollabDTO collabDTO = collabService.getCollaboratorOfBoard(boardId, collabId, userId);
+                        return ResponseEntity.ok(collabDTO);
+                    }else {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "THIS BOARD IS PRIVATE!!");
+                    }
+                }
+            }
+
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization Error");
     }
