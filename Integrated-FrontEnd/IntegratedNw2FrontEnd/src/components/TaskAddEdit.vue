@@ -1,13 +1,12 @@
 <script setup>
-import { defineProps, defineEmits, ref, computed, onMounted,watch } from "vue"
-import { useStoreStatus } from "@/stores/statusStores"
-import { useRoute } from "vue-router"
-import NavBar from "@/shared/NavBar.vue";
-const route = useRoute()
-const emit = defineEmits(["close", "sentData"])
-const statusStore = useStoreStatus()
-const allStatus = ref([])
-const routerId = ref(route.params.id)
+import { defineProps, defineEmits, ref, computed, onMounted, watch } from "vue";
+import { useStoreStatus } from "@/stores/statusStores";
+import { useRoute } from "vue-router";
+const route = useRoute();
+const emit = defineEmits(["close", "sentData"]);
+const statusStore = useStoreStatus();
+const allStatus = ref([]);
+const routerId = ref(route.params.id);
 const props = defineProps({
   mode: String,
   task: {
@@ -22,40 +21,38 @@ const props = defineProps({
       updatedOn: "",
     },
   },
-})
-console.log(props.task);
+});
 
 const defaultStatus = ref({
   statusId: null,
-})
+});
 
 onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value)
-  const noStatus = allStatus.value.find((status) => status.name === "No Status")
+  allStatus.value = await statusStore.fetchStatus(routerId.value);
+  const noStatus = allStatus.value.find(
+    (status) => status.name === "No Status"
+  );
   if (noStatus) {
-    defaultStatus.value.statusId = noStatus.id
+    defaultStatus.value.statusId = noStatus.id;
   }
-})
-console.log(props.task);
-
-
+});
 
 const newTask = ref({
   ...props.task,
   statusId: props.task?.status?.id ?? defaultStatus.value.statusId,
-})
+});
 
 const titleCharCount = computed(() =>
   newTask.value.title ? newTask.value.title.length : 0
-)
+);
 
 const assigneesCharCount = computed(() =>
   newTask.value.assignees ? newTask.value.assignees.length : 0
-)
+);
 
 const descriptionCharCount = computed(() =>
   newTask.value.description ? newTask.value.description.length : 0
-)
+);
 const selectedStatus = ref(props?.task?.status?.name ?? "No Status");
 const isDropdownOpen = ref(false);
 const toggleDropdown = () => {
@@ -63,13 +60,11 @@ const toggleDropdown = () => {
 };
 const updateStatus = (statusName) => {
   selectedStatus.value = statusName;
-  newTask.value.statusId = allStatus.value.find((status) => status.name === statusName).id
-  isDropdownOpen.value = false; // Close the dropdown after selection
+  newTask.value.statusId = allStatus.value.find(
+    (status) => status.name === statusName
+  ).id;
+  isDropdownOpen.value = false;
 };
-
-// watch(newTask, (newValue) => {
-//   console.log(newValue);
-// }, { deep: true })
 </script>
 
 <template>
@@ -79,7 +74,9 @@ const updateStatus = (statusName) => {
         class="itbkk-modal-task bg-grey-500 backdrop-brightness-50 w-screen h-screen fixed top-0 left-0 pt-16 tablet:pt-20"
         style="translate: transform(-50%, -50%)"
       >
-        <div class="w-full tablet:w-[60%] laptop:w-[600px] m-[auto] max-h-screen">
+        <div
+          class="w-full tablet:w-[60%] laptop:w-[600px] m-[auto] max-h-screen"
+        >
           <div
             class="overflow-auto max-h-screen flex flex-col justify-between bg-[#81B2D6] p-7 border-gray-200 rounded-b-xl tablet:rounded-lg shadow-xl"
           >
@@ -111,12 +108,12 @@ const updateStatus = (statusName) => {
                   <button
                     type="button"
                     @click="toggleDropdown"
-                    class="inline-flex justify-center w-full text-white font-semibold rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-[#b3d1e8] text-sm   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="inline-flex justify-center w-full text-white font-semibold rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-[#b3d1e8] text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     id="menu-button"
                     aria-expanded="true"
                     aria-haspopup="true"
                   >
-                    {{ selectedStatus}}
+                    {{ selectedStatus }}
                     <!-- Chevron Icon -->
                     <svg
                       class="-mr-1 ml-2 h-5 w-5"
@@ -143,7 +140,7 @@ const updateStatus = (statusName) => {
                   aria-labelledby="menu-button"
                   tabindex="-1"
                 >
-                  <div class="py-1 text-center " role="none">
+                  <div class="py-1 text-center" role="none">
                     <a
                       v-for="status in allStatus"
                       :key="status.id"
@@ -159,7 +156,6 @@ const updateStatus = (statusName) => {
                   </div>
                 </div>
               </div>
-             
             </div>
             <div class="flex flex-col">
               <div class="text-lg font-bold text-white">Assignees</div>
@@ -184,27 +180,31 @@ const updateStatus = (statusName) => {
             </div>
             <div v-if="mode === 'edit'">
               <div class="flex flex-row">
-                  <div class="mr-2 text-sm font-chivo text-white">TimeZone</div>
-                  <div class="text-sm font-chivo text-white">
-                    🌏 {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+                <div class="mr-2 text-sm font-chivo text-white">TimeZone</div>
+                <div class="text-sm font-chivo text-white">
+                  🌏 {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+                </div>
+              </div>
+              <div class="flex flex-row">
+                <div class="border w-full rounded-md px-2 py-1 my-2">
+                  <div class="flex itbkk-created-on my-1">
+                    <div class="overflow-auto mr-1 text-white">
+                      Created On :
+                    </div>
+                    <div class="text-white">
+                      {{ new Date(task?.createdOn).toLocaleString("en-GB") }}
+                    </div>
+                  </div>
+                  <div class="flex itbkk-updated-on my-1">
+                    <div class="overflow-auto mr-1 text-white">
+                      Updated On :
+                    </div>
+                    <div class="text-white">
+                      {{ new Date(task?.updatedOn).toLocaleString("en-GB") }}
+                    </div>
                   </div>
                 </div>
-                <div class="flex flex-row">
-                  <div class="border w-full rounded-md px-2 py-1 my-2">
-                    <div class="flex itbkk-created-on my-1">
-                      <div class="overflow-auto mr-1 text-white">Created On :</div>
-                      <div class="text-white">
-                        {{ new Date(task?.createdOn).toLocaleString("en-GB") }}
-                      </div>
-                    </div>
-                    <div class="flex itbkk-updated-on my-1">
-                      <div class="overflow-auto mr-1 text-white">Updated On :</div>
-                      <div class="text-white">
-                        {{ new Date(task?.updatedOn).toLocaleString("en-GB") }}
-                      </div>
-                    </div>
-                  </div>
-                  </div>
+              </div>
             </div>
             <div>
               <div>
@@ -238,9 +238,9 @@ const updateStatus = (statusName) => {
                     class="itbkk-button-confirm disabled btn bg-gradient-to-r from-blue-700 to-blue-300 border-none text-white"
                     @click="
                       () => {
-                        $router.go(-1)
-                        emit('sentData', newTask)
-                        emit('close', false)
+                        $router.go(-1);
+                        emit('sentData', newTask);
+                        emit('close', false);
                       }
                     "
                     :disabled="
@@ -248,8 +248,7 @@ const updateStatus = (statusName) => {
                       ((newTask.assignees ?? '') === (task?.assignees ?? '') &&
                         (newTask.description ?? '') ===
                           (task?.description ?? '') &&
-                        (newTask.statusId ?? '') ===
-                          (task?.status?.id ?? '') &&
+                        (newTask.statusId ?? '') === (task?.status?.id ?? '') &&
                         (newTask.title ?? '') === (task?.title ?? ''))
                     "
                   >
@@ -262,8 +261,8 @@ const updateStatus = (statusName) => {
                   class="itbkk-button-cancel btn bg-gradient-to-r from-red-700 to-red-300 border-none text-white"
                   @click="
                     () => {
-                      $router.go(-1)
-                      emit('close', false)
+                      $router.go(-1);
+                      emit('close', false);
                     }
                   "
                 >

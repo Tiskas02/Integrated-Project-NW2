@@ -39,18 +39,16 @@ const token = parseJwt(receiveToken);
 const accessRights = ref("WRITE");
 onMounted(async () => {
   if (token?.oid) {
-    console.log('inif');
     const dataBoard = await boardStore.fetchBoards(token?.oid);
-    console.log(dataBoard);
     nameBoard.value = dataBoard[0].name;
   }
   const dataStatus = await statusStore.fetchStatus(routeId.value);
-  if(dataStatus.status === 403){
-    toasterStore.error({ text: dataStatus.message  ,setTimeout: 8000 });
+  if (dataStatus.status === 403) {
+    toasterStore.error({ text: dataStatus.message, setTimeout: 8000 });
     router.push({ name: "board" });
   }
-  if(dataStatus.error){
-    toasterStore.error({ text: `error : ${dataStatus.error}`});
+  if (dataStatus.error) {
+    toasterStore.error({ text: `error : ${dataStatus.error}` });
     router.push({ name: "board" });
   }
   const collab = await collabStore.fetchCollabsByBoardId(routeId.value);
@@ -183,7 +181,7 @@ const setClose = (value) => {
         <div
           class="itbkk-board-name font-rubik font-medium text-xl text-slate-800 ml-2 cursor-pointer hover:bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:inline-block hover:text-transparent hover:bg-clip-text hover:duration-500"
         >
-          {{ nameBoard }} 
+          {{ nameBoard }}
         </div>
       </div>
       <div class="grow"></div>
@@ -191,10 +189,8 @@ const setClose = (value) => {
         class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 flex tablet:mx-8 mx-4"
         @click="token && accessRights !== 'READ' && setModal(true, 'add', null)"
         :class="{
-                          'opacity-50 cursor-not-allowed':
-                            accessRights === 'READ' || !token,
-                        }"
-
+          'opacity-50 cursor-not-allowed': accessRights === 'READ' || !token,
+        }"
       >
         <svg
           width="20"
@@ -218,23 +214,20 @@ const setClose = (value) => {
         <div class="text-white">Add Status</div>
       </div>
     </div>
-    <div class="flex justify-center text-2xl font-bold text-gray-900 ml-4 my-4 hover:bg-gradient-to-r from-blue-800 via-blue-400 to-blue-200  hover:text-transparent hover:bg-clip-text hover:duration-500">
-    Status Management
-  </div>
+    <div
+      class="flex justify-center text-2xl font-bold text-gray-900 ml-4 my-4 hover:bg-gradient-to-r from-blue-800 via-blue-400 to-blue-200 hover:text-transparent hover:bg-clip-text hover:duration-500"
+    >
+      Status Management
+    </div>
     <div class="w-full flex justify-center">
       <div class="min-w-full divide-y divide-gray-200">
         <div v-if="statuses.length <= 0" class="w-full border-none h-24">
           <div class="flex justify-center items-center h-full">
-            <p class="text-xl font-bold  text-slate-500">
-              No Status
-            </p>
+            <p class="text-xl font-bold text-slate-500">No Status</p>
           </div>
         </div>
         <div class="flex flex-row flex-wrap justify-start mx-2 my-6">
-          <div
-            v-for="(status, index) in statuses" :key="status.id"
-            class="m-2"
-          >
+          <div v-for="(status, index) in statuses" :key="status.id" class="m-2">
             <div
               class="btn border-0 w-[187px] h-[11rem] laptop:w-60 laptop:h-48 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
               style="
@@ -243,20 +236,19 @@ const setClose = (value) => {
                 background-position: center;
               "
             >
-            <div class="w-[187px] laptop:w-60">
+              <div class="w-[187px] laptop:w-60">
                 <h1 class="text-3xl font-bold text-gray-900 text-left">
                   {{ status.name }}
                 </h1>
                 <div class="text-sm font-medium text-gray-700 text-left">
-                  <div class="font-bold">
-                    Description 
+                  <div class="font-bold">Description</div>
+                  <div class="w-5/6 overflow-y-auto">
+                    {{
+                      status?.description == "" || status?.description === null
+                        ? "No Description Provided"
+                        : status?.description
+                    }}
                   </div>
-                  <div class=" w-5/6 overflow-y-auto">
-                  {{
-                    status?.description == "" || status?.description === null
-                      ? "No Description Provided"
-                      : status?.description
-                  }}</div>
                 </div>
               </div>
               <div
@@ -265,21 +257,29 @@ const setClose = (value) => {
               >
                 <button
                   class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white"
-                  @click="token && accessRights !== 'READ' && fetchById(status.id, 'edit')"
+                  @click="
+                    token &&
+                      accessRights !== 'READ' &&
+                      fetchById(status.id, 'edit')
+                  "
                   :class="{
-                          'opacity-50 cursor-not-allowed':
-                            accessRights === 'READ' || !token,
-                        }"
+                    'opacity-50 cursor-not-allowed':
+                      accessRights === 'READ' || !token,
+                  }"
                 >
                   Edit
                 </button>
                 <button
                   class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
-                  @click="token && accessRights !== 'READ' && setModal(true, 'delete', status.id)"
+                  @click="
+                    token &&
+                      accessRights !== 'READ' &&
+                      setModal(true, 'delete', status.id)
+                  "
                   :class="{
-                          'opacity-50 cursor-not-allowed':
-                            accessRights === 'READ' || !token,
-                        }"
+                    'opacity-50 cursor-not-allowed':
+                      accessRights === 'READ' || !token,
+                  }"
                 >
                   Delete
                 </button>

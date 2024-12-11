@@ -19,7 +19,6 @@ export const useStoreBoard = defineStore("boards", () => {
       boardData.forEach((board) => {
         boards.value.push(board);
       });
-      console.log(boards.value);
       if (boards.value.length === 0) {
         return noData;
       } else {
@@ -50,8 +49,6 @@ export const useStoreBoard = defineStore("boards", () => {
     try {
       const addedBoard = await addBoard(newBoard);
       boards.value.push(addedBoard);
-      console.log(addedBoard);
-
       return addedBoard;
     } catch (error) {
       throw new Error(error.message);
@@ -61,14 +58,12 @@ export const useStoreBoard = defineStore("boards", () => {
   async function updateVisibility(id, visibility) {
     try {
       const updatedBoard = await updateBoardVisibility(id, visibility);
-      console.log(updatedBoard);
       const index = boards.value.findIndex((board) => board.id === id);
       boards.value[index] = {
-          ...boards.value[index],
-          visibilities: updatedBoard.visibility,
+        ...boards.value[index],
+        visibilities: updatedBoard.visibility,
         collabIn: [...boards.value[index].collabIn],
       };
-      console.log(boards.value[index]);
       return updatedBoard;
     } catch (error) {
       throw new Error(error.message);
@@ -77,7 +72,6 @@ export const useStoreBoard = defineStore("boards", () => {
 
   function matchUserBoard(id) {
     const matchedBoard = boards.value.find((board) => board.boards.id === id);
-    console.log(matchedBoard);
 
     if (matchedBoard) {
       return matchedBoard;
