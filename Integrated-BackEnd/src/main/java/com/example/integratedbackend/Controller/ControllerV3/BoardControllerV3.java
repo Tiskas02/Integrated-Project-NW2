@@ -853,19 +853,24 @@ public class BoardControllerV3 {
             String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
 
             Boards boardInfo = boardService.getBoardByBoardId(boardId);
+            String boardOwnerName = boardInfo.getUsers().getUsername();
 
             CollabDTO collabAccess = collabService.getCollaborator(boardId, userId);
+
+            if (username.equals(boardOwnerName)) {
+                List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+                return ResponseEntity.ok(collabDTOS);
+            }
 
             if (boardInfo != null && username != null) {
                 if (collabAccess.getStatus() == Collab.Status.PENDING){
                     throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not accepted invitation");
                 }
-                String boardOwnerName = boardInfo.getUsers().getUsername();
 
-                if (username.equals(boardOwnerName)) {
-                    List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
-                    return ResponseEntity.ok(collabDTOS);
-                }
+//                if (username.equals(boardOwnerName)) {
+//                    List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
+//                    return ResponseEntity.ok(collabDTOS);
+//                }
 
                 List<CollabDTO> collabDTOS = collabService.getAllCollaborator(boardId, userId);
                 return ResponseEntity.ok(collabDTOS);
