@@ -7,7 +7,8 @@ import { storeToRefs } from "pinia";
 import { useStoreBoard } from "@/stores/boardStore";
 import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useToasterStore } from "@/stores/notificationStores";
-import BaseBtn from "@/shared/BaseBtn.vue";
+import { useStoreCollab } from "@/stores/collabStore";
+const collabStore = useStoreCollab();
 const route = useRoute();
 const router = useRouter();
 const showModal = ref(false);
@@ -20,6 +21,7 @@ const toasterStore = useToasterStore();
 const routeId = ref(route.params.id);
 const nameBoard = ref();
 const parseJwt = (token) => {
+  if (!token) return null;
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
@@ -34,17 +36,33 @@ const parseJwt = (token) => {
 };
 const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
-
+const accessRights = ref("WRITE");
 onMounted(async () => {
-  const dataBoard = await boardStore.fetchBoards(token.oid);
-  console.log(dataBoard);
-  const dataStatus = await statusStore.fetchStatus(routeId.value, token.oid);
-  console.log(dataStatus);
+  if (token?.oid) {
+    console.log('inif');
+    const dataBoard = await boardStore.fetchBoards(token?.oid);
+    console.log(dataBoard);
+    nameBoard.value = dataBoard[0].name;
+  }
+  const dataStatus = await statusStore.fetchStatus(routeId.value);
+  if(dataStatus.status === 403){
+    toasterStore.error({ text: dataStatus.message  ,setTimeout: 8000 });
+    router.push({ name: "board" });
+  }
   if(dataStatus.error){
     toasterStore.error({ text: `error : ${dataStatus.error}`});
     router.push({ name: "board" });
   }
-  nameBoard.value = dataBoard[0].boards.name;
+  const collab = await collabStore.fetchCollabsByBoardId(routeId.value);
+  if (collab.length !== 0) {
+    collab.forEach((item) => {
+      if (item.oid === token.oid) {
+        accessRights.value = item.accessRight;
+      }
+    });
+  } else {
+    accessRights.value = "WRITE";
+  }
 });
 
 const addOrEditStatus = async (newStatus) => {
@@ -171,7 +189,12 @@ const setClose = (value) => {
       <div class="grow"></div>
       <div
         class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 flex tablet:mx-8 mx-4"
-        @click="setModal(true, 'add', null)"
+        @click="token && accessRights !== 'READ' && setModal(true, 'add', null)"
+        :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ' || !token,
+                        }"
+
       >
         <svg
           width="20"
@@ -242,13 +265,21 @@ const setClose = (value) => {
               >
                 <button
                   class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white"
-                  @click="fetchById(status.id, 'edit')"
+                  @click="token && accessRights !== 'READ' && fetchById(status.id, 'edit')"
+                  :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ' || !token,
+                        }"
                 >
                   Edit
                 </button>
                 <button
                   class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
-                  @click="setModal(true, 'delete', status.id)"
+                  @click="token && accessRights !== 'READ' && setModal(true, 'delete', status.id)"
+                  :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ' || !token,
+                        }"
                 >
                   Delete
                 </button>

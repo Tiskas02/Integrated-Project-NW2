@@ -1,95 +1,93 @@
-import { defineStore } from "pinia"
-import { ref } from "vue"
+import { defineStore } from "pinia";
+import { ref } from "vue";
 import {
   getAllCollabDataByUserId,
   getCollabDataByBoardId,
   addCollabData,
   deleteCollabUtil,
   sendInvitationEmail,
-} from "@/libs/api/collab/fetchUtilCollab"
+} from "@/libs/api/collab/fetchUtilCollab";
 
 export const useStoreCollab = defineStore("collabs", () => {
-  const collabs = ref([])
+  const collabs = ref([]);
   async function fetchCollabs(collabId) {
     try {
-      const noData = "No data"
-      collabs.value = []
-      const collabData = await getAllCollabDataByUserId(collabId)
+      const noData = "No data";
+      collabs.value = [];
+      const collabData = await getAllCollabDataByUserId(collabId);
       collabData.boards.forEach((collab) => {
-        collabs.value.push(collab)
-      })
-      console.log(collabs.value)
+        collabs.value.push(collab);
+      });
+      console.log(collabs.value);
       if (collabs.value.length === 0) {
-        return noData
+        return noData;
       } else {
-        return collabs.value
+        return collabs.value;
       }
     } catch (error) {
-      console.error("Error fetching data:", error)
+      console.error("Error fetching data:", error);
     }
   }
   function addCollabDataInBoard(collab) {
-    collabs.value = []
+    collabs.value = [];
     collab.forEach((item) => {
-      collabs.value.push(item)
-    })
-    return collabs.value
+      collabs.value.push(item);
+    });
+    return collabs.value;
   }
   async function fetchCollabsByBoardId(boardId) {
     try {
-      collabs.value = []
-      const collabData = await getCollabDataByBoardId(boardId)
-      console.log(collabData);
+      collabs.value = [];
+      const collabData = await getCollabDataByBoardId(boardId);
+
       if (collabData.error) {
-        return collabData
-      }else{
-      collabData.forEach((collab) => {
-        collabs.value.push(collab)
-      })
-      return collabs.value
-    }
+        return collabData;
+      } else if (collabData.status === 403) {
+        return collabData;
+      } else {
+        collabData.forEach((collab) => {
+          collabs.value.push(collab);
+        });
+        return collabData;
+      }
     } catch (error) {
-      console.error("Error fetching data:", error)
+      console.error("Error fetching data:", error);
     }
   }
   async function addCollab(collab, routeId) {
     try {
-      const newCollab = await addCollabData(collab, routeId)
+      const newCollab = await addCollabData(collab, routeId);
       if (newCollab) {
-        console.log("New collab:", newCollab)
-        collabs.value.push(newCollab)
+        console.log("New collab:", newCollab);
+        collabs.value.push(newCollab);
       }
-      return newCollab
+      return newCollab;
     } catch (error) {
-      console.error("Error adding collaborator:", error)
-      return null
+      console.error("Error adding collaborator:", error);
+      return null;
     }
   }
 
   async function deleteCollab(collabId, routeId) {
     try {
-      const res = await deleteCollabUtil(collabId, routeId)
-      console.log(collabs.value)
-      console.log("Collab ID:", collabId)
-      console.log("collab.oid", collabs.oid)
+      const res = await deleteCollabUtil(collabId, routeId);
       collabs.value.splice(
         collabs.value.findIndex((collab) => collab.oid === collabId),
         1
-      )
-      console.log("Response data:", res)
-      return res
+      );
+      return res;
     } catch (error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
   }
 
   async function sendInvitation(newCollab, boardId) {
     try {
-      const response = await sendInvitationEmail(newCollab, boardId)
-      return response
+      const response = await sendInvitationEmail(newCollab, boardId);
+      return response;
     } catch (error) {
-      console.error("Error sending invitation:", error)
-      throw new Error(error.message)
+      console.error("Error sending invitation:", error);
+      throw new Error(error.message);
     }
   }
 
@@ -101,5 +99,5 @@ export const useStoreCollab = defineStore("collabs", () => {
     deleteCollab,
     addCollabDataInBoard,
     sendInvitation,
-  }
-})
+  };
+});

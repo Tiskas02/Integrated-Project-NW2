@@ -18,7 +18,7 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 const parseJwt = (token) => {
-  const base64Url = token.split(".")[1];
+  const base64Url = token?.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
     atob(base64)
@@ -102,7 +102,7 @@ const logout = () => {
           class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center"
           @click="isMenuOpen = false"
         >
-          {{ userPayload.name }}
+          {{ userPayload?.name }}
         </RouterLink>
         <!-- Always show the Logout link -->
         <RouterLink

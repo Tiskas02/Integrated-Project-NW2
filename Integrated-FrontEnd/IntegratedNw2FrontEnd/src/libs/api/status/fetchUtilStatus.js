@@ -4,14 +4,19 @@ function getToken() {
   return localStorage.getItem("token")
 }
 
-async function getStatusData(id,collabId) {
+async function getStatusData(id) {
   try {
     const token = getToken()
-    const res = await fetch(`${url}/v3/boards/${id}/statuses`,{
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-    })
+    let res
+    if (token === null) {
+       res = await fetch(`${url}/v3/boards/${id}/statuses`)
+    }else{
+       res = await fetch(`${url}/v3/boards/${id}/statuses`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      })
+    }
     const data = await res.json()
     return data
   } catch (error) {

@@ -37,10 +37,16 @@ onMounted(async () => {
       collabInvitation.value.push(item);
     }
   });
-
-  // Result
-  console.log(collabInvitation.value);
-  console.log(token);
+  if(token.oid === collabInvitation.value[0]?.oid){
+    console.log("You are the owner of this board");
+  }else{
+    toasterStore.error({ text: "You are not the owner of this board 🫵",setTimeout: 5000 });
+    router.push({ name: "board" });
+  }
+  if (collabInvitation.value[0].status === "ACCEPTED") {
+    toasterStore.error({ text: "You are accepted this borad already",setTimeout: 5000 });
+    router.push({ name: "board" });
+  }
 });
 const acceptInvitation = async () => {
   // Navigate to the board home after accepting
@@ -56,7 +62,13 @@ const acceptInvitation = async () => {
   }
 };
 
-const declineInvitation = () => {
+const declineInvitation = async () => {
+  const res = await collabStore.deleteCollab(token.oid,routeId.value);
+  if (res.status === 200) {
+    toasterStore.success({ text: "Declined Collab Board successfully!" });
+  } else {
+    toasterStore.error({ text: "Error Declined Collab Board" });
+  }
   // Navigate back to the login page or wherever appropriate
   router.push({ name: "board" });
 };

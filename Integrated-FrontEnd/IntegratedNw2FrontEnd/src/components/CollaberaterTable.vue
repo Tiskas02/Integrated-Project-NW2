@@ -41,16 +41,30 @@ const parseJwt = (token) => {
 };
 const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
-
+const accessRights = ref("WRITE");
 onMounted(async () => {
   const dataBoard = await boardStore.fetchBoards(token.oid);
   const collab = await collabStore.fetchCollabsByBoardId(routeId.value);
-  
+  if (collab.length !== 0) {
+    collab.forEach((item) => {
+      if (item.oid === token.oid) {
+        accessRights.value = item.accessRight;
+      }
+    });
+  } else {
+    accessRights.value = "WRITE";
+  }
+  console.log(accessRights.value);
+  if(collab.status === 403){
+    console.log("You are not the owner of this board");
+    toasterStore.error({ text: collab.message  ,setTimeout: 8000 });
+    router.push({ name: "board" });
+  }
   if(collab.error){
     toasterStore.error({ text:  `error : ${collab.error}` });
     router.push({ name: "board" });
   }
-  nameBoard.value = dataBoard[0].boards.name;
+  nameBoard.value = dataBoard[0].name;
   dataCollab.value = collab;
 });
 
@@ -108,7 +122,11 @@ const setModal = (value) => {
       <div class="grow"></div>
       <div
         class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 flex tablet:mx-8 mx-4"
-        @click="setModal(true, 'add', null)"
+        @click="accessRights !== 'READ' && setModal(true, 'add', null)"
+        :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ',
+                        }"
       >
         <svg
           width="20"
@@ -191,7 +209,11 @@ const setModal = (value) => {
               >
                 <button
                   class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
-                  @click="setDataCollab(true,collab)"
+                  @click="accessRights !== 'READ' && setDataCollab(true,collab)"
+                  :class="{
+                          'opacity-50 cursor-not-allowed':
+                            accessRights === 'READ',
+                        }"
                 >
                   Delete
                 </button>

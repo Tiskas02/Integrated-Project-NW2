@@ -22,6 +22,8 @@ const showModal = ref(false);
 const storeModeNavBar = ref("");
 const storeBoardType = ref("Personal");
 const isDropdownOpen = ref(false);
+const isBoardnull = ref(false);
+const routeId = ref(route.params.id);
 const parseJwt = (token) => {
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -40,6 +42,9 @@ const token = parseJwt(receiveToken);
 onMounted(async () => {
   storeModeNavBar.value = "board";
   const data = await boardStore.fetchBoards();
+  if (data[0].id === null) {
+    isBoardnull.value = true;
+  }
   const dataCollab = collabStore.addCollabDataInBoard(data[0].collabIn);
   console.log(data);
   // const collab = await collabStore.fetchCollabs(token.oid)
@@ -84,6 +89,9 @@ const addBoard = async (newBoard) => {
 const navigateToBoardTasks = (paramId) => {
   router.push({ name: "Task", params: { id: paramId } });
 };
+const navigateToInvitation = (paramId) => {
+  router.push({ name: "invitation", params: { id: paramId }});
+};
 function formatDate(isoDate) {
   const date = new Date(isoDate);
   return date.toLocaleDateString("en-US", {
@@ -96,6 +104,14 @@ function formatDate(isoDate) {
     timeZone: "UTC",
   });
 }
+const leaveBoard = async (collabId) => {
+  const res = await collabStore.deleteCollab(token.oid,collabId);
+  if (res.status === 200) {
+    toasterStore.success({ text: "Leave Collab Board successfully!" });
+  } else {
+    toasterStore.error({ text: "Error Declined Collab Board" });
+  }
+};
 </script>
 
 <template>
@@ -183,12 +199,12 @@ function formatDate(isoDate) {
         </div>
       </div>
     </div>
-    <div class="px-4 text-xl font-bold mb-4">{{ storeBoardType }} Board </div>
+    <div class="px-4 text-xl font-bold mb-4">{{ storeBoardType }} Board</div>
     <div v-if="storeBoardType === 'Personal'">
       <div>
         <div
-          v-if="boards.length <= 0"
-          class="w-full h-[60lvh] "
+          v-if="boards.length <= 0 || isBoardnull === true"
+          class="w-full h-[60lvh]"
         >
           <div class="flex justify-center items-center h-full">
             <p class="text-xl font-bold animate-bounce text-slate-500">
@@ -196,7 +212,7 @@ function formatDate(isoDate) {
             </p>
           </div>
         </div>
-        <div class="flex flex-row flex-wrap justify-start mx-2">
+        <div v-else class="flex flex-row flex-wrap justify-start mx-2">
           <div
             v-for="(board, index) in boards"
             :key="board.id"
@@ -241,10 +257,7 @@ function formatDate(isoDate) {
     </div>
     <div v-else>
       <div>
-        <div
-          v-if="collabs.length <= 0"
-          class="w-full h-[60lvh] "
-        >
+        <div v-if="collabs.length <= 0" class="w-full h-[60lvh]">
           <div class="flex justify-center items-center h-full">
             <p class="text-xl font-bold animate-bounce text-slate-500">
               Collaborator Board is empty
@@ -254,9 +267,9 @@ function formatDate(isoDate) {
         <div class="flex flex-row flex-wrap justify-start mx-2">
           <div
             v-for="(collab, index) in collabs"
-            :key="collabs.boardId"
+            :key="collab.boardId"
             class="m-2"
-            @click="navigateToBoardTasks(collab.boardId)"
+            @click="collab.status !== 'PENDING' && navigateToBoardTasks(collab.boardId)"
           >
             <div
               class="btn border-0 w-[380px] h-60 laptop:w-[350px] rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
@@ -277,6 +290,15 @@ function formatDate(isoDate) {
                 <p class="text-sm font-medium text-gray-700 text-left">
                   Access Right : {{ collab.accessRight }}
                 </p>
+                <p
+                  class="text-sm font-medium text-gray-700 text-left"
+                  :class="{
+                    'text-yellow-500': collab.status === 'PENDING',
+                    'text-green-500': collab.status === 'ACCEPTED',
+                  }"
+                >
+                  Status : {{ collab.status }}
+                </p>
               </div>
               <!-- Button -->
               <!-- <button
@@ -285,8 +307,17 @@ function formatDate(isoDate) {
                 
               </button> -->
               <div class="flex space-x-2 justify-end w-full">
+                <div v-if="collab.status === 'PENDING'" class="tooltip tooltip-info" data-tip="go to invitation page " >
+                  <button
+                  class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white"
+                  @click="navigateToInvitation(collab.boardId)"
+                >
+                  Invitation Page
+                </button>
+                </div>
                 <button
                   class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
+                  @click="leaveBoard(collab.boardId)"
                 >
                   Leave
                 </button>

@@ -43,8 +43,9 @@ const defaultStatus = ref({
 });
 const accessRights = ref("WRITE");
 const parseJwt = (token) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  if (!token) return null;
+  const base64Url = token?.split(".")[1];
+  const base64 = base64Url?.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
@@ -58,27 +59,27 @@ const parseJwt = (token) => {
 const receiveToken = localStorage.getItem("token");
 const token = parseJwt(receiveToken);
 
+
 onMounted(async () => {
-  const boardData = await boardStore.fetchBoards(token.oid);
-  boardsData.value = boardData[0];
-  console.log(boardData);
-  const data = await tasksStore.fetchTasks(routerId.value, token.oid);
-  const collab = await collabStore.fetchCollabsByBoardId(routerId.value);
-  nameboard.value = data[0]?.board?.name
-    ? data[0].board.name
-    : boardData[0].boards.name;
-  storeVisibility.value =
-  boardData[0].visibilities === "PUBLIC"
-      ? true
-      : false;
-    
-  storeTasks.value = data;
+  if (token?.oid) {
+  const boardData = await boardStore.fetchBoards(token?.oid);
+  boardsData.value = boardData[0] ? boardData[0] : null ;
+  storeVisibility.value = boardData[0].visibilities === "PUBLIC" ? true : false;
+  }
+  const data = await tasksStore.fetchTasks(routerId.value);
+  if(data.status === 403){
+    toasterStore.error({ text: data.message  ,setTimeout: 8000 });
+    router.push({ name: "board" });
+  }
   if (data.error) {
     toasterStore.error({ text: `error : ${data.error}` });
     router.push({ name: "board" });
   }
-  console.log(collab);
-
+  nameboard.value = data[0]?.board?.name
+    ? data[0]?.board?.name
+    : boardsData[0]?.boards?.name;
+  storeTasks.value = data;
+  const collab = await collabStore.fetchCollabsByBoardId(routerId.value);
   if (collab.length !== 0) {
     collab.forEach((item) => {
       if (item.oid === token.oid) {
@@ -88,10 +89,9 @@ onMounted(async () => {
   } else {
     accessRights.value = "WRITE";
   }
-  console.log(accessRights.value);
 });
 onMounted(async () => {
-  allStatus.value = await statusStore.fetchStatus(routerId.value, token.oid);
+  allStatus.value = await statusStore.fetchStatus(routerId.value);
   const noStatus = allStatus.value.find(
     (status) => status.name === "No Status"
   );
@@ -272,8 +272,10 @@ const EditVisibilities = async (value) => {
   }
 };
 
-const setVisibility = () => {
-  const toVisibility = boardsData.value
+const setVisibility =async () => {
+  const boardData = await boardStore.fetchBoards(token?.oid);
+  boardsData.value = boardData[0] ? boardData[0] : null ;
+  const toVisibility = boardsData.value;
   storeChangeVisibility.value = toVisibility;
   console.log(storeChangeVisibility.value);
   showVisibility.value = true;
@@ -388,11 +390,11 @@ const getColorForStatus = (statusName, statuses) => {
                     type="checkbox"
                     class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
                     v-model="storeVisibility"
-                    @click="accessRights !== 'READ' && setVisibility()"
+                    @click="token && accessRights !== 'READ' && setVisibility()"
                     :checked="checkToggle"
-                    :disabled="accessRights === 'READ'"
+                    :disabled="accessRights === 'READ' || !token"
                     :class="{
-                      'opacity-50 cursor-not-allowed': accessRights === 'READ',
+                      'opacity-50 cursor-not-allowed': accessRights === 'READ' || !token,
                     }"
                   />
                 </label>
@@ -483,9 +485,9 @@ const getColorForStatus = (statusName, statuses) => {
             <div
               class="itbkk-button-add btn border-none bg-gradient-to-r from-blue-700 to-blue-400 mx-5 tablet:mx-1"
               :class="{
-                'opacity-50 cursor-not-allowed': accessRights === 'READ',
+                'opacity-50 cursor-not-allowed': accessRights === 'READ' || !token,
               }"
-              @click="accessRights !== 'READ' && setDetail(true, null, 'add')"
+              @click="token && accessRights !== 'READ' && setDetail(true, null, 'add')"
             >
               <svg
                 width="20"
@@ -677,27 +679,27 @@ const getColorForStatus = (statusName, statuses) => {
                     >
                       <div
                         class="itbkk-button-edit text-white btn border-white bg-gradient-to-r from-yellow-500 to-yellow-300"
-                        @click="
+                        @click="token && 
                           accessRights !== 'READ' &&
                             fetchDataById(routerId, task.id, 'edit')
                         "
                         :class="{
                           'opacity-50 cursor-not-allowed':
-                            accessRights === 'READ',
+                            accessRights === 'READ' || !token,
                         }"
                       >
                         Edit
                       </div>
                       <div
                         class="itbkk-button-delete text-white btn btn-outline border-white bg-gradient-to-r from-red-500 to-red-300"
-                        @click="
+                        @click="token && 
                           accessRights !== 'READ' &&
                             (fetchDataById(routerId, task.id, 'delete'),
                             setIndex(index))
                         "
                         :class="{
                           'opacity-50 cursor-not-allowed':
-                            accessRights === 'READ',
+                            accessRights === 'READ' || !token,
                         }"
                       >
                         Delete
