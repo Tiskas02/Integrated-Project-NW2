@@ -168,26 +168,6 @@ const submitForm = async () => {
               >
             </div>
           </div>
-
-          <div class="w-full flex flex-row mt-5">
-            <div class="border border-slate-300 w-[45%] h-[1px] m-auto"></div>
-            <div class="px-2 text-black">Other</div>
-            <div class="border border-slate-300 w-[45%] h-[1px] m-auto"></div>
-          </div>
-          <div>
-            <div class="w-full flex justify-center items-center mt-3">
-              <button
-                class="btn border-none w-[20rem] h-[10%] bg-white rounded shadow-md text-black hover:bg-black hover:text-white transition-all duration-300"
-              >
-                <img
-                  class="w-[30px] h-[30px]"
-                  src="/microsoft-icon.png"
-                  alt="google"
-                />
-                Sign in with Microsoft
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
