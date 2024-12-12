@@ -8,6 +8,8 @@ import BoardModal from "@/components/BoardModal.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 import { useRoute, useRouter } from "vue-router";
 import NavBar from "@/shared/NavBar.vue";
+import BoardDelete from "./BoardDelete.vue";
+import BoardEdit from "@/components/BoardEdit.vue";
 const route = useRoute();
 const router = useRouter();
 const dataLoaded = ref(true);
@@ -22,6 +24,9 @@ const storeBoardType = ref("Personal");
 const isDropdownOpen = ref(false);
 const isBoardnull = ref(false);
 const routeId = ref(route.params.id);
+const showDeleteModal = ref(false);
+const storeBoard = ref("");
+const showEditModal = ref(false);
 const parseJwt = (token) => {
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -60,11 +65,55 @@ const updateBoardType = (type) => {
   isDropdownOpen.value = false;
 };
 const setModal = () => {
+  router.push({ name: "addBoard" });
   showModal.value = true;
 };
 
 const setClose = () => {
   showModal.value = false;
+};
+const setDelete = (id) => {
+  boards.value.forEach((board) => {
+    if (board.id === id) {
+      storeBoard.value = board;
+    }
+  });
+  showDeleteModal.value = true;
+};
+const setCloseDelete = () => {
+  showDeleteModal.value = false;
+};
+const setEdit = (id) => {
+  router.push({ name: "editBoard", params: { editid: id } });
+  boards.value.forEach((board) => {
+    if (board.id === id) {
+      storeBoard.value = board;
+    }
+  });
+  showEditModal.value = true;
+};
+const setCloseEdit = () => {
+  showEditModal.value = false;
+};
+const editBoard = async (board) => {
+  const data = await boardStore.updateBoard(board.id, {
+    name: board.name,
+  });
+  if (data) {
+    toasterStore.success({ text: "Board edited successfully!" });
+  } else {
+    toasterStore.error({
+      text: "An error occurred while editing the board.",
+    });
+  }
+};
+const deleteBoard = async (boardId) => {
+  const res = await boardStore.deleteBoard(boardId);
+  if (res === 200) {
+    toasterStore.success({ text: "Board deleted successfully!" });
+  } else {
+    toasterStore.error({ text: "Error deleting board" });
+  }
 };
 
 const addBoard = async (newBoard) => {
@@ -209,7 +258,7 @@ const leaveBoard = async (collabId) => {
             v-for="(board, index) in boards"
             :key="board.id"
             class="m-2"
-            @click="navigateToBoardTasks(board.id)"
+           
           >
             <div
               class="btn border-0 w-[380px] h-60 laptop:w-[350px] rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
@@ -219,7 +268,7 @@ const leaveBoard = async (collabId) => {
                 background-position: center;
               "
             >
-              <div>
+              <div @click="navigateToBoardTasks(board.id)">
                 <h1 class="text-3xl font-bold text-gray-900 text-left">
                   {{ board.name }}
                 </h1>
@@ -233,11 +282,13 @@ const leaveBoard = async (collabId) => {
               <div class="flex space-x-2 w-full">
                 <button
                   class="btn bg-gradient-to-r from-blue-700 to-blue-400 border-0 text-white"
+                  @click="setEdit(board.id)"
                 >
                   Edit
                 </button>
                 <button
                   class="btn bg-gradient-to-r from-red-700 to-red-400 border-0 text-white"
+                  @click="setDelete(board.id)"
                 >
                   Delete
                 </button>
@@ -295,12 +346,6 @@ const leaveBoard = async (collabId) => {
                   Status : {{ collab.status }}
                 </p>
               </div>
-              <!-- Button -->
-              <!-- <button
-                class="btn border-0 bg-gradient-to-r from-green-400 to-green-200 text-gray-900 text-sm font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
-              >
-                
-              </button> -->
               <div class="flex space-x-2 justify-end w-full">
                 <div
                   v-if="collab.status === 'PENDING'"
@@ -331,7 +376,22 @@ const leaveBoard = async (collabId) => {
         v-if="showModal"
         @close="setClose"
         @newBoard="addBoard"
-        class="itbkk-modal-task"
+      />
+    </teleport>
+    <teleport to="#body">
+      <BoardDelete
+        v-if="showDeleteModal"
+        @close="setCloseDelete"
+        @savedDelete="deleteBoard"
+        :board="storeBoard"
+      />
+    </teleport>
+    <teleport to="#body">
+      <BoardEdit
+        v-if="showEditModal"
+        @close="setCloseEdit"
+        @newBoard="editBoard"
+        :board="storeBoard"
       />
     </teleport>
   </div>

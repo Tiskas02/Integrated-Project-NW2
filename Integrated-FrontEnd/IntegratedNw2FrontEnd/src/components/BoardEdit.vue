@@ -1,10 +1,16 @@
 <script setup>
 import BaseBtn from "@/shared/BaseBtn.vue";
-import { defineEmits, ref } from "vue";
+import { defineEmits, ref,defineProps } from "vue";
 const emit = defineEmits(["close", "newBoard"]);
-const newBoard = ref({
-  name: "",
+const props = defineProps({
+  board: Object,
 });
+const newBoard = ref({
+  ...props.board
+});
+console.log(newBoard.value);
+console.log(props.board);
+
 </script>
 
 <template>
@@ -30,7 +36,7 @@ const newBoard = ref({
                 required
                 maxlength="120"
                 v-model="newBoard.name"
-              ></textarea>
+              >{{ board?.name }}</textarea>
             </div>
           </div>
           <div class="flex flex-row w-full justify-end my-4">

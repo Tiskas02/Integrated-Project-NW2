@@ -19,6 +19,25 @@ async function getBoardData() {
     return null;
   }
 }
+async function editBoard(boardId, updatedBoard) {
+  try {
+    const token = getToken();
+    const res = await fetch(`${url}/v3/boards/${boardId}`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ...updatedBoard,
+      }),
+    });
+    const editedBoard = await res.json();
+    return editedBoard;
+  } catch (error) {
+    console.error(`error: ${error}`);
+  }
+}
 
 async function getBoardDataByCollabId(boardId) {
   try {
@@ -59,6 +78,21 @@ async function addBoard(newBoard) {
     console.log(`error: ${error}`);
   }
 }
+async function deleteBoardById(boardId) {
+  try {
+    const token = getToken();
+    const res = await fetch(`${url}/v3/boards/${boardId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.status;
+  } catch (error) {
+    console.error("Error adding task:", error);
+    return null;
+  }
+}
 
 async function updateBoardVisibility(id, visibility) {
   try {
@@ -89,4 +123,6 @@ export {
   addBoard,
   updateBoardVisibility,
   getBoardDataByCollabId,
+  editBoard,
+  deleteBoardById,
 };

@@ -5,6 +5,8 @@ import {
   addBoard,
   updateBoardVisibility,
   getBoardDataByCollabId,
+  editBoard,
+  deleteBoardById,
 } from "@/libs/api/board/fetchUtilBoard";
 
 export const useStoreBoard = defineStore("boards", () => {
@@ -26,6 +28,31 @@ export const useStoreBoard = defineStore("boards", () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+  }
+  async function deleteBoard(boardId) {
+    try {
+      const res = await deleteBoardById(boardId);
+      boards.value.splice(
+        boards.value.findIndex((board) => board.id === boardId),
+        1
+      );
+      return res;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  async function updateBoard(boardId,board) {
+    try {
+      const updatedBoard = await editBoard(boardId, board);
+      const boardIndex = boards.value.findIndex((board) => board.id === boardId);
+      boards.value[boardIndex] = {
+        ...updatedBoard,
+        visibilities: updatedBoard.visibility,
+      };
+      return updatedBoard;
+    } catch (error) {
+      throw new Error(error.message);
     }
   }
 
@@ -87,5 +114,7 @@ export const useStoreBoard = defineStore("boards", () => {
     matchUserBoard,
     updateVisibility,
     fetchBoardsByCollabId,
+    deleteBoard,
+    updateBoard
   };
 });

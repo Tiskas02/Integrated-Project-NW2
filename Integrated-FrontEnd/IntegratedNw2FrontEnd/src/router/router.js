@@ -10,6 +10,8 @@ import Login from "@/components/Login.vue";
 import BoardHome from "@/views/BoardHome.vue";
 import NavBar from "@/shared/NavBar.vue";
 import Invitation from "@/views/Invitation.vue";
+import BoardModal from "@/components/BoardModal.vue";
+import BoardEdit from "@/components/BoardEdit.vue";
 import { getCollabDataByBoardId } from "@/libs/api/collab/fetchUtilCollab";
 const url = import.meta.env.VITE_BASE_URL;
 function parseJwt(token) {
@@ -75,6 +77,20 @@ const routes = [
     name: "board",
     component: BoardHome,
     meta: { requiresAuth: true },
+    children: [
+      {
+        path: "add",
+        name: "addBoard",
+        component: BoardModal,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: ":editid/edit",
+        name: "editBoard",
+        component: BoardEdit,
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: "/nav",

@@ -117,6 +117,40 @@ public List<BoardResponse> getBoardByUserName(String userName) {
         return savedBoard;
     }
 
+    public Boards updateBoard(String boardId, Boards boardDTO) {
+        // Fetch the existing board
+        Optional<Boards> existingBoardOpt = boardsRepositoriesV3.findById(boardId);
+        if (existingBoardOpt.isEmpty()) {
+            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board with id " + boardId + " not found");
+        }
+
+        Boards existingBoard = existingBoardOpt.get();
+
+        existingBoard.setName(boardDTO.getName());
+
+        if (boardDTO.getId() == null){
+            existingBoard.setId(boardId);
+        }
+        if (boardDTO.getVisibility() == null) {
+            existingBoard.setVisibility(existingBoard.getVisibility());
+        }
+        if (boardDTO.getCreatedOn() == null){
+            existingBoard.setCreatedOn(existingBoard.getCreatedOn());
+        }
+        if (boardDTO.getUpdatedOn() == null){
+            existingBoard.setUpdatedOn(existingBoard.getUpdatedOn());
+        }
+        if (boardDTO.getCollab() == null) {
+            existingBoard.setCollab(existingBoard.getCollab());
+        }
+        if (boardDTO.getUsers() == null){
+            existingBoard.setUsers(existingBoard.getUsers());
+        }
+
+        return boardsRepositoriesV3.save(existingBoard);
+    }
+
+
     @Transactional
     public Boards deleteBoardByBoardId(String boardId) {
         Optional<Boards> board = boardsRepositoriesV3.findById(boardId);
