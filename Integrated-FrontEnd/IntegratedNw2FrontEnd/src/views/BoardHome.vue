@@ -224,7 +224,7 @@ const leaveBoard = async (collabId) => {
                   {{ board.name }}
                 </h1>
                 <p class="text-sm font-medium text-gray-700 text-left">
-                  Board Visibility : {{ board.visibility }}
+                  Board Visibility : {{ board.visibilities }}
                 </p>
                 <p class="text-sm font-medium text-gray-700 text-left">
                   Created : {{ formatDate(board.createdOn) }}

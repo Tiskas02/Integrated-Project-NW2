@@ -68,8 +68,15 @@ const logout = () => {
         <div v-if="mode === 'board' || mode === 'collab'"></div>
         <template v-else>
           <router-link
+            :to="{ name: 'board'}"
+            class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center text-lg"
+            @click="isMenuOpen = false"
+          >
+            Board
+          </router-link>
+          <router-link
             :to="{ name: 'Task', params: { id: boardId } }"
-            class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center text-lg text-white"
+            class="block py-2 pb-2 hover:bg-sky-800 font-medium border-b-[1px] text-center text-lg"
             @click="isMenuOpen = false"
           >
             Task
@@ -139,9 +146,16 @@ const logout = () => {
         </svg>
       </button>
 
-      <div class="hidden tablet:flex space-x-4 items-center">
+      <div class="hidden tablet:flex space-x-1 items-center">
         <div v-if="mode === 'board' || mode === 'collab'"></div>
-        <div v-else class="flex flex-row space-x-8">
+        <div v-else class="flex flex-row space-x-3 laptop:space-x-8">
+          <router-link
+            :to="{ name: 'board' }"
+            class="block py-2 hover:text-blue-700 font-semibold text-center text-slate-500 tooltip tooltip-bottom"
+            data-tip="Back to board"
+          >
+            Board
+          </router-link>
           <router-link
             :to="{ name: 'Task', params: { id: boardId } }"
             class="block py-2 hover:text-blue-700 font-semibold text-center text-slate-500 tooltip tooltip-bottom"

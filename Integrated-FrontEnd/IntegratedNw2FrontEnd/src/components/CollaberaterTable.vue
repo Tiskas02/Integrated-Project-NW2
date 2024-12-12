@@ -1,14 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import StatusModal from "./StatusModal.vue";
 import { useStoreStatus } from "@/stores/statusStores";
 import { useStoreCollab } from "@/stores/collabStore";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useStoreBoard } from "@/stores/boardStore";
-import { getStatusDataById } from "@/libs/api/status/fetchUtilStatus.js";
 import { useToasterStore } from "@/stores/notificationStores";
-import BaseBtn from "@/shared/BaseBtn.vue";
 import AddCollab from "./AddCollab.vue";
 import CollabDelete from "@/views/CollabDelete.vue";
 const route = useRoute();

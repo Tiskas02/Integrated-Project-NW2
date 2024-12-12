@@ -8,7 +8,6 @@ import { useStoreStatus } from "../stores/statusStores.js";
 import { getTaskById } from "@/libs/api/task/fetchUtilTask.js";
 import { getStatusData } from "@/libs/api/status/fetchUtilStatus.js";
 import TaskModal from "../components/TaskModal.vue";
-import BaseBtn from "@/shared/BaseBtn.vue";
 import { useToasterStore } from "@/stores/notificationStores";
 import Boardvisibility from "@/views/BoardVisibility.vue";
 import { useStoreCollab } from "@/stores/collabStore";
@@ -77,7 +76,8 @@ onMounted(async () => {
   }
   nameboard.value = data[0]?.board?.name
     ? data[0]?.board?.name
-    : boardsData[0]?.boards?.name;
+    : boardsData.value.name;
+    
   storeTasks.value = data;
   const collab = await collabStore.fetchCollabsByBoardId(routerId.value);
   if (collab.length !== 0) {
@@ -89,8 +89,6 @@ onMounted(async () => {
   } else {
     accessRights.value = "WRITE";
   }
-});
-onMounted(async () => {
   allStatus.value = await statusStore.fetchStatus(routerId.value);
   const noStatus = allStatus.value.find(
     (status) => status.name === "No Status"
@@ -366,7 +364,7 @@ const getColorForStatus = (statusName, statuses) => {
                   </span>
                   <input
                     type="checkbox"
-                    class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700"
+                    class="itbkk-board-visibility toggle border-blue-500 bg-blue-500 [--tglbg:white] hover:bg-blue-700 checked:bg-blue-700"
                     v-model="storeVisibility"
                     @click="token && accessRights !== 'READ' && setVisibility()"
                     :checked="checkToggle"
@@ -403,7 +401,7 @@ const getColorForStatus = (statusName, statuses) => {
                   </svg>
                 </div>
                 <div
-                  class="dropdown dropdown-bottom dropdown-hover w-full flex h-[48px]"
+                  class="dropdown dropdown-bottom dropdown-hover w-full flex h-[48px]  tooltip tooltip-info" data-tip="Filter by Status"
                 >
                   <div
                     tabindex="0"
@@ -499,7 +497,7 @@ const getColorForStatus = (statusName, statuses) => {
   </div>
   <div class="h-[800px] tablet:h-[900px] laptop:h-[1000px]">
     <div
-      class="w-[410px] tablet:w-[750px] laptop:w-full flex tablet:justify-start laptop:justify-center tablet:mx-4 laptop:mx-4 justify-center"
+      class="w-[390px] tablet:w-[750px] laptop:w-full flex tablet:justify-start laptop:justify-center tablet:mx-4 laptop:mx-4 justify-center"
     >
       <div
         class="shadow-2xl rounded-md w-[360px] tablet:w-[650px] laptop:w-[95%] h-[95%] shadow-yellow-500/10 overflow-auto"
