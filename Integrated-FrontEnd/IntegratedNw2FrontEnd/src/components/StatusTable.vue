@@ -226,10 +226,10 @@ const setClose = (value) => {
             <p class="text-xl font-bold text-slate-500">No Status</p>
           </div>
         </div>
-        <div class="flex flex-row flex-wrap justify-start mx-2 my-6">
+        <div class="flex flex-row flex-wrap justify-center tablet:justify-start mx-2 my-6">
           <div v-for="(status, index) in statuses" :key="status.id" class="m-2">
             <div
-              class="btn border-0 w-[187px] h-[11rem] laptop:w-60 laptop:h-48 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
+              class="btn border-0 w-[187px] h-[13rem] laptop:w-60 laptop:h-48 rounded-xl shadow-lg p-4 flex flex-col justify-between items-start"
               style="
                 background-image: url('https://res.cloudinary.com/dyhavbbzf/image/upload/v1733736380/l3eanxnnefwk07sonuhz.png');
                 background-size: cover;
