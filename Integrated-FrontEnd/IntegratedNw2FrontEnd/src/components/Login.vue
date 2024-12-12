@@ -40,9 +40,7 @@ async function userLogin(user) {
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
-
     const data = await res.json();
-
     localStorage.setItem("token", data.access_token);
     localStorage.setItem("refresh_token", data.refresh_token);
     return data;
@@ -108,9 +106,7 @@ const submitForm = async () => {
         <div>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-black"
-                >Username</span
-              >
+              <span class="label-text font-semibold text-black">Username</span>
             </div>
             <input
               type="text"
@@ -127,9 +123,7 @@ const submitForm = async () => {
           </label>
           <label class="form-control w-full max-w-xs my-2">
             <div class="label">
-              <span class="label-text font-semibold text-black"
-                >Password</span
-              >
+              <span class="label-text font-semibold text-black">Password</span>
             </div>
             <input
               type="password"
@@ -172,26 +166,6 @@ const submitForm = async () => {
               <span class="itbkk-message"
                 >Username or Password is incorrect</span
               >
-            </div>
-          </div>
-
-          <div class="w-full flex flex-row mt-5">
-            <div class="border border-slate-300 w-[45%] h-[1px] m-auto"></div>
-            <div class="px-2 text-black">Other</div>
-            <div class="border border-slate-300 w-[45%] h-[1px] m-auto"></div>
-          </div>
-          <div>
-            <div class="w-full flex justify-center items-center mt-3">
-              <button
-                class="btn border-none w-[20rem] h-[10%] bg-white rounded shadow-md text-black hover:bg-black hover:text-white transition-all duration-300"
-              >
-                <img
-                  class="w-[30px] h-[30px]"
-                  src="/microsoft-icon.png"
-                  alt="google"
-                />
-                Sign in with Microsoft
-              </button>
             </div>
           </div>
         </div>

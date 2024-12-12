@@ -1,8 +1,8 @@
 <script setup>
-import StatusAddEdit from "./StatusAddEdit.vue"
-import StatusDelete from "@/views/StatusDelete.vue"
-import { defineProps, defineEmits, ref } from "vue"
-const emit = defineEmits(["close", "newStatus", "deleteId", "sentTranferId"])
+import StatusAddEdit from "./StatusAddEdit.vue";
+import StatusDelete from "@/views/StatusDelete.vue";
+import { defineProps, defineEmits, ref } from "vue";
+const emit = defineEmits(["close", "newStatus", "deleteId", "sentTranferId"]);
 const props = defineProps({
   status: {
     type: Object,
@@ -13,25 +13,25 @@ const props = defineProps({
     },
   },
   statusMode: String,
-})
+});
 
-const sentStatusMode = ref(props.statusMode)
-const sentStatus = ref(props.status)
+const sentStatusMode = ref(props.statusMode);
+const sentStatus = ref(props.status);
 const sentclose = (value) => {
-  emit("close", value)
-}
+  emit("close", value);
+};
 
 const sentNewStatus = (value) => {
-  emit("newStatus", value)
-}
+  emit("newStatus", value);
+};
 
 const sentDelteId = (value) => {
-  emit("deleteId", value)
-}
+  emit("deleteId", value);
+};
 
 const sentTranferId = (value) => {
-  emit("sentTranferId", value)
-}
+  emit("sentTranferId", value);
+};
 </script>
 
 <template>

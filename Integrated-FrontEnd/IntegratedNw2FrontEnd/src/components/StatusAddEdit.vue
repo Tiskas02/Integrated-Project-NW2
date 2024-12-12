@@ -37,8 +37,6 @@ const nameCharCount = computed(() =>
 const descriptionCharCount = computed(() =>
   storeData.value.description ? storeData.value.description.length : 0
 );
-console.log(props.status);
-console.log("storeData", storeData.value);
 </script>
 
 <template>
@@ -68,7 +66,9 @@ console.log("storeData", storeData.value);
                   >{{ status?.name }}</textarea
                 >
               </div>
-              <div class="flex justify-end text-xs text-white">{{ nameCharCount }}/50</div>
+              <div class="flex justify-end text-xs text-white">
+                {{ nameCharCount }}/50
+              </div>
             </div>
             <div class="mt-3">
               <div class="text-lg z-0 text-white">Description</div>
@@ -89,13 +89,15 @@ console.log("storeData", storeData.value);
             </div>
             <div class="flex flex-row w-full justify-end my-4">
               <div class="mr-2">
-                <BaseBtn :disabled="
+                <BaseBtn
+                  :disabled="
                     storeData.name?.trim() === '' ||
                     (storeData.name === status?.name &&
                       storeData.description === status?.description &&
                       storeData.id === status?.id)
                   "
-                  class="itbkk-button-confirm itbkk-button-ok mx-4 mt-3">
+                  class="itbkk-button-confirm itbkk-button-ok mx-4 mt-3"
+                >
                   <template #default>
                     <button
                       @click="
@@ -125,7 +127,7 @@ console.log("storeData", storeData.value);
                 </BaseBtn>
               </div>
               <div>
-                <BaseBtn class="itbkk-button-cancel ">
+                <BaseBtn class="itbkk-button-cancel">
                   <template #cancel>
                     <button
                       @click="
