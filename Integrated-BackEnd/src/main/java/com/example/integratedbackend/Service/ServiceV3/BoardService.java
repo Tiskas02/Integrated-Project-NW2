@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -115,6 +116,22 @@ public List<BoardResponse> getBoardByUserName(String userName) {
         statusServiceV3.createDefaultStatus(savedBoard.getId());
         return savedBoard;
     }
+
+    @Transactional
+    public Boards deleteBoardByBoardId(String boardId) {
+        Optional<Boards> board = boardsRepositoriesV3.findById(boardId);
+        if (board.isEmpty()) {
+            throw new ItemNotFoundException(HttpStatus.NOT_FOUND, "Board with id " + boardId + " not found");
+        }
+
+        boardsRepositoriesV3.deleteStatusesByBoardId(boardId);
+
+
+        boardsRepositoriesV3.deleteBoardById(boardId);
+
+        return board.get();
+    }
+
 
     public boolean boardExists(String boardId) {
         if (boardId == null) {

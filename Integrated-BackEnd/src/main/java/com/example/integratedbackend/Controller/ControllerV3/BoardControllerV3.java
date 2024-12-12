@@ -162,6 +162,31 @@ public class BoardControllerV3 {
         return new ResponseEntity<>(board, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Object> deleteBoard(
+            @RequestHeader(value = "Authorization") String authHeader,
+            @PathVariable String boardId){
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
+        }
+        String jwt = authHeader.substring(7);
+        String username = jwtUtil.extractClaim(jwt, Claims::getSubject);
+        String userId = (String) jwtUtil.extractAllClaims(jwt).get("oid");
+
+        Boards boardInfo = boardService.getBoardByBoardId(boardId);
+        String boardOwnerName = boardInfo.getUsers().getUsername();
+
+        if (userId != null) {
+            if (username.equals(boardOwnerName)) {
+                return ResponseEntity.ok(boardService.deleteBoardByBoardId(boardId));
+            }else {
+                throw new AccessRightNotAllow(HttpStatus.FORBIDDEN, "You are not allowed to delete this board");
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
+    }
+
     // ================================statuses=====================================
 
     @GetMapping("{boardId}/statuses")
