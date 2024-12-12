@@ -46,15 +46,10 @@ export const useStoreBoard = defineStore("boards", () => {
     try {
       const updatedBoard = await editBoard(boardId, board);
       const boardIndex = boards.value.findIndex((board) => board.id === boardId);
-      boards.value[boardIndex] = updatedBoard;
-      
-      // boards.value[boardIndex] = {
-      //   ...updatedBoard,
-      //   status: {
-      //     id: updatedBoard.status.statusId,
-      //     name: updatedBoard.status.statusName,
-      //   },
-      // };
+      boards.value[boardIndex] = {
+        ...updatedBoard,
+        visibilities: updatedBoard.visibility,
+      };
       return updatedBoard;
     } catch (error) {
       throw new Error(error.message);

@@ -99,8 +99,6 @@ const editBoard = async (board) => {
   const data = await boardStore.updateBoard(board.id, {
     name: board.name,
   });
-  console.log(data);
-  
   if (data) {
     toasterStore.success({ text: "Board edited successfully!" });
   } else {
@@ -111,7 +109,7 @@ const editBoard = async (board) => {
 };
 const deleteBoard = async (boardId) => {
   const res = await boardStore.deleteBoard(boardId);
-  if (res.status === 200) {
+  if (res === 200) {
     toasterStore.success({ text: "Board deleted successfully!" });
   } else {
     toasterStore.error({ text: "Error deleting board" });
